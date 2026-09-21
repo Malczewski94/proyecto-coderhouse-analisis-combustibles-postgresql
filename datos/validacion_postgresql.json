@@ -1,187 +1,90 @@
 {
   "resultado": "CORRECTO",
-  "motor": "PGlite (PostgreSQL en WebAssembly)",
+  "version_modelo": 2,
+  "motor": "PGlite 0.5.8 (PostgreSQL en WebAssembly)",
   "version": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
   "estructura_sql_ejecutada": true,
+  "validaciones_sql_ejecutadas": true,
   "conteos": {
-    "clientes": 432,
-    "pedidos": 4909,
-    "detalles": 22894,
-    "fuentes": 1007,
-    "celdas_nulas_entrada": 168
+    "operadores": 18,
+    "productos": 7,
+    "clientes": 18,
+    "pedidos": 216,
+    "detalle_pedido": 1007,
+    "fuente_ventas": 1007,
+    "detalle_pedido_entrada": 1010
   },
-  "registros_con_diferencias": 0,
-  "errores_trazabilidad": 0,
-  "consultas_tecnicas_de_prueba": {
-    "top_clientes": [
-      {
-        "id_cliente": "C0265",
-        "gasto": "5146391961.53510"
-      },
-      {
-        "id_cliente": "C0267",
-        "gasto": "3891699662.93777"
-      },
-      {
-        "id_cliente": "C0242",
-        "gasto": "3879251506.71581"
-      },
-      {
-        "id_cliente": "C0266",
-        "gasto": "3846755259.42433"
-      },
-      {
-        "id_cliente": "C0268",
-        "gasto": "3615251246.84075"
-      }
-    ],
-    "meses": [
-      {
-        "mes": "2025-01-01T00:00:00.000Z",
-        "importe": "10095233279.25000"
-      },
-      {
-        "mes": "2025-02-01T00:00:00.000Z",
-        "importe": "10024372092.50200"
-      },
-      {
-        "mes": "2025-03-01T00:00:00.000Z",
-        "importe": "10636993017.83000"
-      },
-      {
-        "mes": "2025-04-01T00:00:00.000Z",
-        "importe": "10213597094.02000"
-      },
-      {
-        "mes": "2025-05-01T00:00:00.000Z",
-        "importe": "10765760001.72200"
-      },
-      {
-        "mes": "2025-06-01T00:00:00.000Z",
-        "importe": "10813129530.75000"
-      },
-      {
-        "mes": "2025-07-01T00:00:00.000Z",
-        "importe": "12004274839.26000"
-      },
-      {
-        "mes": "2025-08-01T00:00:00.000Z",
-        "importe": "12260514811.10500"
-      },
-      {
-        "mes": "2025-09-01T00:00:00.000Z",
-        "importe": "12356546180.88000"
-      },
-      {
-        "mes": "2025-10-01T00:00:00.000Z",
-        "importe": "13391668900.60000"
-      },
-      {
-        "mes": "2025-11-01T00:00:00.000Z",
-        "importe": "13295202542.47100"
-      },
-      {
-        "mes": "2025-12-01T00:00:00.000Z",
-        "importe": "15860282317.40000"
-      }
-    ],
-    "productos_menos_vendidos": [
-      {
-        "id_producto": "P004",
-        "litros": "495530.000"
-      },
-      {
-        "id_producto": "P005",
-        "litros": "3405860.000"
-      },
-      {
-        "id_producto": "P006",
-        "litros": "11885870.000"
-      }
-    ],
-    "ranking": [
-      {
-        "categoria": "GNC",
-        "id_pedido": "V001515",
-        "importe": "24503926.03829",
-        "puesto": 1
-      },
-      {
-        "categoria": "GNC",
-        "id_pedido": "V001486",
-        "importe": "22834995.20700",
-        "puesto": 2
-      },
-      {
-        "categoria": "GNC",
-        "id_pedido": "V003251",
-        "importe": "22124399.29696",
-        "puesto": 3
-      },
-      {
-        "categoria": "Gasoil",
-        "id_pedido": "V003252",
-        "importe": "324331121.85724",
-        "puesto": 1
-      },
-      {
-        "categoria": "Gasoil",
-        "id_pedido": "V001900",
-        "importe": "291717147.87200",
-        "puesto": 2
-      },
-      {
-        "categoria": "Gasoil",
-        "id_pedido": "V003076",
-        "importe": "274558295.63071",
-        "puesto": 3
-      },
-      {
-        "categoria": "Nafta",
-        "id_pedido": "V000200",
-        "importe": "120908826.10409",
-        "puesto": 1
-      },
-      {
-        "categoria": "Nafta",
-        "id_pedido": "V000265",
-        "importe": "118436557.33472",
-        "puesto": 2
-      },
-      {
-        "categoria": "Nafta",
-        "id_pedido": "V000205",
-        "importe": "115735849.48289",
-        "puesto": 3
-      },
-      {
-        "categoria": "Queroseno",
-        "id_pedido": "V003006",
-        "importe": "17233123.14614",
-        "puesto": 1
-      },
-      {
-        "categoria": "Queroseno",
-        "id_pedido": "V003809",
-        "importe": "16651081.06000",
-        "puesto": 2
-      },
-      {
-        "categoria": "Queroseno",
-        "id_pedido": "V003007",
-        "importe": "15355369.69291",
-        "puesto": 3
-      }
-    ],
-    "unidades": [
-      {
-        "unidad_venta": "L",
-        "cantidad": "93213130.000"
-      },
-      {
-        "unidad_venta": "m3",
-        "cantidad": "8638800.200"
-      }
-    ]
-  }
+  "limpieza": [
+    {
+      "etapa": "Entrada antes de limpiar",
+      "filas": 1010,
+      "filas_repetidas": 3,
+      "precios_nulos": 8
+    },
+    {
+      "etapa": "Detalle limpio",
+      "filas": 1007,
+      "filas_repetidas": 0,
+      "precios_nulos": 0
+    }
+  ],
+  "conciliacion": {
+    "registros_comprobados": 1007,
+    "registros_con_diferencias": 0
+  },
+  "fechas": {
+    "fechas_nulas": 0,
+    "fechas_invalidas": 0,
+    "meses": 12
+  },
+  "trazabilidad": {
+    "filas_unidas": 1007,
+    "errores_trazabilidad": 0
+  },
+  "tipos": [
+    {
+      "table_name": "detalle_pedido",
+      "column_name": "cantidad",
+      "data_type": "numeric",
+      "numeric_precision": 18,
+      "numeric_scale": 3
+    },
+    {
+      "table_name": "detalle_pedido",
+      "column_name": "precio_unitario_ars",
+      "data_type": "numeric",
+      "numeric_precision": 18,
+      "numeric_scale": 2
+    },
+    {
+      "table_name": "fuente_ventas",
+      "column_name": "periodo",
+      "data_type": "date",
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "table_name": "pedidos",
+      "column_name": "fecha",
+      "data_type": "date",
+      "numeric_precision": null,
+      "numeric_scale": null
+    }
+  ],
+  "importe_referencia_ars": "141717574607.79000",
+  "volumenes": [
+    {
+      "unidad_venta": "L",
+      "cantidad": "93213130.000"
+    },
+    {
+      "unidad_venta": "m3",
+      "cantidad": "8638800.200"
+    }
+  ],
+  "top_5_consulta_ejecutable": true,
+  "restricciones_pedido_mensual_verificadas": true,
+  "migracion_preserva_v1": true,
+  "migracion_repetida_rechazada": true,
+  "alcance": "Validación técnica V2. Pendiente ejecución y capturas en pgAdmin del usuario; interpretación de negocio pendiente."
 }

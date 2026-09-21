@@ -31,28 +31,34 @@ Una fila representa un establecimiento de referencia. La combinación inscripci�
 
 ## Clientes
 
+Una fila es una cuenta del mayorista ficticio asociada a un establecimiento real. Su identidad es real y su relación comercial es simulada. Se trabaja por establecimiento, no por CUIT consolidado.
+
 | Campo | Tipo | Significado |
 | --- | --- | --- |
-| id_cliente | TEXT, PK | Identificador de comprador ficticio |
-| nombre | TEXT | Etiqueta explícita `Cliente ficticio ...` |
-| segmento | TEXT | Sector asignado artificialmente: Comercio y servicios, Flota comercial, Transporte o Agro |
-| provincia | TEXT | Provincia asignada según el establecimiento de referencia |
-| origen | TEXT | `sintetico` |
+| id_cliente | TEXT, PK | Identificador interno de cuenta |
+| id_operador | TEXT, FK, UNIQUE | Establecimiento de origen; no proveedor |
+| nombre | TEXT | Nombre real del operador, copiado de la fuente |
+| provincia | TEXT | Provincia real del establecimiento |
+| origen_identidad | TEXT | `real` |
+| relacion_comercial | TEXT | `simulada` |
+
+Nombre y provincia se copian al generar la cuenta; el generador los obtiene de operadores. Para localidad, dirección, CUIT y bandera consultar operadores mediante id_operador. V2 elimina el segmento inventado.
 
 ## Pedidos
 
 | Campo | Tipo | Significado |
 | --- | --- | --- |
-| id_pedido | TEXT, PK | Identificador ficticio |
-| fecha | DATE | Día simulado dentro del mes real |
-| id_cliente | TEXT, FK | Comprador ficticio |
-| id_operador | TEXT, FK | Establecimiento real utilizado como referencia |
-| estado | TEXT | `Concretado`, supuesto de simulación |
-| origen | TEXT | `sintetico` |
+| id_pedido | TEXT, PK | Identificador simulado |
+| fecha | DATE | Primer día del mes de 2025 como representación mensual; no fecha de entrega |
+| id_cliente | TEXT, FK | Cuenta del establecimiento que compra en la simulación |
+| estado | TEXT | `Concretado`, supuesto del caso |
+| origen | TEXT | `sintetico_mensual` |
+
+UNIQUE(id_cliente, fecha) y CHECK del primer día del mes garantizan un pedido por cliente/mes. Se generan doce por cliente, 216 en total. El operador se obtiene a través de clientes, sin repetirlo en pedidos.
 
 ## Detalle de pedido
 
-Una fila identifica la parte de un registro fuente asignada a un pedido. Es única por pedido y fuente. La cantidad se interpreta con `productos.unidad_venta`.
+Una fila representa un registro fuente completo asignado al pedido mensual del establecimiento. id_fuente es único en el detalle. La cantidad se interpreta con `productos.unidad_venta`.
 
 | Campo | Tipo | Significado |
 | --- | --- | --- |
@@ -60,9 +66,9 @@ Una fila identifica la parte de un registro fuente asignada a un pedido. Es úni
 | id_pedido | TEXT, FK | Cabecera |
 | id_producto | TEXT, FK | Producto |
 | id_fuente | TEXT, FK | Registro mensual real del que procede la cantidad |
-| cantidad | NUMERIC(18,3) | Cantidad distribuida artificialmente, positiva |
-| precio_unitario_ars | NUMERIC(18,2) | Precio mensual con impuestos asignado; ARS por unidad del producto |
-| origen | TEXT | `sintetico_con_precio_mensual` |
+| cantidad | NUMERIC(18,3) | Volumen mensual completo convertido a la unidad de venta, usado como compra simulada |
+| precio_unitario_ars | NUMERIC(18,2) | Precio minorista mensual con impuestos usado como referencia; ARS por unidad |
+| origen | TEXT | `simulado_con_referencia_minorista` |
 
 El importe no se almacena en la tabla: `v_ventas` lo calcula como cantidad × precio. El producto puede tener hasta cinco decimales monetarios; redondear solo para presentación evita introducir diferencias de conciliación.
 
@@ -99,9 +105,9 @@ Una fila corresponde a un registro incluido de la extracción de Access. No es u
 
 ## Vistas SQL
 
-- `v_ventas`: une pedidos, detalle y productos. Expone fecha ficticia, cliente, operador, categoría, unidad, cantidad, precio y `importe_referencia_ars`.
+- `v_ventas`: une pedidos, clientes, detalle y productos. Expone mes representado como fecha, cliente, operador de origen, categoría, unidad, cantidad, precio y `importe_referencia_ars`.
 - `v_conciliacion`: compara cantidades e importes por fuente. `COALESCE(SUM(...),0)` representa correctamente ausencia de detalles; no sustituye precios desconocidos por cero.
 
 ## Valores ausentes y límites
 
-CSV vacío corresponde a NULL al cargar en SQL. `N/D` se mantiene en el original y debe tratarse explícitamente como desconocido cuando corresponda. Los datos reales excluidos no se reparten en pedidos. Las cifras del dataset describen únicamente registros incluidos; ni el muestreo ni la imputación permiten inferir comportamiento de compradores reales.
+CSV vacío corresponde a NULL al cargar en SQL. `N/D` se mantiene en el original y debe tratarse explícitamente como desconocido cuando corresponda. Los datos reales excluidos no alimentan los pedidos. Las cifras del dataset describen únicamente registros incluidos; ni el muestreo ni la imputación permiten inferir comportamiento de compradores reales.

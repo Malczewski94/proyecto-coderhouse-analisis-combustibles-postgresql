@@ -1,24 +1,22 @@
 # Estado del proyecto y guía de continuidad
 
-Última actualización: 2026-09-21.
+Última actualización: 2026-09-21. Versión vigente del modelo: **V2**.
 Repositorio: https://github.com/Malczewski94/proyecto-coderhouse-analisis-combustibles-postgresql
-Rama de trabajo: `main`.
+Rama publicada: main.
 
-## 1. Cómo retomar en otro chat
+## 1. Cómo retomar
 
-Leer este archivo, el README raíz, `analisis.sql` y los commits posteriores a esta actualización. Para detalles del dataset, leer `datos/README.md` y `datos/diccionario.md`. Comprobar el estado real de GitHub antes de modificar archivos: este documento es un punto de continuidad, no reemplaza los archivos actuales.
+Leer este archivo, README.md, datos/README.md, datos/diccionario.md y los commits posteriores. Trabajar en español y paso a paso. Antes de cada tarea explicar qué parte del pipeline y del entregable cubre. No desarrollar todas las consultas de una vez: el usuario quiere comprender y revisar cada resultado.
 
-Trabajar en español, paso a paso y documentar cada avance. No completar todas las consultas de una vez: el usuario quiere entender, ejecutar y revisar cada resultado. No repetir la preparación ya realizada ni presentar pruebas técnicas previas como análisis de negocio terminado.
+Actualizar este archivo con cada avance, diferenciando preparado, validado técnicamente, ejecutado por el usuario y publicado. No dar por ejecutadas tareas en el PostgreSQL local del usuario: no hay conexión a esa base.
 
-Actualizar este archivo al cerrar cada avance relevante, junto con los archivos afectados: estado, resultado comprobado, evidencia, pendiente y próxima acción. Si algo falla, registrar qué quedó guardado y qué no. No afirmar que una escritura o ejecución fue exitosa sin confirmación. No incorporar claves ni credenciales.
+## 2. Decisión central aprobada y alcance
 
-## 2. Objetivo y alcance
+El usuario confirmó que la intención original era usar operadores como clientes de un mayorista ficticio. El modelo V1 con compradores ficticios no reflejaba esa intención. Autorizó modificar los archivos, un pedido mensual por establecimiento y precios originales como referencia.
 
-Proyecto final Coderhouse: análisis comercial de combustibles con PostgreSQL. Simular el trabajo de un analista desde la preparación y limpieza hasta la interpretación de resultados para una red comercial ficticia.
+V2: 18 establecimientos reales son cuentas cliente de un mayorista ficticio. La fuente gubernamental informa ventas de estaciones al público, no compras a distribuidores. El Gobierno es fuente/publicador, no vendedor. Se supone que el volumen vendido al público equivale a la compra mensual simulada, sin variación de existencias. El precio minorista mensual con impuestos se utiliza como referencia, nunca como precio mayorista real. No se inventan descuentos ni márgenes.
 
-Dataset híbrido: establecimientos, productos, volúmenes y precios mensuales reales; clientes compradores, pedidos, fechas diarias y relaciones comerciales simulados. No representa transacciones reales ni información interna de YPF.
-
-Muestra minorista de 2025: 18 establecimientos, tres en cada provincia de Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe; doce meses y siete productos. Fuente: `precios_eess_2025_en_adelante.accdb`, tabla `public_vi_access_eess_2025_en_adelante`. Se extrajeron 408.550 filas; la simulación utiliza 1.007 registros del canal Al público. La muestra original seleccionada tiene 1.013 filas antes de excluir seis de otros canales. No se usa el archivo mayorista.
+Se conserva la muestra de 2025: tres establecimientos en cada una de Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe; siete productos. Fuente Access precios_eess_2025_en_adelante.accdb, tabla public_vi_access_eess_2025_en_adelante; extracción previa de 408.550 filas. Muestra congelada de 1.013 filas, seis excluidas por canal; 1.007 incluidas Al público. No se usa el archivo mayorista.
 
 ## 3. Consigna recuperada y verificada
 
@@ -65,104 +63,73 @@ Además, los criterios generales requieren JOIN entre al menos dos tablas, agreg
 
 Total: 100 puntos. Aprobación: 70 puntos. No confundir esta entrega con el proyecto de IA de reclamos logísticos ni con otras preentregas SQL.
 
-## 4. Estructura definida
+## 4. Modelo vigente
 
-Base prevista: `capstone_project`. Esquema: `combustibles`. Trabajo del usuario en PostgreSQL y pgAdmin.
+Base requerida: capstone_project. Esquema V2: combustibles. Una cuenta por establecimiento, no por CUIT consolidado.
 
-| Tabla | Función | Filas esperadas/documentadas |
-| --- | --- | ---: |
-| operadores | Establecimientos de referencia | 18 |
-| productos | Productos, categorías y unidades | 7 |
-| clientes | Compradores ficticios | 432 |
-| pedidos | Cabeceras con cliente, operador, fecha y estado | 4.909 |
-| detalle_pedido | Detalles limpios y vínculo a la fuente | 22.894 |
-| fuente_ventas | Registros mensuales reales incluidos | 1.007 |
-| detalle_pedido_entrada | Entrada didáctica con incidencias | 22.953 |
+| Tabla | Filas | Función |
+| --- | ---: | --- |
+| operadores | 18 | Identidad de origen del establecimiento |
+| clientes | 18 | Cuenta con id_operador único, nombre y provincia reales |
+| productos | 7 | Producto, categoría y unidad |
+| pedidos | 216 | Un pedido mensual por cliente |
+| fuente_ventas | 1.007 | Registro real de venta al público |
+| detalle_pedido | 1.007 | Una línea por registro fuente |
+| detalle_pedido_entrada | 1.010 | Entrada con incidencias didácticas |
 
-Cuatro tablas comerciales: clientes, productos, pedidos y detalle_pedido. Las restantes conservan trazabilidad y permiten auditar la limpieza. Cada pedido pertenece a un cliente y operador; cada detalle a un pedido, producto y registro fuente. Usar claves primarias/foráneas, cantidades y precios positivos, DATE y NUMERIC.
+Pedidos ya no duplica id_operador: se obtiene por clientes. Se eliminó segmento inventado. Fecha = primer día del mes como representación contable, no fecha de entrega. UNIQUE(cliente, fecha) más CHECK de primer día garantizan frecuencia mensual. Doce pedidos por cliente no demuestran fidelidad.
 
-## 5. Estado por paso
+Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUMERIC para cantidades y precios. Líquidos en L, GNC en m³, sin sumarlos como volumen único. Totales: 93.213.130 L y 8.638.800,20 m³; importe de referencia 141.717.574.607,79 ARS nominales. Sin extrapolación nacional ni inferencias de rentabilidad.
 
-| Paso | Estado | Qué falta |
-| --- | --- | --- |
-| 1. Problema | Definido y documentado | Mantener coherencia con resultados finales |
-| 2. Preparación/carga | Documentada con captura de los siete conteos coincidentes | Confirmar nombre de la base local |
-| 3. Limpieza | Documentada con evidencias en pgAdmin | Mantener trazabilidad; no repetir la carga |
-| 4. Análisis | En desarrollo: primera consulta propuesta | Revisar resultado con el usuario y desarrollar las restantes |
-| 5. Hallazgos | Pendiente | Interpretaciones, evidencias y conclusiones |
+## 5. Estado y validación
 
-La entrada tiene 22.953 filas, 59 repeticiones y 168 celdas de precio nulas. Se introdujeron 167 precios nulos en detalles distintos y un duplicado repite uno de ellos. DISTINCT elimina duplicados exactos y COALESCE recupera el precio del mismo registro fuente. Salida: 22.894 filas, cero repeticiones y cero precios nulos.
+| Paso del pipeline | Estado V2 |
+| --- | --- |
+| 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
+| 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; carga local y captura pendientes |
+| 3. Limpieza | 8 precios nulos y 3 duplicados; validada técnicamente; capturas locales pendientes |
+| 4. Análisis | Primera consulta adaptada; prueba técnica exitosa; resultado e interpretación con usuario pendientes |
+| 5. Hallazgos | Pendientes de revisión conjunta |
 
-La conciliación documentada en pgAdmin compara 1.007 registros y da cero diferencias de cantidad o importe. Las comprobaciones técnicas previas con Python/Decimal y PGlite (PostgreSQL 18.3) son evidencias separadas, no ejecución nueva en este chat. No se ha conectado este chat a la base local del usuario.
+Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
 
-## 6. Decisiones y razones
+Python Decimal comprueba claves, doce meses, limpieza y conservación exacta de volúmenes/importes. PGlite 0.5.8 (PostgreSQL 18.3) ejecutó estructura.sql, validaciones.sql y primera consulta, comprobó 1.007 fuentes sin diferencias, fechas/tipos, JOIN sin multiplicación y restricciones mensuales. También comprobó migración V1→V2, preservación de 432 clientes antiguos y rechazo de migración repetida. Reportes en datos/validacion.json y datos/validacion_postgresql.json. No equivalen a ejecución en pgAdmin del usuario.
 
-- Usar datos reales más simulación para construir el modelo comercial sin inventar que se conocen compradores o pedidos reales.
-- Separar operadores de clientes: una estación es referencia de origen y no el comprador ficticio.
-- La bandera es la marca declarada; no acredita franquicia ni propiedad común.
-- Usar solo 2025 y una muestra intencional manejable; no extrapolar resultados a Argentina.
-- Convertir líquidos de m³ a litros y conservar GNC en m³; nunca sumar ambas unidades como un volumen único.
-- Calcular importes en ARS nominales con precio promedio mensual con impuestos. No llamarlos facturación auditada, rentabilidad ni crecimiento real ajustado por inflación.
-- Recuperar precios desde fuente_ventas porque el generador asignó ese mismo precio a los detalles; no rellenar con cero ni con un promedio general.
-- Conservar entrada y salida para demostrar limpieza. Las incidencias fueron introducidas para el ejercicio, no atribuirlas a la fuente pública.
-- Semilla del generador: 20250915. La concentración de compradores está inducida por ponderaciones del generador; no es un descubrimiento del mercado.
-- La carga incluye INSERT y una transacción; no requiere importar cada CSV por separado. No volver a ejecutar estructura.sql sobre las tablas existentes: no borra objetos previos.
-- El 21/09/2026 el usuario autorizó publicar estructura.sql y los CSV, incluidos nombres y CUIT de operadores, por proceder de una fuente pública. Se publican conservando atribución y distinción entre datos reales y simulados.
+## 6. Archivos modificados y evidencias
 
-## 7. Análisis previstos y avance
+- estructura.sql y datos/generar_dataset.py: modelo V2 determinista, sin reparto aleatorio ni semilla.
+- CSV derivados, incidencias, conciliacion, resumen, hashes y validaciones: regenerados V2.
+- fuente_original.csv, fuente_ventas.csv, operadores.csv, productos.csv y auxiliares de selección conservan la fuente original.
+- migrar_v1.sql: renombra combustibles a combustibles_v1 sin borrar datos, con guardas.
+- validaciones.sql: mantiene conteos/limpieza/conciliación y agrega fechas, pedidos mensuales, JOIN y tipos.
+- analisis.sql: top 5 con nombres reales, localidad, provincia, cantidad_pedidos y gasto_referencia_ars.
+- README y diccionario: actualizados; README incluye relaciones mediante Mermaid.
+- historico/v1/: capturas y validación PostgreSQL anterior, claramente excluidas como evidencia V2.
 
-| Pregunta | Criterio | Estado |
-| --- | --- | --- |
-| Cinco clientes con mayor gasto | SUM(cantidad × precio) por cliente | Consulta en analisis.sql; interpretación pendiente |
-| Evolución mensual de ventas | Importe de referencia por mes | Pendiente |
-| Tres productos menos vendidos | Volumen en litros entre seis productos líquidos; GNC aparte | Pendiente |
-| Ranking de pedidos por categoría | Sumar importe del pedido en cada categoría y aplicar RANK por categoría | Pendiente |
-| Concentración del top 5 | Importe top 5 / total × 100 | Pendiente |
-| Precio ponderado por producto/mes | SUM(cantidad × precio) / SUM(cantidad) | Pendiente |
+V1 completa se conserva en el historial, commit d81d873cd2004164bb0cdb330f045efe1a54add9. No eliminar el respaldo local del usuario. El top 5 antiguo con C0265 y demás clientes ficticios es obsoleto y no debe interpretarse ni documentarse como V2.
 
-La primera consulta usa JOIN, GROUP BY, COUNT(DISTINCT id_pedido), SUM, filtro Concretado y LIMIT 5. No se registró todavía aquí un resultado validado conjuntamente ni conclusiones.
+La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/2026. La actualización del modelo y sus archivos fue autorizada explícitamente en esta conversación.
 
-## 8. Archivos disponibles y ausentes
+## 7. Preguntas y forma de trabajar
 
-Disponibles en GitHub al verificar main:
+1. Cinco clientes con mayor gasto de referencia: SQL adaptado, pendiente captura/interpretación V2.
+2. Evolución mensual de importes: pendiente.
+3. Tres productos líquidos menos vendidos, GNC aparte: pendiente.
+4. Ranking de pedidos por categoría con RANK(): pendiente.
+5. Concentración del top 5: pendiente.
+6. Precio ponderado por producto/mes: pendiente.
 
-- `README.md`: pasos 1–3, métricas y pendientes.
-- `analisis.sql`: primera consulta de negocio.
-- `validaciones.sql`: controles de conteos, limpieza y conciliación.
-- `datos/README.md`: metodología, selección, simulación y reproducción.
-- `datos/diccionario.md`: campos, claves y unidades.
-- `datos/generar_dataset.py`: generador.
-- `datos/validacion.json` y `datos/validacion_postgresql.json`: pruebas previas.
-- `datos/advertencias_fuente.csv`: archivo de advertencias.
-- `imagenes/limpieza.png` y `imagenes/conciliacion.png`: capturas del paso 3.
-- `imagenes/conteos_tablas.png`: captura del resultado de los siete conteos en pgAdmin; todos coinciden con los esperados. La imagen no muestra la consulta ni el nombre de la base. El SQL se incluye como texto en el README y permanece en validaciones.sql.
-- `PROJECT_STATE.md`: creado en esta actualización.
+Las secciones 1–6 de la actividad son orientación, pipeline, ejemplos, controles, conceptos y cierre, no seis entregas diferentes. Se cubren los cuatro pasos del entregable: configuración, limpieza, análisis y documentación. Mantener las seis preguntas y revisar todos los criterios de la rúbrica al cerrar.
 
-Publicados en esta actualización: `estructura.sql`, los 13 CSV del paquete (incluida `fuente_original.csv`), `sha256_csv.json`, `perfil_fuente.json` y `resumen_dataset.json`. Se recuperó el paquete preparado y se verificaron las huellas SHA-256 de los 13 CSV. El SQL coincide byte por byte con el preparado previamente. El repositorio incluye los insumos para cargar y regenerar el dataset; no se ejecutó una nueva carga en la base local del usuario.
+Para cada consulta: pregunta y métrica → explicación y ejecución del usuario → control del resultado → interpretación conjunta y límites → SQL/README/evidencia/estado en GitHub. No añadir análisis futuros para adelantarse al aprendizaje.
 
-Referencia previa a la creación de este archivo: commit `a17c5a3e4a691e831d47ca8d2d1e75a9bfa4c4b6`, del 2026-09-21, “Documentar pasos 1 a 3 y evidencias; dejar publicación de datos pendiente”. Consultar el historial para el commit de este archivo y cualquier cambio posterior.
+## 8. Siguiente tarea concreta
 
-## 9. Evidencias y documentación pendientes
+Guiar la actualización en pgAdmin antes de retomar análisis:
 
-- Resultados y capturas legibles de las consultas de negocio, a medida que se revisen.
-- Interpretaciones, conclusiones y limitaciones específicas por consulta.
-- Revisar el nombre real de la base local frente a capstone_project antes de dar la configuración por plenamente verificada.
-- Verificar al finalizar el cumplimiento de cada criterio de la rúbrica y la ejecución completa de los scripts entregados.
+1. Pedir resultado de SELECT current_database(); el nombre local aún no está confirmado.
+2. En la base que contiene V1, ejecutar migrar_v1.sql una sola vez; conserva el esquema antiguo. Luego estructura.sql V2 completo. En base nueva vacía solo estructura.sql.
+3. Ejecutar validaciones.sql por bloques y pedir capturas V2: conteos generales, limpieza y conciliación. Confirmar también fechas (0 nulas/invalidas, 12 meses) y trazabilidad (1.007 filas, 0 errores).
+4. Incorporar las nuevas evidencias, cerrar los pendientes locales y retomar el top 5 V2.
 
-Las capturas son evidencias acordadas para el proyecto; no afirmar que cada captura enumerada sea un requisito literal de la consigna.
-
-## 10. Criterios de documentación del README
-
-Mantener la estructura de los cinco pasos del pipeline. Explicar qué se hizo y por qué, con cifras comprobadas. Diferenciar preparado, ejecutado, validado y publicado. No declarar reproducibilidad mientras falten datos o scripts.
-
-Para cada análisis: pregunta de negocio, definición de métrica/unidad/filtros, referencia a la consulta, resultado observado, interpretación y limitación. Incorporar la captura junto a su explicación con rutas relativas en imagenes/. No inventar resultados ni causas.
-
-Conservar la diferencia entre datos reales, derivados y sintéticos. Separar evidencia técnica de conclusiones comerciales. Documentar decisiones de nulos, duplicados y unidades, y los pasos concretos para ejecutar. Usar el README como explicación del proyecto; este archivo conserva continuidad y tareas pendientes.
-
-## 11. Último punto y siguiente tarea
-
-Último punto: se recibió y verificó la captura de los siete conteos de pgAdmin, todos coincidentes con el dataset esperado. Se incorporó como imagenes/conteos_tablas.png y se documentó la consulta como texto en el README. Se cerró el pendiente de evidencia del paso 2; el nombre de la base local sigue sin confirmarse porque no aparece en la imagen.
-
-Siguiente tarea de trabajo: retomar la primera consulta de analisis.sql con el usuario, ejecutarla en su base ya cargada (o revisar el resultado que aporte), comprobar los cinco clientes, interpretar los importes y documentar resultado/evidencia. Luego avanzar consulta por consulta.
-
-Publicación del dataset resuelta. Continúan pendientes el análisis de negocio, sus evidencias y las conclusiones.
+No pedir de nuevo autorización para estas modificaciones: ya fue concedida. Si una carga falla, conservar el respaldo y diagnosticar sin borrar esquemas. No presentar la entrega completa hasta revisar análisis, conclusiones y reproducción final.

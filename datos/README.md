@@ -1,44 +1,22 @@
-> Organización del repositorio: `estructura.sql` está en la raíz (`../estructura.sql` desde esta carpeta). Ejecutar el generador desde la raíz con `python3 datos/generar_dataset.py`; los CSV permanecen en `datos/`.
+# Dataset V2: mayorista ficticio y establecimientos reales
 
-# Dataset híbrido de comercialización de combustibles
+Los 18 establecimientos reales seleccionados se utilizan como cuentas cliente de un mayorista ficticio. Se conserva `operadores` como tabla de identidad de origen y `clientes` como vínculo comercial simulado, uno a uno. El Gobierno es el publicador de datos, no nuestro vendedor.
 
-Proyecto educativo para análisis con PostgreSQL. Combina una muestra de ventas mensuales declaradas ante la Secretaría de Energía con clientes y pedidos ficticios. **No son transacciones reales ni información interna de YPF u otra empresa.**
-
-## Caso de negocio
-
-Una red comercial ficticia utiliza establecimientos reales como referencia para simular ventas a cuentas empresariales. El objetivo es estudiar gasto de clientes simulados, evolución mensual de ventas, productos con menor demanda y ranking de pedidos por categoría.
-
-La pertenencia de los establecimientos a esa red y toda relación cliente–operador son ficticias. El campo `bandera` describe la marca declarada en la fuente; no prueba un contrato de franquicia ni propiedad común. Los pedidos representan lotes comerciales artificiales, que pueden agrupar varios suministros o cargas a una cuenta; no son tickets individuales de surtidor ni una simulación logística.
+La fuente contiene ventas de las estaciones al público. No acredita sus compras ni sus proveedores. Usamos cantidades vendidas como cantidades compradas simuladas, sin cambios de existencias, y el precio minorista mensual original como referencia. La relación comercial, los pedidos y su estado son simulados; los nombres y ubicaciones de los establecimientos son reales.
 
 ## Contenido
 
 | Elemento | Cantidad |
 | --- | ---: |
-| Año seleccionado | 2025, doce meses |
-| Establecimientos de referencia | 18 |
+| Establecimientos / clientes | 18 / 18 |
 | Provincias | 6 |
 | Productos | 7 |
-| Categorías | 4 |
-| Clientes ficticios | 432 |
-| Pedidos ficticios | 4.909 |
-| Detalles de pedidos limpios | 22.894 |
-| Registros reales que sustentan la simulación | 1.007 |
+| Meses de 2025 | 12 |
+| Pedidos mensuales | 216 |
+| Registros fuente y detalles limpios | 1.007 cada uno |
+| Detalles de entrada | 1.010 |
 
-Provincias: Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe. Categorías: Nafta, Gasoil, Queroseno y GNC. La muestra incluye tres establecimientos por provincia. No representa el mercado nacional ni pretende estimar cuotas de mercado.
-
-## Qué es real, derivado o sintético
-
-| Dato | Procedencia |
-| --- | --- |
-| Operador, inscripción, CUIT, bandera, ubicación, tipo de negocio | Fuente real; textos normalizados mediante eliminación de espacios extremos |
-| Producto original, período mensual, volumen, precio promedio e impuestos originales | Fuente real |
-| Identificadores internos, categorías, unidades normalizadas, importe de referencia | Derivados |
-| Clientes, sectores de clientes, asignaciones a establecimientos | Sintéticos |
-| Fecha diaria, identificador y estado de pedido, reparto de cantidades | Sintéticos |
-| Precio unitario de un pedido | Precio mensual real asignado artificialmente; no precio transaccional observado |
-| Nulos de precios y duplicados en la entrada de práctica | Errores sintéticos controlados, registrados por separado |
-
-No se utilizan nombres de compradores reales. Todos los clientes se denominan explícitamente `Cliente ficticio ...`. `Concretado` es un estado de la simulación, no un campo acreditado por la fuente. Los rankings de clientes y pedidos describen el generador; no permiten extraer conclusiones sobre compradores reales.
+Las seis provincias son Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe. La bandera indica la marca declarada y no prueba franquicia, propiedad común ni proveedor efectivo de un pedido.
 
 ## Origen y extracción
 
@@ -87,69 +65,41 @@ No sumar litros y m³ de GNC como un volumen único. El ranking de tres producto
 
 Totales del conjunto incluido: **93.213.130 litros de combustibles líquidos** y **8.638.800,20 m³ de GNC**, siempre separados. Importe de referencia combinado: **141.717.574.607,79 ARS**. Son totales de esta muestra intencional, no del país.
 
-## Reglas de simulación
+## Reglas de simulación V2
 
-- Semilla fija: `20250915`, con semillas derivadas por SHA-256 para cada establecimiento/mes y registro de fuente.
-- Crear 24 clientes ficticios por establecimiento, 432 en total. Los sectores son asignaciones artificiales, no observaciones.
-- Seleccionar doce días ficticios de cada mes y hasta dos asignaciones de clientes por día. Los cuatro primeros clientes de cada grupo reciben un peso de selección ocho veces mayor. La concentración resultante es inducida por diseño; no es un hallazgo del mercado.
-- Dividir la cantidad de cada registro fuente en hasta 24 partes positivas, con precisión de 0,001 L o m³. La partición se realiza con enteros para que la suma sea exacta.
-- Agrupar por establecimiento, fecha ficticia y cliente para formar pedidos. Esto permite que un pedido incluya varias categorías. Consolidar detalles del mismo pedido y registro fuente.
-- Todos los detalles usan el precio mensual con impuestos de su registro fuente, sin generar descuentos ni precios diarios.
-- Todos los pedidos son concretados. No se simulan devoluciones, crédito, cancelaciones ni costos.
-- No interpretar las fechas o tamaños de pedido como patrones de demanda diarios reales. La simulación no calibra tamaños de tickets ni capacidad de vehículos.
+1. Una cuenta cliente por establecimiento identificado por inscripción, CUIT y ubicación. No agrupar sucursales por CUIT sin una decisión adicional.
+2. Un pedido por cliente/mes, 216 en total. `fecha` usa el primer día del mes como representación técnica. No indica una entrega observada.
+3. Un detalle por registro fuente, con su cantidad completa y su precio mensual con impuestos. No se fragmentan cantidades ni se asignan compradores aleatorios.
+4. Precio de referencia minorista, no precio mayorista. No se aplican descuentos inventados ni se calculan márgenes.
+5. Estado `Concretado` en todos los pedidos, por supuesto del caso. No hay cancelaciones ni información de costos.
+6. Los doce pedidos de cada cliente están fijados por diseño: no permiten inferir fidelidad o frecuencia comercial real.
+7. Generación determinista por orden de claves, períodos e identificadores fuente. V2 no utiliza azar ni semilla.
 
-## Tablas y archivos
+## Limpieza didáctica
 
-| Archivo | Función |
-| --- | --- |
-| `operadores.csv` | Establecimientos de referencia reales |
-| `productos.csv` | Productos y categorías con unidades |
-| `clientes.csv` | Compradores ficticios |
-| `pedidos.csv` | Cabeceras ficticias |
-| `detalle_pedido.csv` | Detalle limpio listo para análisis |
-| `fuente_ventas.csv` | Registros reales incluidos, con conversión y trazabilidad |
-| `fuente_original.csv` | Muestra extraída con encabezados y valores originales |
-| `detalle_pedido_entrada.csv` | Entrada didáctica con nulos y duplicados sintéticos |
-| `incidencias_simuladas.csv` | Identificación de los errores agregados a la entrada |
-| `conciliacion.csv` | Comparación fuente–pedidos por cada registro incluido |
-| `estructura.sql` | Creación, inserción, limpieza y vistas en PostgreSQL |
-| `generar_dataset.py` | Regeneración desde la muestra original incluida |
-| `diccionario.md` | Significado, claves, unidades y procedencia de los campos |
-| `validacion.json` | Comprobaciones independientes con aritmética decimal |
-| `resumen_dataset.json` | Conteos, parámetros y totales |
-| `sha256_csv.json` | Huellas para comprobar integridad de los CSV |
+El generador copia los 1.007 detalles, retira 8 precios y agrega 3 duplicados exactos. Quedan 1.010 filas de entrada, con 8 celdas de precio nulas. Las incidencias se registran en `incidencias_simuladas.csv`; no son defectos atribuidos a la fuente real.
 
-CSV en UTF-8, separador coma, punto decimal y encabezados en primera fila. Campos vacíos representan valores ausentes. No abrir y volver a guardar los CSV con conversiones automáticas de Excel: puede alterar fechas, identificadores o decimales.
+`DISTINCT` elimina las copias idénticas y `COALESCE` recupera el precio de la misma fuente mensual, válido porque ese es el precio de referencia asignado por diseño. Resultado: 1.007 detalles, sin duplicados ni precios nulos. Los períodos no tienen nulos; se verifica su conversión a DATE y no se imputan fechas ficticias adicionales.
 
-Relaciones: `clientes → pedidos ← operadores`; `pedidos → detalle_pedido ← productos`; `detalle_pedido → fuente_ventas`, que a su vez identifica operador, producto y mes reales. Las tablas auxiliares de fuente y entrada hacen auditable el proceso; la rúbrica no impone un máximo de tablas.
+La conciliación compara cada uno de los 1.007 registros con su detalle y debe dar cero diferencias de cantidad e importe. El control de JOIN comprueba establecimiento, producto, período y número de filas.
 
-## Limpieza para el ejercicio
+## Archivos y reproducción
 
-`detalle_pedido_entrada.csv` contiene 22.953 filas: 22.894 detalles más 59 duplicados exactos. Se retiraron artificialmente los precios de 167 detalles. Puede haber una copia duplicada de un precio faltante; el registro de incidencias cuenta detalles afectados, no necesariamente todas las celdas vacías de la entrada.
+- `fuente_original.csv`: muestra congelada de 1.013 filas con encabezados originales.
+- `operadores.csv`, `clientes.csv`, `productos.csv`, `pedidos.csv`, `fuente_ventas.csv`, `detalle_pedido.csv` y `detalle_pedido_entrada.csv`: siete tablas.
+- `exclusiones.csv`, `advertencias_fuente.csv`, `candidatos_revision.csv`, `perfil_fuente.json`: trazabilidad de la selección original y sus controles.
+- `incidencias_simuladas.csv`, `conciliacion.csv`, `resumen_dataset.json`, `validacion.json`: resultados V2 del generador.
+- `sha256_csv.json`: huellas de todos los CSV.
+- `validacion_postgresql.json`: prueba técnica V2 separada, realizada con PGlite 0.5.8 / PostgreSQL 18.3.
+- `../estructura.sql`: DDL, INSERT, limpieza y vistas V2.
+- `../migrar_v1.sql`: conserva el esquema anterior como combustibles_v1 antes de la carga nueva.
 
-La carga SQL elimina duplicados exactos con `SELECT DISTINCT` y recupera los precios mediante `COALESCE(precio_entrada, precio_fuente)`. La recuperación es válida **porque el generador asignó el mismo precio mensual a todos los detalles de una fuente**. En transacciones reales, el precio mensual no recupera necesariamente un precio faltante.
+CSV en UTF-8, separados por coma, punto decimal y encabezado. Los campos vacíos corresponden a valores ausentes; no convertir automáticamente identificadores, fechas o decimales al abrirlos en Excel.
 
-Se preservan tanto la entrada como el detalle limpio. Las comprobaciones verifican que la limpieza reconstruya exactamente este último. No se introdujeron errores en el archivo original ni se convirtió un precio desconocido en cero.
+Desde la raíz: `python3 datos/generar_dataset.py` (Python 3.10+, biblioteca estándar). Regenera tablas, SQL y controles Python; no descarga datos ni repite la extracción/selección desde Access. El reporte PostgreSQL debe verificarse por separado si cambia el generador.
 
-## Cargar en PostgreSQL
+Las instrucciones de carga y migración están en el [README principal](../README.md). Las capturas V2 de pgAdmin están pendientes; [historico/v1](../historico/v1/README.md) conserva las anteriores. El dataset está publicado con autorización del usuario para incluir nombres y CUIT de la fuente pública (21/09/2026).
 
-1. Crear una base vacía llamada `capstone_project` desde pgAdmin. Alternativamente ejecutar `CREATE DATABASE capstone_project;` conectado a otra base, fuera de una transacción.
-2. Conectarse a `capstone_project`.
-3. Abrir `estructura.sql` en Query Tool y ejecutar el archivo completo. Incluye los datos; no requiere importar CSV manualmente ni configurar rutas.
-4. Consultar `combustibles.v_ventas`. La consulta final de conciliación debe devolver cero filas.
+## Alcance de la entrega
 
-Con `psql`, si está instalado: `psql -d capstone_project -v ON_ERROR_STOP=1 -f estructura.sql`.
-
-El script utiliza el esquema `combustibles` y una transacción. No borra tablas previas; una segunda ejecución sobre tablas existentes falla deliberadamente. Usar una base vacía para repetir una carga completa.
-
-La carga completa y la limpieza se ejecutaron correctamente en **PostgreSQL 18.3 mediante PGlite 0.5.8 (WebAssembly)**. Se verificaron claves, trazabilidad, doce meses de resultados y consultas técnicas con `GROUP BY`, funciones de fecha y `RANK()`. La conciliación SQL no devolvió diferencias. `validacion_postgresql.json` conserva el resultado y las salidas de prueba; no sustituye el análisis de negocio. La ejecución local de limpieza y conciliación se documenta por separado con las capturas de pgAdmin en el README raíz.
-
-La entrada contiene 168 celdas de precio vacías: 167 detalles afectados y una copia duplicada de uno de ellos. Después de eliminar duplicados y recuperar los precios, se obtienen los 22.894 detalles esperados.
-
-Para regenerar los archivos sin Access: `python generar_dataset.py` desde esta carpeta (Python 3.10 o superior, sin dependencias externas). Mantener `fuente_original.csv` junto al script. Esta reproducción parte de la muestra congelada; no descarga novedades ni vuelve a seleccionar establecimientos del archivo de un gigabyte. La regeneración reemplaza los CSV derivados, SQL y reportes de validación.
-
-## Alcance de esta entrega
-
-Esta entrega prepara el **dataset**, su carga y su validación. El dataset y el SQL de carga ya están publicados en GitHub, con autorización del usuario del 21/09/2026 para incluir los datos públicos de operadores. Las consultas finales de negocio y sus conclusiones siguen en desarrollo. No se incluye todavía un `analisis.sql` final ni se afirma que el proyecto completo esté entregado.
-
-Las cuatro preguntas pueden resolverse: top de clientes sintéticos por gasto, ventas por mes, tres productos líquidos menos vendidos y ranking de pedidos sintéticos por categoría. Para este último, sumar primero el importe de cada pedido dentro de cada categoría y aplicar `RANK()` con partición por categoría y orden por importe descendente.
+Se prepara y verifica el modelo V2. `analisis.sql` contiene únicamente la primera consulta de negocio adaptada; su revisión conjunta y las cinco restantes están pendientes. No se declara terminado el proyecto.

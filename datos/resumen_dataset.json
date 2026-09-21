@@ -1,18 +1,19 @@
 {
-  "semilla": 20250915,
+  "version_modelo": 2,
+  "modelo": "Mayorista ficticio; establecimientos reales como clientes; un pedido mensual; precios minoristas de referencia",
   "conteos": {
     "operadores": 18,
     "productos": 7,
-    "clientes": 432,
+    "clientes": 18,
     "fuente_ventas": 1007,
-    "pedidos": 4909,
-    "detalle_pedido": 22894,
-    "detalle_pedido_entrada": 22953
+    "pedidos": 216,
+    "detalle_pedido": 1007,
+    "detalle_pedido_entrada": 1010
   },
   "filas_originales_muestra": 1013,
   "filas_excluidas": 6,
-  "precios_nulos_simulados": 167,
-  "duplicados_simulados": 59,
+  "precios_nulos_simulados": 8,
+  "duplicados_simulados": 3,
   "advertencias_fuente": 0,
   "productos": [
     {

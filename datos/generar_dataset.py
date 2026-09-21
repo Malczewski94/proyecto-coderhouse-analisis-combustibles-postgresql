@@ -1,13 +1,14 @@
 """Reconstruye el dataset desde fuente_original.csv. Python 3.10+, biblioteca estándar.
-Todos los clientes, fechas diarias y pedidos son sintéticos. Semilla fija.
+V2: establecimientos reales como clientes de un mayorista ficticio. Pedidos mensuales.
 """
 from pathlib import Path
-from collections import defaultdict, Counter
+from collections import defaultdict
 from decimal import Decimal as D
-import calendar, csv, hashlib, json, random
+import csv, hashlib, json
+from datetime import date
 
 ROOT=Path(__file__).resolve().parent
-SEED=20250915
+VERSION=2
 MAPA={
  'Nafta (súper) entre 92 y 95 Ron':('Nafta','L'),
  'Nafta (premium) de más de 95 Ron':('Nafta','L'),
@@ -26,10 +27,6 @@ def dec(x):
  return D(str(x))
 def fmt(x):return format(x,'f') if isinstance(x,D) else str(x)
 def key(r):return tuple(r[k].strip() for k in ['Nro Inscripción','CUIT','Provincia','Localidad','Dirección'])
-def rng_for(*parts):
- seed=hashlib.sha256('|'.join(map(str,(SEED,)+parts)).encode()).digest()
- return random.Random(int.from_bytes(seed,'big'))
-
 def main():
  raw=read('fuente_original.csv')
  keys=sorted(set(key(r) for r in raw))
@@ -67,41 +64,18 @@ def main():
   if unit=='m3' and v<D('100'):
    warnings.append(dict(id_fuente=fid,campo='Volumen',valor=v,motivo='GNC mensual menor a 100 m3: revisar posible escala o carga. Se preserva bajo la unidad documentada; sin inferir factor adicional.'))
  sources.sort(key=lambda s:s['id_fuente'])
- clients=[];pools={}
- for op in ops:
-  pool=[]
-  for j in range(1,25):
-   cid=f'C{len(clients)+1:04d}';pool.append(cid)
-   segment=['Comercio y servicios','Flota comercial','Transporte','Agro'][j%4]
-   clients.append(dict(id_cliente=cid,nombre=f'Cliente ficticio {len(clients)+1:04d}',segmento=segment,provincia=op['provincia'],origen='sintetico'))
-  pools[op['id_operador']]=pool
- order_keys={};pending=[]
- for s in sources:
-  oid=s['id_operador'];period=s['periodo'][:7]
-  # Doce fechas compartidas por establecimiento/mes permiten pedidos multiproducto.
-  rr=rng_for(oid,period);y,m=map(int,period.split('-'))
-  days=sorted(rr.sample(range(1,calendar.monthrange(y,m)[1]+1),12))
-  pool=pools[oid]
-  slots=[(f'{period}-{day:02d}',rr.choices(pool,weights=[8 if j<4 else 1 for j in range(24)])[0]) for day in days for _ in range(2)]
-  total_units=int(s['cantidad_venta']*1000)
-  assert D(total_units)==s['cantidad_venta']*1000
-  n=min(24,total_units)
-  rr=rng_for(s['id_fuente']);cuts=sorted(rr.sample(range(1,total_units),n-1)) if n>1 else []
-  edges=[0]+cuts+[total_units]
-  # Partición exacta a resolución 0,001 L o m3. Las cantidades diarias son artificiales.
-  for j in range(n):
-   date,cid=slots[j];ok=(oid,date,cid);order_keys[ok]=None
-   pending.append((ok,s['id_fuente'],s['id_producto'],D(edges[j+1]-edges[j])/1000,s['precio_promedio_con_impuestos_ars']))
- orders=[]
- for i,ok in enumerate(sorted(order_keys),1):
-  oid,date,cid=ok;pid=f'V{i:06d}';order_keys[ok]=pid
-  orders.append(dict(id_pedido=pid,fecha=date,id_cliente=cid,id_operador=oid,estado='Concretado',origen='sintetico'))
- # Consolidar por pedido y registro fuente, conservando trazabilidad completa.
- merged=defaultdict(lambda:D(0))
- for ok,fid,prod,q,p in pending:merged[(order_keys[ok],fid,prod,p)]+=q
+ # Una cuenta comercial por establecimiento; la identidad es real, la relación es simulada.
+ clients=[];client_ids={}
+ for i,op in enumerate(ops,1):
+  cid=f'C{i:04d}';client_ids[op['id_operador']]=cid
+  clients.append(dict(id_cliente=cid,id_operador=op['id_operador'],nombre=op['nombre_operador'],provincia=op['provincia'],origen_identidad='real',relacion_comercial='simulada'))
+ # El primer día representa el mes contable, no una entrega diaria observada.
+ order_keys=sorted({(s['id_operador'],s['periodo']) for s in sources})
+ order_ids={k:f'V{i:06d}' for i,k in enumerate(order_keys,1)}
+ orders=[dict(id_pedido=order_ids[k],fecha=k[1],id_cliente=client_ids[k[0]],estado='Concretado',origen='sintetico_mensual') for k in order_keys]
  details=[]
- for i,((order,fid,prod,p),q) in enumerate(sorted(merged.items()),1):
-  details.append(dict(id_detalle=f'D{i:07d}',id_pedido=order,id_producto=prod,id_fuente=fid,cantidad=q,precio_unitario_ars=p,origen='sintetico_con_precio_mensual'))
+ for i,s in enumerate(sources,1):
+  details.append(dict(id_detalle=f'D{i:07d}',id_pedido=order_ids[(s['id_operador'],s['periodo'])],id_producto=s['id_producto'],id_fuente=s['id_fuente'],cantidad=s['cantidad_venta'],precio_unitario_ars=s['precio_promedio_con_impuestos_ars'],origen='simulado_con_referencia_minorista'))
  # Copia de entrada didáctica. No altera los archivos de fuente real.
  entry=[d.copy() for d in details];incidents=[]
  for i in range(36,len(entry),137):
@@ -118,7 +92,7 @@ def main():
  # Verificaciones independientes usando Decimal, claves y datos leídos desde CSV.
  validate(tables,incidents)
  build_sql(tables)
- summary={'semilla':SEED,'conteos':{k:len(v) for k,v in tables.items()},'filas_originales_muestra':len(raw),'filas_excluidas':len(excluded),'precios_nulos_simulados':sum(x['incidencia']=='nulo_sintetico' for x in incidents),'duplicados_simulados':len(duplicates),'advertencias_fuente':len(warnings),'productos':products,'periodos':sorted({s['periodo'] for s in sources}),'provincias':sorted({o['provincia'] for o in ops}),'totales_por_unidad':{u:fmt(sum((s['cantidad_venta'] for s in sources if s['unidad_venta']==u),D(0))) for u in ('L','m3')},'importe_referencia_ars':fmt(sum((s['cantidad_venta']*s['precio_promedio_con_impuestos_ars'] for s in sources),D(0))),'interpretacion_importe':'Estimación a precios promedio mensuales declarados, asignados a pedidos sintéticos. No facturación auditada.'}
+ summary={'version_modelo':VERSION,'modelo':'Mayorista ficticio; establecimientos reales como clientes; un pedido mensual; precios minoristas de referencia','conteos':{k:len(v) for k,v in tables.items()},'filas_originales_muestra':len(raw),'filas_excluidas':len(excluded),'precios_nulos_simulados':sum(x['incidencia']=='nulo_sintetico' for x in incidents),'duplicados_simulados':len(duplicates),'advertencias_fuente':len(warnings),'productos':products,'periodos':sorted({s['periodo'] for s in sources}),'provincias':sorted({o['provincia'] for o in ops}),'totales_por_unidad':{u:fmt(sum((s['cantidad_venta'] for s in sources if s['unidad_venta']==u),D(0))) for u in ('L','m3')},'importe_referencia_ars':fmt(sum((s['cantidad_venta']*s['precio_promedio_con_impuestos_ars'] for s in sources),D(0))),'interpretacion_importe':'Estimación a precios promedio mensuales declarados, asignados a pedidos sintéticos. No facturación auditada.'}
  (ROOT/'resumen_dataset.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf8')
  hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(ROOT.glob('*.csv'))}
  (ROOT/'sha256_csv.json').write_text(json.dumps(hashes,indent=2))
@@ -126,16 +100,21 @@ def main():
 
 def validate(tables,incidents):
  sources={r['id_fuente']:r for r in tables['fuente_ventas']};orders={r['id_pedido']:r for r in tables['pedidos']}
- products={r['id_producto']:r for r in tables['productos']};clients={r['id_cliente'] for r in tables['clientes']};ops={r['id_operador'] for r in tables['operadores']}
+ products={r['id_producto']:r for r in tables['productos']};clients={r['id_cliente']:r for r in tables['clientes']};ops={r['id_operador'] for r in tables['operadores']}
  for name,rows in tables.items():
   if name=='detalle_pedido_entrada':continue
   pk=list(rows[0])[0];assert len({r[pk] for r in rows})==len(rows),(name,'duplicate key')
- for o in orders.values():assert o['id_cliente'] in clients and o['id_operador'] in ops
+ assert len(clients)==len(ops) and {c['id_operador'] for c in clients.values()}==ops
+ assert len({(o['id_cliente'],o['fecha']) for o in orders.values()})==len(orders)
+ assert len(orders)==len(clients)*12
+ for o in orders.values():
+  assert o['id_cliente'] in clients
+  dt=date.fromisoformat(o['fecha']);assert dt.year==2025 and dt.day==1
  volumes=defaultdict(lambda:D(0));amounts=defaultdict(lambda:D(0));months=defaultdict(set)
  for d in read('detalle_pedido.csv'):
   s=sources[d['id_fuente']];o=orders[d['id_pedido']]
   assert d['id_producto']==s['id_producto'] and d['id_producto'] in products
-  assert o['id_operador']==s['id_operador'] and o['fecha'][:7]==s['periodo'][:7]
+  assert clients[o['id_cliente']]['id_operador']==s['id_operador'] and o['fecha'][:7]==s['periodo'][:7]
   assert dec(d['cantidad'])>0 and dec(d['precio_unitario_ars'])==s['precio_promedio_con_impuestos_ars']
   volumes[d['id_fuente']]+=dec(d['cantidad']);amounts[d['id_fuente']]+=dec(d['cantidad'])*dec(d['precio_unitario_ars'])
  reconciled=[]
@@ -155,10 +134,11 @@ def validate(tables,incidents):
   clean[d['id_detalle']]=d
  assert clean=={r['id_detalle']:r for r in read('detalle_pedido.csv')}
  write('conciliacion.csv',reconciled)
- (ROOT/'validacion.json').write_text(json.dumps({'resultado':'CORRECTO','claves_primarias_unicas':True,'relaciones_sin_huerfanos':True,'operador_producto_periodo_coinciden':True,'doce_meses_por_establecimiento':True,'filas_fuente_conciliadas':len(reconciled),'diferencia_total_cantidad_por_registro':'0','diferencia_importe_por_registro_ars':'0','limpieza_recupera_detalle_exacto':True,'motor_validacion':'Python Decimal; PostgreSQL se verifica por separado si está disponible'},ensure_ascii=False,indent=2))
+ (ROOT/'validacion.json').write_text(json.dumps({'resultado':'CORRECTO','version_modelo':VERSION,'un_cliente_por_establecimiento':True,'un_pedido_por_cliente_mes':True,'fechas_validas_2025':True,'claves_primarias_unicas':True,'relaciones_sin_huerfanos':True,'operador_producto_periodo_coinciden':True,'doce_meses_por_establecimiento':True,'filas_fuente_conciliadas':len(reconciled),'diferencia_total_cantidad_por_registro':'0','diferencia_importe_por_registro_ars':'0','limpieza_recupera_detalle_exacto':True,'motor_validacion':'Python Decimal; PostgreSQL se verifica por separado si está disponible'},ensure_ascii=False,indent=2))
 
 def build_sql(t):
- ddl='''-- Dataset híbrido. Ejecutar en una base capstone_project creada previamente.
+ ddl='''-- V2: mayorista ficticio, clientes con identidad real y precios minoristas de referencia.
+-- Dataset híbrido. Ejecutar en una base capstone_project creada previamente.
 -- Crea un esquema propio. Si ya existe con tablas, la carga se detiene: no borra datos.
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS combustibles;
@@ -175,8 +155,10 @@ CREATE TABLE productos (
  unidad_precio TEXT NOT NULL, origen_nombre TEXT NOT NULL, origen_categoria TEXT NOT NULL
 );
 CREATE TABLE clientes (
- id_cliente TEXT PRIMARY KEY, nombre TEXT NOT NULL, segmento TEXT NOT NULL,
- provincia TEXT NOT NULL, origen TEXT NOT NULL CHECK(origen='sintetico')
+ id_cliente TEXT PRIMARY KEY, id_operador TEXT NOT NULL UNIQUE REFERENCES operadores,
+ nombre TEXT NOT NULL, provincia TEXT NOT NULL,
+ origen_identidad TEXT NOT NULL CHECK(origen_identidad='real'),
+ relacion_comercial TEXT NOT NULL CHECK(relacion_comercial='simulada')
 );
 CREATE TABLE fuente_ventas (
  id_fuente TEXT PRIMARY KEY, fila_extraida INTEGER NOT NULL UNIQUE,
@@ -192,8 +174,10 @@ CREATE TABLE fuente_ventas (
 );
 CREATE TABLE pedidos (
  id_pedido TEXT PRIMARY KEY, fecha DATE NOT NULL, id_cliente TEXT NOT NULL REFERENCES clientes,
- id_operador TEXT NOT NULL REFERENCES operadores, estado TEXT NOT NULL CHECK(estado='Concretado'),
- origen TEXT NOT NULL CHECK(origen='sintetico')
+ estado TEXT NOT NULL CHECK(estado='Concretado'),
+ origen TEXT NOT NULL CHECK(origen='sintetico_mensual'),
+ UNIQUE(id_cliente,fecha),
+ CHECK(fecha >= DATE '2025-01-01' AND fecha < DATE '2026-01-01' AND EXTRACT(DAY FROM fecha)=1)
 );
 CREATE TABLE detalle_pedido_entrada (
  id_detalle TEXT, id_pedido TEXT, id_producto TEXT, id_fuente TEXT,
@@ -201,7 +185,7 @@ CREATE TABLE detalle_pedido_entrada (
 );
 CREATE TABLE detalle_pedido (
  id_detalle TEXT PRIMARY KEY, id_pedido TEXT NOT NULL REFERENCES pedidos,
- id_producto TEXT NOT NULL REFERENCES productos, id_fuente TEXT NOT NULL REFERENCES fuente_ventas,
+ id_producto TEXT NOT NULL REFERENCES productos, id_fuente TEXT NOT NULL UNIQUE REFERENCES fuente_ventas,
  cantidad NUMERIC(18,3) NOT NULL CHECK(cantidad>0),
  precio_unitario_ars NUMERIC(18,2) NOT NULL CHECK(precio_unitario_ars>0), origen TEXT NOT NULL,
  UNIQUE(id_pedido,id_fuente)
@@ -229,10 +213,11 @@ SELECT DISTINCT e.id_detalle,e.id_pedido,e.id_producto,e.id_fuente,e.cantidad,
 FROM detalle_pedido_entrada e JOIN fuente_ventas f ON f.id_fuente=e.id_fuente;
 
 CREATE VIEW v_ventas AS
-SELECT d.id_detalle,p.id_pedido,p.fecha,p.id_cliente,p.id_operador,
+SELECT d.id_detalle,p.id_pedido,p.fecha,p.id_cliente,c.id_operador,
  d.id_producto,pr.categoria,pr.unidad_venta,d.id_fuente,d.cantidad,d.precio_unitario_ars,
  d.cantidad*d.precio_unitario_ars AS importe_referencia_ars
-FROM detalle_pedido d JOIN pedidos p USING(id_pedido) JOIN productos pr USING(id_producto);
+FROM detalle_pedido d JOIN pedidos p USING(id_pedido)
+JOIN clientes c USING(id_cliente) JOIN productos pr USING(id_producto);
 
 CREATE VIEW v_conciliacion AS
 SELECT f.id_fuente,f.unidad_venta,f.cantidad_venta AS cantidad_fuente,
