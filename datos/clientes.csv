@@ -1,0 +1,433 @@
+id_cliente,nombre,segmento,provincia,origen
+C0001,Cliente ficticio 0001,Flota comercial,SANTA FE,sintetico
+C0002,Cliente ficticio 0002,Transporte,SANTA FE,sintetico
+C0003,Cliente ficticio 0003,Agro,SANTA FE,sintetico
+C0004,Cliente ficticio 0004,Comercio y servicios,SANTA FE,sintetico
+C0005,Cliente ficticio 0005,Flota comercial,SANTA FE,sintetico
+C0006,Cliente ficticio 0006,Transporte,SANTA FE,sintetico
+C0007,Cliente ficticio 0007,Agro,SANTA FE,sintetico
+C0008,Cliente ficticio 0008,Comercio y servicios,SANTA FE,sintetico
+C0009,Cliente ficticio 0009,Flota comercial,SANTA FE,sintetico
+C0010,Cliente ficticio 0010,Transporte,SANTA FE,sintetico
+C0011,Cliente ficticio 0011,Agro,SANTA FE,sintetico
+C0012,Cliente ficticio 0012,Comercio y servicios,SANTA FE,sintetico
+C0013,Cliente ficticio 0013,Flota comercial,SANTA FE,sintetico
+C0014,Cliente ficticio 0014,Transporte,SANTA FE,sintetico
+C0015,Cliente ficticio 0015,Agro,SANTA FE,sintetico
+C0016,Cliente ficticio 0016,Comercio y servicios,SANTA FE,sintetico
+C0017,Cliente ficticio 0017,Flota comercial,SANTA FE,sintetico
+C0018,Cliente ficticio 0018,Transporte,SANTA FE,sintetico
+C0019,Cliente ficticio 0019,Agro,SANTA FE,sintetico
+C0020,Cliente ficticio 0020,Comercio y servicios,SANTA FE,sintetico
+C0021,Cliente ficticio 0021,Flota comercial,SANTA FE,sintetico
+C0022,Cliente ficticio 0022,Transporte,SANTA FE,sintetico
+C0023,Cliente ficticio 0023,Agro,SANTA FE,sintetico
+C0024,Cliente ficticio 0024,Comercio y servicios,SANTA FE,sintetico
+C0025,Cliente ficticio 0025,Flota comercial,CHACO,sintetico
+C0026,Cliente ficticio 0026,Transporte,CHACO,sintetico
+C0027,Cliente ficticio 0027,Agro,CHACO,sintetico
+C0028,Cliente ficticio 0028,Comercio y servicios,CHACO,sintetico
+C0029,Cliente ficticio 0029,Flota comercial,CHACO,sintetico
+C0030,Cliente ficticio 0030,Transporte,CHACO,sintetico
+C0031,Cliente ficticio 0031,Agro,CHACO,sintetico
+C0032,Cliente ficticio 0032,Comercio y servicios,CHACO,sintetico
+C0033,Cliente ficticio 0033,Flota comercial,CHACO,sintetico
+C0034,Cliente ficticio 0034,Transporte,CHACO,sintetico
+C0035,Cliente ficticio 0035,Agro,CHACO,sintetico
+C0036,Cliente ficticio 0036,Comercio y servicios,CHACO,sintetico
+C0037,Cliente ficticio 0037,Flota comercial,CHACO,sintetico
+C0038,Cliente ficticio 0038,Transporte,CHACO,sintetico
+C0039,Cliente ficticio 0039,Agro,CHACO,sintetico
+C0040,Cliente ficticio 0040,Comercio y servicios,CHACO,sintetico
+C0041,Cliente ficticio 0041,Flota comercial,CHACO,sintetico
+C0042,Cliente ficticio 0042,Transporte,CHACO,sintetico
+C0043,Cliente ficticio 0043,Agro,CHACO,sintetico
+C0044,Cliente ficticio 0044,Comercio y servicios,CHACO,sintetico
+C0045,Cliente ficticio 0045,Flota comercial,CHACO,sintetico
+C0046,Cliente ficticio 0046,Transporte,CHACO,sintetico
+C0047,Cliente ficticio 0047,Agro,CHACO,sintetico
+C0048,Cliente ficticio 0048,Comercio y servicios,CHACO,sintetico
+C0049,Cliente ficticio 0049,Flota comercial,MISIONES,sintetico
+C0050,Cliente ficticio 0050,Transporte,MISIONES,sintetico
+C0051,Cliente ficticio 0051,Agro,MISIONES,sintetico
+C0052,Cliente ficticio 0052,Comercio y servicios,MISIONES,sintetico
+C0053,Cliente ficticio 0053,Flota comercial,MISIONES,sintetico
+C0054,Cliente ficticio 0054,Transporte,MISIONES,sintetico
+C0055,Cliente ficticio 0055,Agro,MISIONES,sintetico
+C0056,Cliente ficticio 0056,Comercio y servicios,MISIONES,sintetico
+C0057,Cliente ficticio 0057,Flota comercial,MISIONES,sintetico
+C0058,Cliente ficticio 0058,Transporte,MISIONES,sintetico
+C0059,Cliente ficticio 0059,Agro,MISIONES,sintetico
+C0060,Cliente ficticio 0060,Comercio y servicios,MISIONES,sintetico
+C0061,Cliente ficticio 0061,Flota comercial,MISIONES,sintetico
+C0062,Cliente ficticio 0062,Transporte,MISIONES,sintetico
+C0063,Cliente ficticio 0063,Agro,MISIONES,sintetico
+C0064,Cliente ficticio 0064,Comercio y servicios,MISIONES,sintetico
+C0065,Cliente ficticio 0065,Flota comercial,MISIONES,sintetico
+C0066,Cliente ficticio 0066,Transporte,MISIONES,sintetico
+C0067,Cliente ficticio 0067,Agro,MISIONES,sintetico
+C0068,Cliente ficticio 0068,Comercio y servicios,MISIONES,sintetico
+C0069,Cliente ficticio 0069,Flota comercial,MISIONES,sintetico
+C0070,Cliente ficticio 0070,Transporte,MISIONES,sintetico
+C0071,Cliente ficticio 0071,Agro,MISIONES,sintetico
+C0072,Cliente ficticio 0072,Comercio y servicios,MISIONES,sintetico
+C0073,Cliente ficticio 0073,Flota comercial,MISIONES,sintetico
+C0074,Cliente ficticio 0074,Transporte,MISIONES,sintetico
+C0075,Cliente ficticio 0075,Agro,MISIONES,sintetico
+C0076,Cliente ficticio 0076,Comercio y servicios,MISIONES,sintetico
+C0077,Cliente ficticio 0077,Flota comercial,MISIONES,sintetico
+C0078,Cliente ficticio 0078,Transporte,MISIONES,sintetico
+C0079,Cliente ficticio 0079,Agro,MISIONES,sintetico
+C0080,Cliente ficticio 0080,Comercio y servicios,MISIONES,sintetico
+C0081,Cliente ficticio 0081,Flota comercial,MISIONES,sintetico
+C0082,Cliente ficticio 0082,Transporte,MISIONES,sintetico
+C0083,Cliente ficticio 0083,Agro,MISIONES,sintetico
+C0084,Cliente ficticio 0084,Comercio y servicios,MISIONES,sintetico
+C0085,Cliente ficticio 0085,Flota comercial,MISIONES,sintetico
+C0086,Cliente ficticio 0086,Transporte,MISIONES,sintetico
+C0087,Cliente ficticio 0087,Agro,MISIONES,sintetico
+C0088,Cliente ficticio 0088,Comercio y servicios,MISIONES,sintetico
+C0089,Cliente ficticio 0089,Flota comercial,MISIONES,sintetico
+C0090,Cliente ficticio 0090,Transporte,MISIONES,sintetico
+C0091,Cliente ficticio 0091,Agro,MISIONES,sintetico
+C0092,Cliente ficticio 0092,Comercio y servicios,MISIONES,sintetico
+C0093,Cliente ficticio 0093,Flota comercial,MISIONES,sintetico
+C0094,Cliente ficticio 0094,Transporte,MISIONES,sintetico
+C0095,Cliente ficticio 0095,Agro,MISIONES,sintetico
+C0096,Cliente ficticio 0096,Comercio y servicios,MISIONES,sintetico
+C0097,Cliente ficticio 0097,Flota comercial,CHACO,sintetico
+C0098,Cliente ficticio 0098,Transporte,CHACO,sintetico
+C0099,Cliente ficticio 0099,Agro,CHACO,sintetico
+C0100,Cliente ficticio 0100,Comercio y servicios,CHACO,sintetico
+C0101,Cliente ficticio 0101,Flota comercial,CHACO,sintetico
+C0102,Cliente ficticio 0102,Transporte,CHACO,sintetico
+C0103,Cliente ficticio 0103,Agro,CHACO,sintetico
+C0104,Cliente ficticio 0104,Comercio y servicios,CHACO,sintetico
+C0105,Cliente ficticio 0105,Flota comercial,CHACO,sintetico
+C0106,Cliente ficticio 0106,Transporte,CHACO,sintetico
+C0107,Cliente ficticio 0107,Agro,CHACO,sintetico
+C0108,Cliente ficticio 0108,Comercio y servicios,CHACO,sintetico
+C0109,Cliente ficticio 0109,Flota comercial,CHACO,sintetico
+C0110,Cliente ficticio 0110,Transporte,CHACO,sintetico
+C0111,Cliente ficticio 0111,Agro,CHACO,sintetico
+C0112,Cliente ficticio 0112,Comercio y servicios,CHACO,sintetico
+C0113,Cliente ficticio 0113,Flota comercial,CHACO,sintetico
+C0114,Cliente ficticio 0114,Transporte,CHACO,sintetico
+C0115,Cliente ficticio 0115,Agro,CHACO,sintetico
+C0116,Cliente ficticio 0116,Comercio y servicios,CHACO,sintetico
+C0117,Cliente ficticio 0117,Flota comercial,CHACO,sintetico
+C0118,Cliente ficticio 0118,Transporte,CHACO,sintetico
+C0119,Cliente ficticio 0119,Agro,CHACO,sintetico
+C0120,Cliente ficticio 0120,Comercio y servicios,CHACO,sintetico
+C0121,Cliente ficticio 0121,Flota comercial,CORDOBA,sintetico
+C0122,Cliente ficticio 0122,Transporte,CORDOBA,sintetico
+C0123,Cliente ficticio 0123,Agro,CORDOBA,sintetico
+C0124,Cliente ficticio 0124,Comercio y servicios,CORDOBA,sintetico
+C0125,Cliente ficticio 0125,Flota comercial,CORDOBA,sintetico
+C0126,Cliente ficticio 0126,Transporte,CORDOBA,sintetico
+C0127,Cliente ficticio 0127,Agro,CORDOBA,sintetico
+C0128,Cliente ficticio 0128,Comercio y servicios,CORDOBA,sintetico
+C0129,Cliente ficticio 0129,Flota comercial,CORDOBA,sintetico
+C0130,Cliente ficticio 0130,Transporte,CORDOBA,sintetico
+C0131,Cliente ficticio 0131,Agro,CORDOBA,sintetico
+C0132,Cliente ficticio 0132,Comercio y servicios,CORDOBA,sintetico
+C0133,Cliente ficticio 0133,Flota comercial,CORDOBA,sintetico
+C0134,Cliente ficticio 0134,Transporte,CORDOBA,sintetico
+C0135,Cliente ficticio 0135,Agro,CORDOBA,sintetico
+C0136,Cliente ficticio 0136,Comercio y servicios,CORDOBA,sintetico
+C0137,Cliente ficticio 0137,Flota comercial,CORDOBA,sintetico
+C0138,Cliente ficticio 0138,Transporte,CORDOBA,sintetico
+C0139,Cliente ficticio 0139,Agro,CORDOBA,sintetico
+C0140,Cliente ficticio 0140,Comercio y servicios,CORDOBA,sintetico
+C0141,Cliente ficticio 0141,Flota comercial,CORDOBA,sintetico
+C0142,Cliente ficticio 0142,Transporte,CORDOBA,sintetico
+C0143,Cliente ficticio 0143,Agro,CORDOBA,sintetico
+C0144,Cliente ficticio 0144,Comercio y servicios,CORDOBA,sintetico
+C0145,Cliente ficticio 0145,Flota comercial,CORRIENTES,sintetico
+C0146,Cliente ficticio 0146,Transporte,CORRIENTES,sintetico
+C0147,Cliente ficticio 0147,Agro,CORRIENTES,sintetico
+C0148,Cliente ficticio 0148,Comercio y servicios,CORRIENTES,sintetico
+C0149,Cliente ficticio 0149,Flota comercial,CORRIENTES,sintetico
+C0150,Cliente ficticio 0150,Transporte,CORRIENTES,sintetico
+C0151,Cliente ficticio 0151,Agro,CORRIENTES,sintetico
+C0152,Cliente ficticio 0152,Comercio y servicios,CORRIENTES,sintetico
+C0153,Cliente ficticio 0153,Flota comercial,CORRIENTES,sintetico
+C0154,Cliente ficticio 0154,Transporte,CORRIENTES,sintetico
+C0155,Cliente ficticio 0155,Agro,CORRIENTES,sintetico
+C0156,Cliente ficticio 0156,Comercio y servicios,CORRIENTES,sintetico
+C0157,Cliente ficticio 0157,Flota comercial,CORRIENTES,sintetico
+C0158,Cliente ficticio 0158,Transporte,CORRIENTES,sintetico
+C0159,Cliente ficticio 0159,Agro,CORRIENTES,sintetico
+C0160,Cliente ficticio 0160,Comercio y servicios,CORRIENTES,sintetico
+C0161,Cliente ficticio 0161,Flota comercial,CORRIENTES,sintetico
+C0162,Cliente ficticio 0162,Transporte,CORRIENTES,sintetico
+C0163,Cliente ficticio 0163,Agro,CORRIENTES,sintetico
+C0164,Cliente ficticio 0164,Comercio y servicios,CORRIENTES,sintetico
+C0165,Cliente ficticio 0165,Flota comercial,CORRIENTES,sintetico
+C0166,Cliente ficticio 0166,Transporte,CORRIENTES,sintetico
+C0167,Cliente ficticio 0167,Agro,CORRIENTES,sintetico
+C0168,Cliente ficticio 0168,Comercio y servicios,CORRIENTES,sintetico
+C0169,Cliente ficticio 0169,Flota comercial,CORRIENTES,sintetico
+C0170,Cliente ficticio 0170,Transporte,CORRIENTES,sintetico
+C0171,Cliente ficticio 0171,Agro,CORRIENTES,sintetico
+C0172,Cliente ficticio 0172,Comercio y servicios,CORRIENTES,sintetico
+C0173,Cliente ficticio 0173,Flota comercial,CORRIENTES,sintetico
+C0174,Cliente ficticio 0174,Transporte,CORRIENTES,sintetico
+C0175,Cliente ficticio 0175,Agro,CORRIENTES,sintetico
+C0176,Cliente ficticio 0176,Comercio y servicios,CORRIENTES,sintetico
+C0177,Cliente ficticio 0177,Flota comercial,CORRIENTES,sintetico
+C0178,Cliente ficticio 0178,Transporte,CORRIENTES,sintetico
+C0179,Cliente ficticio 0179,Agro,CORRIENTES,sintetico
+C0180,Cliente ficticio 0180,Comercio y servicios,CORRIENTES,sintetico
+C0181,Cliente ficticio 0181,Flota comercial,CORRIENTES,sintetico
+C0182,Cliente ficticio 0182,Transporte,CORRIENTES,sintetico
+C0183,Cliente ficticio 0183,Agro,CORRIENTES,sintetico
+C0184,Cliente ficticio 0184,Comercio y servicios,CORRIENTES,sintetico
+C0185,Cliente ficticio 0185,Flota comercial,CORRIENTES,sintetico
+C0186,Cliente ficticio 0186,Transporte,CORRIENTES,sintetico
+C0187,Cliente ficticio 0187,Agro,CORRIENTES,sintetico
+C0188,Cliente ficticio 0188,Comercio y servicios,CORRIENTES,sintetico
+C0189,Cliente ficticio 0189,Flota comercial,CORRIENTES,sintetico
+C0190,Cliente ficticio 0190,Transporte,CORRIENTES,sintetico
+C0191,Cliente ficticio 0191,Agro,CORRIENTES,sintetico
+C0192,Cliente ficticio 0192,Comercio y servicios,CORRIENTES,sintetico
+C0193,Cliente ficticio 0193,Flota comercial,CHACO,sintetico
+C0194,Cliente ficticio 0194,Transporte,CHACO,sintetico
+C0195,Cliente ficticio 0195,Agro,CHACO,sintetico
+C0196,Cliente ficticio 0196,Comercio y servicios,CHACO,sintetico
+C0197,Cliente ficticio 0197,Flota comercial,CHACO,sintetico
+C0198,Cliente ficticio 0198,Transporte,CHACO,sintetico
+C0199,Cliente ficticio 0199,Agro,CHACO,sintetico
+C0200,Cliente ficticio 0200,Comercio y servicios,CHACO,sintetico
+C0201,Cliente ficticio 0201,Flota comercial,CHACO,sintetico
+C0202,Cliente ficticio 0202,Transporte,CHACO,sintetico
+C0203,Cliente ficticio 0203,Agro,CHACO,sintetico
+C0204,Cliente ficticio 0204,Comercio y servicios,CHACO,sintetico
+C0205,Cliente ficticio 0205,Flota comercial,CHACO,sintetico
+C0206,Cliente ficticio 0206,Transporte,CHACO,sintetico
+C0207,Cliente ficticio 0207,Agro,CHACO,sintetico
+C0208,Cliente ficticio 0208,Comercio y servicios,CHACO,sintetico
+C0209,Cliente ficticio 0209,Flota comercial,CHACO,sintetico
+C0210,Cliente ficticio 0210,Transporte,CHACO,sintetico
+C0211,Cliente ficticio 0211,Agro,CHACO,sintetico
+C0212,Cliente ficticio 0212,Comercio y servicios,CHACO,sintetico
+C0213,Cliente ficticio 0213,Flota comercial,CHACO,sintetico
+C0214,Cliente ficticio 0214,Transporte,CHACO,sintetico
+C0215,Cliente ficticio 0215,Agro,CHACO,sintetico
+C0216,Cliente ficticio 0216,Comercio y servicios,CHACO,sintetico
+C0217,Cliente ficticio 0217,Flota comercial,BUENOS AIRES,sintetico
+C0218,Cliente ficticio 0218,Transporte,BUENOS AIRES,sintetico
+C0219,Cliente ficticio 0219,Agro,BUENOS AIRES,sintetico
+C0220,Cliente ficticio 0220,Comercio y servicios,BUENOS AIRES,sintetico
+C0221,Cliente ficticio 0221,Flota comercial,BUENOS AIRES,sintetico
+C0222,Cliente ficticio 0222,Transporte,BUENOS AIRES,sintetico
+C0223,Cliente ficticio 0223,Agro,BUENOS AIRES,sintetico
+C0224,Cliente ficticio 0224,Comercio y servicios,BUENOS AIRES,sintetico
+C0225,Cliente ficticio 0225,Flota comercial,BUENOS AIRES,sintetico
+C0226,Cliente ficticio 0226,Transporte,BUENOS AIRES,sintetico
+C0227,Cliente ficticio 0227,Agro,BUENOS AIRES,sintetico
+C0228,Cliente ficticio 0228,Comercio y servicios,BUENOS AIRES,sintetico
+C0229,Cliente ficticio 0229,Flota comercial,BUENOS AIRES,sintetico
+C0230,Cliente ficticio 0230,Transporte,BUENOS AIRES,sintetico
+C0231,Cliente ficticio 0231,Agro,BUENOS AIRES,sintetico
+C0232,Cliente ficticio 0232,Comercio y servicios,BUENOS AIRES,sintetico
+C0233,Cliente ficticio 0233,Flota comercial,BUENOS AIRES,sintetico
+C0234,Cliente ficticio 0234,Transporte,BUENOS AIRES,sintetico
+C0235,Cliente ficticio 0235,Agro,BUENOS AIRES,sintetico
+C0236,Cliente ficticio 0236,Comercio y servicios,BUENOS AIRES,sintetico
+C0237,Cliente ficticio 0237,Flota comercial,BUENOS AIRES,sintetico
+C0238,Cliente ficticio 0238,Transporte,BUENOS AIRES,sintetico
+C0239,Cliente ficticio 0239,Agro,BUENOS AIRES,sintetico
+C0240,Cliente ficticio 0240,Comercio y servicios,BUENOS AIRES,sintetico
+C0241,Cliente ficticio 0241,Flota comercial,CORDOBA,sintetico
+C0242,Cliente ficticio 0242,Transporte,CORDOBA,sintetico
+C0243,Cliente ficticio 0243,Agro,CORDOBA,sintetico
+C0244,Cliente ficticio 0244,Comercio y servicios,CORDOBA,sintetico
+C0245,Cliente ficticio 0245,Flota comercial,CORDOBA,sintetico
+C0246,Cliente ficticio 0246,Transporte,CORDOBA,sintetico
+C0247,Cliente ficticio 0247,Agro,CORDOBA,sintetico
+C0248,Cliente ficticio 0248,Comercio y servicios,CORDOBA,sintetico
+C0249,Cliente ficticio 0249,Flota comercial,CORDOBA,sintetico
+C0250,Cliente ficticio 0250,Transporte,CORDOBA,sintetico
+C0251,Cliente ficticio 0251,Agro,CORDOBA,sintetico
+C0252,Cliente ficticio 0252,Comercio y servicios,CORDOBA,sintetico
+C0253,Cliente ficticio 0253,Flota comercial,CORDOBA,sintetico
+C0254,Cliente ficticio 0254,Transporte,CORDOBA,sintetico
+C0255,Cliente ficticio 0255,Agro,CORDOBA,sintetico
+C0256,Cliente ficticio 0256,Comercio y servicios,CORDOBA,sintetico
+C0257,Cliente ficticio 0257,Flota comercial,CORDOBA,sintetico
+C0258,Cliente ficticio 0258,Transporte,CORDOBA,sintetico
+C0259,Cliente ficticio 0259,Agro,CORDOBA,sintetico
+C0260,Cliente ficticio 0260,Comercio y servicios,CORDOBA,sintetico
+C0261,Cliente ficticio 0261,Flota comercial,CORDOBA,sintetico
+C0262,Cliente ficticio 0262,Transporte,CORDOBA,sintetico
+C0263,Cliente ficticio 0263,Agro,CORDOBA,sintetico
+C0264,Cliente ficticio 0264,Comercio y servicios,CORDOBA,sintetico
+C0265,Cliente ficticio 0265,Flota comercial,SANTA FE,sintetico
+C0266,Cliente ficticio 0266,Transporte,SANTA FE,sintetico
+C0267,Cliente ficticio 0267,Agro,SANTA FE,sintetico
+C0268,Cliente ficticio 0268,Comercio y servicios,SANTA FE,sintetico
+C0269,Cliente ficticio 0269,Flota comercial,SANTA FE,sintetico
+C0270,Cliente ficticio 0270,Transporte,SANTA FE,sintetico
+C0271,Cliente ficticio 0271,Agro,SANTA FE,sintetico
+C0272,Cliente ficticio 0272,Comercio y servicios,SANTA FE,sintetico
+C0273,Cliente ficticio 0273,Flota comercial,SANTA FE,sintetico
+C0274,Cliente ficticio 0274,Transporte,SANTA FE,sintetico
+C0275,Cliente ficticio 0275,Agro,SANTA FE,sintetico
+C0276,Cliente ficticio 0276,Comercio y servicios,SANTA FE,sintetico
+C0277,Cliente ficticio 0277,Flota comercial,SANTA FE,sintetico
+C0278,Cliente ficticio 0278,Transporte,SANTA FE,sintetico
+C0279,Cliente ficticio 0279,Agro,SANTA FE,sintetico
+C0280,Cliente ficticio 0280,Comercio y servicios,SANTA FE,sintetico
+C0281,Cliente ficticio 0281,Flota comercial,SANTA FE,sintetico
+C0282,Cliente ficticio 0282,Transporte,SANTA FE,sintetico
+C0283,Cliente ficticio 0283,Agro,SANTA FE,sintetico
+C0284,Cliente ficticio 0284,Comercio y servicios,SANTA FE,sintetico
+C0285,Cliente ficticio 0285,Flota comercial,SANTA FE,sintetico
+C0286,Cliente ficticio 0286,Transporte,SANTA FE,sintetico
+C0287,Cliente ficticio 0287,Agro,SANTA FE,sintetico
+C0288,Cliente ficticio 0288,Comercio y servicios,SANTA FE,sintetico
+C0289,Cliente ficticio 0289,Flota comercial,CORRIENTES,sintetico
+C0290,Cliente ficticio 0290,Transporte,CORRIENTES,sintetico
+C0291,Cliente ficticio 0291,Agro,CORRIENTES,sintetico
+C0292,Cliente ficticio 0292,Comercio y servicios,CORRIENTES,sintetico
+C0293,Cliente ficticio 0293,Flota comercial,CORRIENTES,sintetico
+C0294,Cliente ficticio 0294,Transporte,CORRIENTES,sintetico
+C0295,Cliente ficticio 0295,Agro,CORRIENTES,sintetico
+C0296,Cliente ficticio 0296,Comercio y servicios,CORRIENTES,sintetico
+C0297,Cliente ficticio 0297,Flota comercial,CORRIENTES,sintetico
+C0298,Cliente ficticio 0298,Transporte,CORRIENTES,sintetico
+C0299,Cliente ficticio 0299,Agro,CORRIENTES,sintetico
+C0300,Cliente ficticio 0300,Comercio y servicios,CORRIENTES,sintetico
+C0301,Cliente ficticio 0301,Flota comercial,CORRIENTES,sintetico
+C0302,Cliente ficticio 0302,Transporte,CORRIENTES,sintetico
+C0303,Cliente ficticio 0303,Agro,CORRIENTES,sintetico
+C0304,Cliente ficticio 0304,Comercio y servicios,CORRIENTES,sintetico
+C0305,Cliente ficticio 0305,Flota comercial,CORRIENTES,sintetico
+C0306,Cliente ficticio 0306,Transporte,CORRIENTES,sintetico
+C0307,Cliente ficticio 0307,Agro,CORRIENTES,sintetico
+C0308,Cliente ficticio 0308,Comercio y servicios,CORRIENTES,sintetico
+C0309,Cliente ficticio 0309,Flota comercial,CORRIENTES,sintetico
+C0310,Cliente ficticio 0310,Transporte,CORRIENTES,sintetico
+C0311,Cliente ficticio 0311,Agro,CORRIENTES,sintetico
+C0312,Cliente ficticio 0312,Comercio y servicios,CORRIENTES,sintetico
+C0313,Cliente ficticio 0313,Flota comercial,BUENOS AIRES,sintetico
+C0314,Cliente ficticio 0314,Transporte,BUENOS AIRES,sintetico
+C0315,Cliente ficticio 0315,Agro,BUENOS AIRES,sintetico
+C0316,Cliente ficticio 0316,Comercio y servicios,BUENOS AIRES,sintetico
+C0317,Cliente ficticio 0317,Flota comercial,BUENOS AIRES,sintetico
+C0318,Cliente ficticio 0318,Transporte,BUENOS AIRES,sintetico
+C0319,Cliente ficticio 0319,Agro,BUENOS AIRES,sintetico
+C0320,Cliente ficticio 0320,Comercio y servicios,BUENOS AIRES,sintetico
+C0321,Cliente ficticio 0321,Flota comercial,BUENOS AIRES,sintetico
+C0322,Cliente ficticio 0322,Transporte,BUENOS AIRES,sintetico
+C0323,Cliente ficticio 0323,Agro,BUENOS AIRES,sintetico
+C0324,Cliente ficticio 0324,Comercio y servicios,BUENOS AIRES,sintetico
+C0325,Cliente ficticio 0325,Flota comercial,BUENOS AIRES,sintetico
+C0326,Cliente ficticio 0326,Transporte,BUENOS AIRES,sintetico
+C0327,Cliente ficticio 0327,Agro,BUENOS AIRES,sintetico
+C0328,Cliente ficticio 0328,Comercio y servicios,BUENOS AIRES,sintetico
+C0329,Cliente ficticio 0329,Flota comercial,BUENOS AIRES,sintetico
+C0330,Cliente ficticio 0330,Transporte,BUENOS AIRES,sintetico
+C0331,Cliente ficticio 0331,Agro,BUENOS AIRES,sintetico
+C0332,Cliente ficticio 0332,Comercio y servicios,BUENOS AIRES,sintetico
+C0333,Cliente ficticio 0333,Flota comercial,BUENOS AIRES,sintetico
+C0334,Cliente ficticio 0334,Transporte,BUENOS AIRES,sintetico
+C0335,Cliente ficticio 0335,Agro,BUENOS AIRES,sintetico
+C0336,Cliente ficticio 0336,Comercio y servicios,BUENOS AIRES,sintetico
+C0337,Cliente ficticio 0337,Flota comercial,BUENOS AIRES,sintetico
+C0338,Cliente ficticio 0338,Transporte,BUENOS AIRES,sintetico
+C0339,Cliente ficticio 0339,Agro,BUENOS AIRES,sintetico
+C0340,Cliente ficticio 0340,Comercio y servicios,BUENOS AIRES,sintetico
+C0341,Cliente ficticio 0341,Flota comercial,BUENOS AIRES,sintetico
+C0342,Cliente ficticio 0342,Transporte,BUENOS AIRES,sintetico
+C0343,Cliente ficticio 0343,Agro,BUENOS AIRES,sintetico
+C0344,Cliente ficticio 0344,Comercio y servicios,BUENOS AIRES,sintetico
+C0345,Cliente ficticio 0345,Flota comercial,BUENOS AIRES,sintetico
+C0346,Cliente ficticio 0346,Transporte,BUENOS AIRES,sintetico
+C0347,Cliente ficticio 0347,Agro,BUENOS AIRES,sintetico
+C0348,Cliente ficticio 0348,Comercio y servicios,BUENOS AIRES,sintetico
+C0349,Cliente ficticio 0349,Flota comercial,BUENOS AIRES,sintetico
+C0350,Cliente ficticio 0350,Transporte,BUENOS AIRES,sintetico
+C0351,Cliente ficticio 0351,Agro,BUENOS AIRES,sintetico
+C0352,Cliente ficticio 0352,Comercio y servicios,BUENOS AIRES,sintetico
+C0353,Cliente ficticio 0353,Flota comercial,BUENOS AIRES,sintetico
+C0354,Cliente ficticio 0354,Transporte,BUENOS AIRES,sintetico
+C0355,Cliente ficticio 0355,Agro,BUENOS AIRES,sintetico
+C0356,Cliente ficticio 0356,Comercio y servicios,BUENOS AIRES,sintetico
+C0357,Cliente ficticio 0357,Flota comercial,BUENOS AIRES,sintetico
+C0358,Cliente ficticio 0358,Transporte,BUENOS AIRES,sintetico
+C0359,Cliente ficticio 0359,Agro,BUENOS AIRES,sintetico
+C0360,Cliente ficticio 0360,Comercio y servicios,BUENOS AIRES,sintetico
+C0361,Cliente ficticio 0361,Flota comercial,SANTA FE,sintetico
+C0362,Cliente ficticio 0362,Transporte,SANTA FE,sintetico
+C0363,Cliente ficticio 0363,Agro,SANTA FE,sintetico
+C0364,Cliente ficticio 0364,Comercio y servicios,SANTA FE,sintetico
+C0365,Cliente ficticio 0365,Flota comercial,SANTA FE,sintetico
+C0366,Cliente ficticio 0366,Transporte,SANTA FE,sintetico
+C0367,Cliente ficticio 0367,Agro,SANTA FE,sintetico
+C0368,Cliente ficticio 0368,Comercio y servicios,SANTA FE,sintetico
+C0369,Cliente ficticio 0369,Flota comercial,SANTA FE,sintetico
+C0370,Cliente ficticio 0370,Transporte,SANTA FE,sintetico
+C0371,Cliente ficticio 0371,Agro,SANTA FE,sintetico
+C0372,Cliente ficticio 0372,Comercio y servicios,SANTA FE,sintetico
+C0373,Cliente ficticio 0373,Flota comercial,SANTA FE,sintetico
+C0374,Cliente ficticio 0374,Transporte,SANTA FE,sintetico
+C0375,Cliente ficticio 0375,Agro,SANTA FE,sintetico
+C0376,Cliente ficticio 0376,Comercio y servicios,SANTA FE,sintetico
+C0377,Cliente ficticio 0377,Flota comercial,SANTA FE,sintetico
+C0378,Cliente ficticio 0378,Transporte,SANTA FE,sintetico
+C0379,Cliente ficticio 0379,Agro,SANTA FE,sintetico
+C0380,Cliente ficticio 0380,Comercio y servicios,SANTA FE,sintetico
+C0381,Cliente ficticio 0381,Flota comercial,SANTA FE,sintetico
+C0382,Cliente ficticio 0382,Transporte,SANTA FE,sintetico
+C0383,Cliente ficticio 0383,Agro,SANTA FE,sintetico
+C0384,Cliente ficticio 0384,Comercio y servicios,SANTA FE,sintetico
+C0385,Cliente ficticio 0385,Flota comercial,CORDOBA,sintetico
+C0386,Cliente ficticio 0386,Transporte,CORDOBA,sintetico
+C0387,Cliente ficticio 0387,Agro,CORDOBA,sintetico
+C0388,Cliente ficticio 0388,Comercio y servicios,CORDOBA,sintetico
+C0389,Cliente ficticio 0389,Flota comercial,CORDOBA,sintetico
+C0390,Cliente ficticio 0390,Transporte,CORDOBA,sintetico
+C0391,Cliente ficticio 0391,Agro,CORDOBA,sintetico
+C0392,Cliente ficticio 0392,Comercio y servicios,CORDOBA,sintetico
+C0393,Cliente ficticio 0393,Flota comercial,CORDOBA,sintetico
+C0394,Cliente ficticio 0394,Transporte,CORDOBA,sintetico
+C0395,Cliente ficticio 0395,Agro,CORDOBA,sintetico
+C0396,Cliente ficticio 0396,Comercio y servicios,CORDOBA,sintetico
+C0397,Cliente ficticio 0397,Flota comercial,CORDOBA,sintetico
+C0398,Cliente ficticio 0398,Transporte,CORDOBA,sintetico
+C0399,Cliente ficticio 0399,Agro,CORDOBA,sintetico
+C0400,Cliente ficticio 0400,Comercio y servicios,CORDOBA,sintetico
+C0401,Cliente ficticio 0401,Flota comercial,CORDOBA,sintetico
+C0402,Cliente ficticio 0402,Transporte,CORDOBA,sintetico
+C0403,Cliente ficticio 0403,Agro,CORDOBA,sintetico
+C0404,Cliente ficticio 0404,Comercio y servicios,CORDOBA,sintetico
+C0405,Cliente ficticio 0405,Flota comercial,CORDOBA,sintetico
+C0406,Cliente ficticio 0406,Transporte,CORDOBA,sintetico
+C0407,Cliente ficticio 0407,Agro,CORDOBA,sintetico
+C0408,Cliente ficticio 0408,Comercio y servicios,CORDOBA,sintetico
+C0409,Cliente ficticio 0409,Flota comercial,MISIONES,sintetico
+C0410,Cliente ficticio 0410,Transporte,MISIONES,sintetico
+C0411,Cliente ficticio 0411,Agro,MISIONES,sintetico
+C0412,Cliente ficticio 0412,Comercio y servicios,MISIONES,sintetico
+C0413,Cliente ficticio 0413,Flota comercial,MISIONES,sintetico
+C0414,Cliente ficticio 0414,Transporte,MISIONES,sintetico
+C0415,Cliente ficticio 0415,Agro,MISIONES,sintetico
+C0416,Cliente ficticio 0416,Comercio y servicios,MISIONES,sintetico
+C0417,Cliente ficticio 0417,Flota comercial,MISIONES,sintetico
+C0418,Cliente ficticio 0418,Transporte,MISIONES,sintetico
+C0419,Cliente ficticio 0419,Agro,MISIONES,sintetico
+C0420,Cliente ficticio 0420,Comercio y servicios,MISIONES,sintetico
+C0421,Cliente ficticio 0421,Flota comercial,MISIONES,sintetico
+C0422,Cliente ficticio 0422,Transporte,MISIONES,sintetico
+C0423,Cliente ficticio 0423,Agro,MISIONES,sintetico
+C0424,Cliente ficticio 0424,Comercio y servicios,MISIONES,sintetico
+C0425,Cliente ficticio 0425,Flota comercial,MISIONES,sintetico
+C0426,Cliente ficticio 0426,Transporte,MISIONES,sintetico
+C0427,Cliente ficticio 0427,Agro,MISIONES,sintetico
+C0428,Cliente ficticio 0428,Comercio y servicios,MISIONES,sintetico
+C0429,Cliente ficticio 0429,Flota comercial,MISIONES,sintetico
+C0430,Cliente ficticio 0430,Transporte,MISIONES,sintetico
+C0431,Cliente ficticio 0431,Agro,MISIONES,sintetico
+C0432,Cliente ficticio 0432,Comercio y servicios,MISIONES,sintetico

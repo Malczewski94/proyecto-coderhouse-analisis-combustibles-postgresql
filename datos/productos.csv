@@ -1,0 +1,8 @@
+id_producto,nombre_original,categoria,unidad_venta,unidad_precio,origen_nombre,origen_categoria
+P001,GNC,GNC,m3,ARS/m3,real,derivado
+P002,Gas Oil Grado 2,Gasoil,L,ARS/L,real,derivado
+P003,Gas Oil Grado 3,Gasoil,L,ARS/L,real,derivado
+P004,Kerosene,Queroseno,L,ARS/L,real,derivado
+P005,Nafta (común) hasta 92 Ron,Nafta,L,ARS/L,real,derivado
+P006,Nafta (premium) de más de 95 Ron,Nafta,L,ARS/L,real,derivado
+P007,Nafta (súper) entre 92 y 95 Ron,Nafta,L,ARS/L,real,derivado

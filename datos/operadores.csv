@@ -1,0 +1,19 @@
+id_operador,nro_inscripcion,cuit,nombre_operador,bandera,provincia,localidad,direccion,tipo_negocio,origen
+O001,1036,30-51932822-0,ESTACION EL SURTIDOR S.R.L.,YPF,SANTA FE,ROSARIO,CORDOBA 4098,Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O002,104,33-70812864-9,CALCAGNO RICARDO OMAR Y CALCAGNO RICARDO JAVIER SOC. HECHO,SHELL C.A.P.S.A.,CHACO,RESISTENCIA,AV. 25 DE MAYO 280,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O003,10979,30-71621033-9,PEREZ HERMANOS S.R.L.,DAPSA S.A.,MISIONES,SAN PEDRO,RUTA NACIONAL 14 KM1052 0,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O004,189,30-59299051-9,PUERTA SA,AXION,MISIONES,POSADAS,Avenida Quaranta 4150,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O005,1907,30-67017935-0,SUCESORES DE OVIDIO JUAN DEGREGORIO S.H,YPF,CHACO,RESISTENCIA,AV.AVALOS 1001,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O006,2298,30-70728425-7,D.G.B. S.R.L.,YPF,CORDOBA,VILLA DOLORES,ITUZAINGO Y DEAN FUNES,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O007,2951,30-66986964-5,ROQUE LINO PENZO Y CIA S.R.L.,YPF,CORRIENTES,SANTA LUCIA,SAN MARTIN N 1000,Bocas de expendio (venta por menor) Combustibles Líquidos + PRVE,real
+O008,3978,30-70895265-2,DON ROBERTO SA,BLANCA,CORRIENTES,SAN COSME,"RUTA NACIONAL N: 12, KM. 1052",Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O009,4653,20-16232054-9,"ROGER, HUGO DANIEL",SHELL C.A.P.S.A.,CHACO,VILLA ANGELA,MONZON Y L.COBELLO 95,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O010,475,30-68389938-7,CUBA SA,YPF,BUENOS AIRES,VILLA DE MAYO,AV. PTE PERON 2282,Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O011,563,30-64767888-9,SANTA BARBARA SA,YPF,CORDOBA,CORDOBA,AUTOPISTA CORDOBA PILAR KM 692,Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O012,6644,30-70827063-2,SUCATA S.A.,YPF,SANTA FE,SAN LORENZO,"RUTA PROVINCIAL Nº 10 0,7",Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O013,683,30-65765065-6,CONSTRUCTORA EDIFICAR SA,SHELL C.A.P.S.A.,CORRIENTES,CORRIENTES,ESTADOS UNIDOS 725,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O014,719,30-67791118-9,LIBEROIL SRL,YPF,BUENOS AIRES,MERLO,av. eva peron 3750,Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O015,723,30-70715847-2,AGLP SA,YPF,BUENOS AIRES,ITUZAINGO,BLAS PARERA 935,Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O016,7672,30-71092757-6,POSTA 16 S.R.L.,GULF,SANTA FE,ROLDAN,FORMOSA 949,Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real
+O017,8252,30-69854828-9,MARIJO S.A.,YPF,CORDOBA,RIO CUARTO,AYACUCHO 3285,Bocas de expendio (venta por menor) Duales (líquidos + GNC),real
+O018,9641,20-18054580-9,"BORDAQUEVICH, HUGO JOSE",AXION,MISIONES,CONCEPCION DE LA SIERRA,RUTA 2 Y AV. REP. ARGENTINA (LOTE RURAL 065 E INMOBILIARIA 4176),Bocas de expendio (venta por menor) Combustibles líquidos únicamente,real

@@ -86,7 +86,7 @@ Cuatro tablas comerciales: clientes, productos, pedidos y detalle_pedido. Las re
 | Paso | Estado | Qué falta |
 | --- | --- | --- |
 | 1. Problema | Definido y documentado | Mantener coherencia con resultados finales |
-| 2. Preparación/carga | Realizada previamente y documentada | Publicación incompleta; captura conjunta de conteos |
+| 2. Preparación/carga | Realizada previamente y documentada | Captura conjunta de conteos |
 | 3. Limpieza | Documentada con evidencias en pgAdmin | Mantener trazabilidad; no repetir la carga |
 | 4. Análisis | En desarrollo: primera consulta propuesta | Revisar resultado con el usuario y desarrollar las restantes |
 | 5. Hallazgos | Pendiente | Interpretaciones, evidencias y conclusiones |
@@ -107,7 +107,7 @@ La conciliación documentada en pgAdmin compara 1.007 registros y da cero difere
 - Conservar entrada y salida para demostrar limpieza. Las incidencias fueron introducidas para el ejercicio, no atribuirlas a la fuente pública.
 - Semilla del generador: 20250915. La concentración de compradores está inducida por ponderaciones del generador; no es un descubrimiento del mercado.
 - La carga incluye INSERT y una transacción; no requiere importar cada CSV por separado. No volver a ejecutar estructura.sql sobre las tablas existentes: no borra objetos previos.
-- La publicación de estructura.sql y los CSV del dataset quedó pendiente por nombres y CUIT de operadores, según el README actual. Esta sesión no resolvió ese pendiente ni publicó esos datos.
+- El 21/09/2026 el usuario autorizó publicar estructura.sql y los CSV, incluidos nombres y CUIT de operadores, por proceder de una fuente pública. Se publican conservando atribución y distinción entre datos reales y simulados.
 
 ## 7. Análisis previstos y avance
 
@@ -137,7 +137,7 @@ Disponibles en GitHub al verificar main:
 - `imagenes/limpieza.png` y `imagenes/conciliacion.png`: capturas.
 - `PROJECT_STATE.md`: creado en esta actualización.
 
-Ausentes del repositorio al verificar: `estructura.sql`, los CSV del dataset (incluido `fuente_original.csv`) y otros auxiliares mencionados en la metodología, como `sha256_csv.json`, `perfil_fuente.json` y `resumen_dataset.json`. Estaban descritos como preparados previamente; su disponibilidad fuera del repositorio no se comprobó en esta sesión. El generador necesita fuente_original.csv: por ahora no permite reproducir el proyecto desde GitHub solamente.
+Publicados en esta actualización: `estructura.sql`, los 13 CSV del paquete (incluida `fuente_original.csv`), `sha256_csv.json`, `perfil_fuente.json` y `resumen_dataset.json`. Se recuperó el paquete preparado y se verificaron las huellas SHA-256 de los 13 CSV. El SQL coincide byte por byte con el preparado previamente. El repositorio incluye los insumos para cargar y regenerar el dataset; no se ejecutó una nueva carga en la base local del usuario.
 
 Referencia previa a la creación de este archivo: commit `a17c5a3e4a691e831d47ca8d2d1e75a9bfa4c4b6`, del 2026-09-21, “Documentar pasos 1 a 3 y evidencias; dejar publicación de datos pendiente”. Consultar el historial para el commit de este archivo y cualquier cambio posterior.
 
@@ -146,9 +146,7 @@ Referencia previa a la creación de este archivo: commit `a17c5a3e4a691e831d47ca
 - Captura del conteo conjunto de todas las tablas en pgAdmin.
 - Resultados y capturas legibles de las consultas de negocio, a medida que se revisen.
 - Interpretaciones, conclusiones y limitaciones específicas por consulta.
-- Completar las instrucciones de reproducción cuando estén publicados los archivos necesarios.
 - Revisar el nombre real de la base local frente a capstone_project antes de dar la configuración por plenamente verificada.
-- Alinear datos/README.md con el estado actual: todavía habla de publicación GitHub futura y de capturas locales futuras, mientras el README raíz ya registra ambas cosas parcialmente realizadas.
 - Verificar al finalizar el cumplimiento de cada criterio de la rúbrica y la ejecución completa de los scripts entregados.
 
 Las capturas son evidencias acordadas para el proyecto; no afirmar que cada captura enumerada sea un requisito literal de la consigna.
@@ -163,8 +161,8 @@ Conservar la diferencia entre datos reales, derivados y sintéticos. Separar evi
 
 ## 11. Último punto y siguiente tarea
 
-Último punto: se recuperó el trabajo tras un fallo de la conversación anterior, se comprobó lectura de GitHub y los permisos informados, y se recuperó la consigna detallada con rúbrica. El usuario pidió crear este archivo antes de continuar el análisis.
+Último punto: con autorización explícita del usuario, se publicaron el SQL de estructura, los CSV y los auxiliares del paquete. Se actualizaron el README raíz, datos/README.md y este archivo para cerrar el pendiente de publicación. La consigna y la rúbrica permanecen registradas arriba.
 
 Siguiente tarea de trabajo: retomar la primera consulta de analisis.sql con el usuario, ejecutarla en su base ya cargada (o revisar el resultado que aporte), comprobar los cinco clientes, interpretar los importes y documentar resultado/evidencia. Luego avanzar consulta por consulta.
 
-Pendiente de publicación independiente: recuperar los archivos faltantes y resolver la publicación de datos señalada en el README. No bloquear la revisión de una consulta local por ese pendiente, pero sí resolverlo antes de declarar la entrega reproducible y completa.
+Publicación del dataset resuelta. Continúan pendientes el análisis de negocio, sus evidencias y las conclusiones.

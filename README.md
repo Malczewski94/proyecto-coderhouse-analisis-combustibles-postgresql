@@ -2,7 +2,7 @@
 
 Proyecto final de Coderhouse. Se construye un caso comercial educativo con datos públicos de combustibles de Argentina y transacciones simuladas, conservando la trazabilidad hasta los registros mensuales de origen.
 
-**Publicación parcial:** los CSV y `estructura.sql` están pendientes de autorización para publicar registros de operadores con nombres y CUIT. Los conteos y procedimientos siguientes describen el dataset preparado y probado; todavía no puede reproducirse la carga solamente con este repositorio.
+**Datos y carga publicados:** se incluyen `estructura.sql`, los CSV y los auxiliares de trazabilidad. El usuario autorizó su publicación el 21/09/2026 por proceder de una fuente pública, incluidos los nombres y CUIT de operadores. Se conserva la atribución de origen y la identificación de datos simulados.
 
 **Estado:** preparación y limpieza documentadas (pasos 1–3). Análisis e interpretación en desarrollo (pasos 4–5).
 
@@ -55,14 +55,14 @@ Cada pedido pertenece a un cliente y a un operador. Cada detalle pertenece a un 
 
 ### Cómo reproducir la carga
 
-1. Crear una base de datos vacía en PostgreSQL y abrir su Query Tool en pgAdmin.
+1. Crear una base de datos vacía llamada `capstone_project` en PostgreSQL y abrir su Query Tool en pgAdmin.
 2. Abrir y ejecutar completo `estructura.sql`. El script crea el esquema; debe ejecutarse una sola vez en esa base, porque no elimina objetos existentes.
 3. Actualizar el explorador y comprobar las tablas bajo `Schemas → combustibles → Tables`.
 4. Ejecutar [validaciones.sql](validaciones.sql) para revisar conteos, limpieza y conciliación.
 
 Los conteos de la tabla anterior proceden del paquete validado. La carga ya se realizó en pgAdmin y las capturas del paso 3 comprueban la entrada, el detalle limpio y la conciliación. Queda pendiente incorporar una captura del conteo conjunto de todas las tablas.
 
-Los CSV están preparados y su publicación queda pendiente. El [generador](datos/generar_dataset.py) usa la semilla `20250915`. Se puede ejecutar desde la raíz con `python3 datos/generar_dataset.py`; regenera los archivos derivados y `estructura.sql`. La extracción y selección previa de la base Access se documentan por separado y no se repiten al ejecutar este generador.
+Los CSV están publicados en `datos/`, incluida la muestra congelada `fuente_original.csv` que necesita el generador. El [generador](datos/generar_dataset.py) usa la semilla `20250915`. Se puede ejecutar desde la raíz con `python3 datos/generar_dataset.py`; regenera los archivos derivados y `estructura.sql`. La extracción y selección previa de la base Access se documentan por separado y no se repiten al ejecutar este generador.
 
 ## 3. Limpieza y transformación
 

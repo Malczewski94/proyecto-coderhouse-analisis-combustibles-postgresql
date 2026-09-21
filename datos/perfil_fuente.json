@@ -1,0 +1,280 @@
+{
+  "periods": {
+    "2025/01": 21754,
+    "2025/08": 21737,
+    "2025/02": 21809,
+    "2025/03": 21856,
+    "2025/04": 21782,
+    "2025/05": 21840,
+    "2025/06": 21759,
+    "2025/07": 21752,
+    "2025/09": 21799,
+    "2025/10": 21727,
+    "2025/11": 21722,
+    "2025/12": 21697,
+    "2026/01": 21561,
+    "2026/02": 21482,
+    "2026/03": 21462,
+    "2026/04": 21273,
+    "2026/05": 21151,
+    "2026/06": 20668,
+    "2026/07": 19719
+  },
+  "2025_rows": 261234,
+  "products": {
+    "Gas Oil Grado 2": 65109,
+    "Gas Oil Grado 3": 59833,
+    "GNC": 24046,
+    "Nafta (súper) entre 92 y 95 Ron": 55626,
+    "Nafta (premium) de más de 95 Ron": 51886,
+    "N/D": 2318,
+    "Nafta (común) hasta 92 Ron": 604,
+    "Kerosene": 1773,
+    "GLPA": 39
+  },
+  "provinces": {
+    "BUENOS AIRES": 94327,
+    "RIO NEGRO": 5419,
+    "CHUBUT": 3698,
+    "SAN LUIS": 3840,
+    "SANTA FE": 29020,
+    "ENTRE RIOS": 11191,
+    "CHACO": 4588,
+    "SANTIAGO DEL ESTERO": 5122,
+    "MENDOZA": 9805,
+    "CATAMARCA": 1920,
+    "CORDOBA": 37142,
+    "SALTA": 4826,
+    "MISIONES": 5029,
+    "TUCUMAN": 7436,
+    "CORRIENTES": 4751,
+    "LA PAMPA": 6869,
+    "CAPITAL FEDERAL": 10058,
+    "FORMOSA": 1928,
+    "SANTA CRUZ": 2186,
+    "JUJUY": 2876,
+    "NEUQUEN": 3605,
+    "LA RIOJA": 1318,
+    "TIERRA DEL FUEGO": 634,
+    "SAN JUAN": 3646
+  },
+  "channels": {
+    "Al público": 220121,
+    "N/D": 2318,
+    "Otros sectores": 7611,
+    "Transporte de cargas": 10528,
+    "Agro": 13318,
+    "Reventa a otras estaciones de servicio": 3999,
+    "Transporte público de pasajeros": 3326,
+    "Vehículos con placa identificatoria extranjera": 13
+  },
+  "missing": {
+    "Fecha de baja": 255811,
+    "Producto": 2318,
+    "Canal de Comercialización": 2318,
+    "Excentos": 2318,
+    "Impuesto Combustible Líquidos": 2318,
+    "Impuesto Dióxido Carbono": 2318,
+    "Tasa Vial": 2318,
+    "tasa Municipal": 2318,
+    "Ingresos Brutos": 2318,
+    "Iva": 2318,
+    "Fondo fiduciario GNC": 2318,
+    "Tipo Negocio": 161
+  },
+  "eligible_stations": 4543,
+  "eligible_by_province": {
+    "BUENOS AIRES": 1648,
+    "RIO NEGRO": 96,
+    "CHUBUT": 72,
+    "SAN LUIS": 59,
+    "SANTA FE": 477,
+    "ENTRE RIOS": 200,
+    "CHACO": 86,
+    "SANTIAGO DEL ESTERO": 100,
+    "MENDOZA": 205,
+    "CATAMARCA": 34,
+    "SALTA": 93,
+    "CORDOBA": 519,
+    "MISIONES": 105,
+    "TUCUMAN": 134,
+    "CORRIENTES": 93,
+    "LA PAMPA": 97,
+    "CAPITAL FEDERAL": 204,
+    "SANTA CRUZ": 40,
+    "JUJUY": 58,
+    "NEUQUEN": 73,
+    "FORMOSA": 38,
+    "LA RIOJA": 24,
+    "TIERRA DEL FUEGO": 14,
+    "SAN JUAN": 74
+  },
+  "selection": {
+    "provinces": [
+      "MISIONES",
+      "CORRIENTES",
+      "CHACO",
+      "SANTA FE",
+      "CORDOBA",
+      "BUENOS AIRES"
+    ],
+    "stations": 18,
+    "raw_rows": 1013,
+    "keys": [
+      [
+        9641,
+        "20-18054580-9",
+        "MISIONES",
+        "CONCEPCION DE LA SIERRA",
+        "RUTA 2 Y AV. REP. ARGENTINA (LOTE RURAL 065 E INMOBILIARIA 4176)"
+      ],
+      [
+        10979,
+        "30-71621033-9",
+        "MISIONES",
+        "SAN PEDRO",
+        "RUTA NACIONAL 14 KM1052 0"
+      ],
+      [
+        189,
+        "30-59299051-9",
+        "MISIONES",
+        "POSADAS",
+        "Avenida Quaranta 4150"
+      ],
+      [
+        683,
+        "30-65765065-6",
+        "CORRIENTES",
+        "CORRIENTES",
+        "ESTADOS UNIDOS 725"
+      ],
+      [
+        2951,
+        "30-66986964-5",
+        "CORRIENTES",
+        "SANTA LUCIA",
+        "SAN MARTIN N 1000"
+      ],
+      [
+        3978,
+        "30-70895265-2",
+        "CORRIENTES",
+        "SAN COSME",
+        "RUTA NACIONAL N: 12, KM. 1052"
+      ],
+      [
+        1907,
+        "30-67017935-0",
+        "CHACO",
+        "RESISTENCIA",
+        "AV.AVALOS 1001"
+      ],
+      [
+        4653,
+        "20-16232054-9",
+        "CHACO",
+        "VILLA ANGELA",
+        "MONZON Y L.COBELLO 95"
+      ],
+      [
+        104,
+        "33-70812864-9",
+        "CHACO",
+        "RESISTENCIA",
+        "AV. 25 DE MAYO 280"
+      ],
+      [
+        1036,
+        "30-51932822-0",
+        "SANTA FE",
+        "ROSARIO",
+        "CORDOBA 4098"
+      ],
+      [
+        6644,
+        "30-70827063-2",
+        "SANTA FE",
+        "SAN LORENZO",
+        "RUTA PROVINCIAL Nº 10 0,7"
+      ],
+      [
+        7672,
+        "30-71092757-6",
+        "SANTA FE",
+        "ROLDAN",
+        "FORMOSA 949"
+      ],
+      [
+        2298,
+        "30-70728425-7",
+        "CORDOBA",
+        "VILLA DOLORES",
+        "ITUZAINGO Y DEAN FUNES"
+      ],
+      [
+        8252,
+        "30-69854828-9",
+        "CORDOBA",
+        "RIO CUARTO",
+        "AYACUCHO 3285"
+      ],
+      [
+        563,
+        "30-64767888-9",
+        "CORDOBA",
+        "CORDOBA",
+        "AUTOPISTA CORDOBA PILAR KM 692"
+      ],
+      [
+        475,
+        "30-68389938-7",
+        "BUENOS AIRES",
+        "VILLA DE MAYO",
+        "AV. PTE PERON 2282"
+      ],
+      [
+        719,
+        "30-67791118-9",
+        "BUENOS AIRES",
+        "MERLO",
+        "av. eva peron 3750"
+      ],
+      [
+        723,
+        "30-70715847-2",
+        "BUENOS AIRES",
+        "ITUZAINGO",
+        "BLAS PARERA 935"
+      ]
+    ],
+    "rule": "Tres establecimientos por provincia con 12 meses con ventas válidas al público e identidad estable. Se prioriza diversidad de productos; desempate por número de inscripción y clave completa. Muestra intencional, no representativa.",
+    "quality_screen": "Se excluyen candidatos completos que presenten un volumen líquido >5000 m3 por producto/mes o, con volumen positivo, precio promedio fuera de 100-5000 ARS/unidad. Umbrales de selección conservadores definidos para el ejercicio, no límites oficiales ni prueba de error. Se guardan registros que motivaron la revisión, sin corregirlos."
+  },
+  "extraction": {
+    "expected_rows": 408550,
+    "extracted_rows": 408550,
+    "period_counts": {
+      "2025/01": 21754,
+      "2025/02": 21809,
+      "2025/03": 21856,
+      "2025/04": 21782,
+      "2025/05": 21840,
+      "2025/06": 21759,
+      "2025/07": 21752,
+      "2025/08": 21737,
+      "2025/09": 21799,
+      "2025/10": 21727,
+      "2025/11": 21722,
+      "2025/12": 21697,
+      "2026/01": 21561,
+      "2026/02": 21482,
+      "2026/03": 21462,
+      "2026/04": 21273,
+      "2026/05": 21151,
+      "2026/06": 20668,
+      "2026/07": 19719
+    },
+    "source_sha256": "b79676dc30efcf6e8053325edf34c2b8de2e688d73f917c2753d7948815cec5a"
+  }
+}

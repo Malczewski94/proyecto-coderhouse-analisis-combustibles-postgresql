@@ -1,0 +1,110 @@
+{
+  "semilla": 20250915,
+  "conteos": {
+    "operadores": 18,
+    "productos": 7,
+    "clientes": 432,
+    "fuente_ventas": 1007,
+    "pedidos": 4909,
+    "detalle_pedido": 22894,
+    "detalle_pedido_entrada": 22953
+  },
+  "filas_originales_muestra": 1013,
+  "filas_excluidas": 6,
+  "precios_nulos_simulados": 167,
+  "duplicados_simulados": 59,
+  "advertencias_fuente": 0,
+  "productos": [
+    {
+      "id_producto": "P001",
+      "nombre_original": "GNC",
+      "categoria": "GNC",
+      "unidad_venta": "m3",
+      "unidad_precio": "ARS/m3",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    },
+    {
+      "id_producto": "P002",
+      "nombre_original": "Gas Oil Grado 2",
+      "categoria": "Gasoil",
+      "unidad_venta": "L",
+      "unidad_precio": "ARS/L",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    },
+    {
+      "id_producto": "P003",
+      "nombre_original": "Gas Oil Grado 3",
+      "categoria": "Gasoil",
+      "unidad_venta": "L",
+      "unidad_precio": "ARS/L",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    },
+    {
+      "id_producto": "P004",
+      "nombre_original": "Kerosene",
+      "categoria": "Queroseno",
+      "unidad_venta": "L",
+      "unidad_precio": "ARS/L",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    },
+    {
+      "id_producto": "P005",
+      "nombre_original": "Nafta (común) hasta 92 Ron",
+      "categoria": "Nafta",
+      "unidad_venta": "L",
+      "unidad_precio": "ARS/L",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    },
+    {
+      "id_producto": "P006",
+      "nombre_original": "Nafta (premium) de más de 95 Ron",
+      "categoria": "Nafta",
+      "unidad_venta": "L",
+      "unidad_precio": "ARS/L",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    },
+    {
+      "id_producto": "P007",
+      "nombre_original": "Nafta (súper) entre 92 y 95 Ron",
+      "categoria": "Nafta",
+      "unidad_venta": "L",
+      "unidad_precio": "ARS/L",
+      "origen_nombre": "real",
+      "origen_categoria": "derivado"
+    }
+  ],
+  "periodos": [
+    "2025-01-01",
+    "2025-02-01",
+    "2025-03-01",
+    "2025-04-01",
+    "2025-05-01",
+    "2025-06-01",
+    "2025-07-01",
+    "2025-08-01",
+    "2025-09-01",
+    "2025-10-01",
+    "2025-11-01",
+    "2025-12-01"
+  ],
+  "provincias": [
+    "BUENOS AIRES",
+    "CHACO",
+    "CORDOBA",
+    "CORRIENTES",
+    "MISIONES",
+    "SANTA FE"
+  ],
+  "totales_por_unidad": {
+    "L": "93213130.00",
+    "m3": "8638800.20"
+  },
+  "importe_referencia_ars": "141717574607.7900",
+  "interpretacion_importe": "Estimación a precios promedio mensuales declarados, asignados a pedidos sintéticos. No facturación auditada."
+}

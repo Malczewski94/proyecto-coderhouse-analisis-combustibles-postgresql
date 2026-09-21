@@ -142,7 +142,7 @@ Con `psql`, si está instalado: `psql -d capstone_project -v ON_ERROR_STOP=1 -f 
 
 El script utiliza el esquema `combustibles` y una transacción. No borra tablas previas; una segunda ejecución sobre tablas existentes falla deliberadamente. Usar una base vacía para repetir una carga completa.
 
-La carga completa y la limpieza se ejecutaron correctamente en **PostgreSQL 18.3 mediante PGlite 0.5.8 (WebAssembly)**. Se verificaron claves, trazabilidad, doce meses de resultados y consultas técnicas con `GROUP BY`, funciones de fecha y `RANK()`. La conciliación SQL no devolvió diferencias. `validacion_postgresql.json` conserva el resultado y las salidas de prueba; no sustituye el futuro análisis de negocio ni acredita ejecución en la instalación local del usuario.
+La carga completa y la limpieza se ejecutaron correctamente en **PostgreSQL 18.3 mediante PGlite 0.5.8 (WebAssembly)**. Se verificaron claves, trazabilidad, doce meses de resultados y consultas técnicas con `GROUP BY`, funciones de fecha y `RANK()`. La conciliación SQL no devolvió diferencias. `validacion_postgresql.json` conserva el resultado y las salidas de prueba; no sustituye el análisis de negocio. La ejecución local de limpieza y conciliación se documenta por separado con las capturas de pgAdmin en el README raíz.
 
 La entrada contiene 168 celdas de precio vacías: 167 detalles afectados y una copia duplicada de uno de ellos. Después de eliminar duplicados y recuperar los precios, se obtienen los 22.894 detalles esperados.
 
@@ -150,6 +150,6 @@ Para regenerar los archivos sin Access: `python generar_dataset.py` desde esta c
 
 ## Alcance de esta entrega
 
-Esta entrega prepara el **dataset**, su carga y su validación. Las consultas finales de negocio, sus conclusiones y la publicación en GitHub se desarrollarán en la siguiente etapa. No se incluye todavía un `analisis.sql` final ni se afirma que el proyecto completo esté entregado.
+Esta entrega prepara el **dataset**, su carga y su validación. El dataset y el SQL de carga ya están publicados en GitHub, con autorización del usuario del 21/09/2026 para incluir los datos públicos de operadores. Las consultas finales de negocio y sus conclusiones siguen en desarrollo. No se incluye todavía un `analisis.sql` final ni se afirma que el proyecto completo esté entregado.
 
 Las cuatro preguntas pueden resolverse: top de clientes sintéticos por gasto, ventas por mes, tres productos líquidos menos vendidos y ranking de pedidos sintéticos por categoría. Para este último, sumar primero el importe de cada pedido dentro de cada categoría y aplicar `RANK()` con partición por categoría y orden por importe descendente.
