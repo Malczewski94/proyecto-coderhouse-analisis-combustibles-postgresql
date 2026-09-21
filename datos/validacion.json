@@ -1,0 +1,13 @@
+{
+  "resultado": "CORRECTO",
+  "claves_primarias_unicas": true,
+  "relaciones_sin_huerfanos": true,
+  "operador_producto_periodo_coinciden": true,
+  "doce_meses_por_establecimiento": true,
+  "filas_fuente_conciliadas": 1007,
+  "diferencia_total_cantidad_por_registro": "0",
+  "diferencia_importe_por_registro_ars": "0",
+  "limpieza_recupera_detalle_exacto": true,
+  "motor_validacion": "Python Decimal; PostgreSQL se verifica por separado si está disponible",
+  "regeneracion_identica_csv_y_sql": true
+}
