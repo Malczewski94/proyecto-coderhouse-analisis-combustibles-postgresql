@@ -86,7 +86,7 @@ Cuatro tablas comerciales: clientes, productos, pedidos y detalle_pedido. Las re
 | Paso | Estado | Qué falta |
 | --- | --- | --- |
 | 1. Problema | Definido y documentado | Mantener coherencia con resultados finales |
-| 2. Preparación/carga | Realizada previamente y documentada | Captura conjunta de conteos |
+| 2. Preparación/carga | Documentada con captura de los siete conteos coincidentes | Confirmar nombre de la base local |
 | 3. Limpieza | Documentada con evidencias en pgAdmin | Mantener trazabilidad; no repetir la carga |
 | 4. Análisis | En desarrollo: primera consulta propuesta | Revisar resultado con el usuario y desarrollar las restantes |
 | 5. Hallazgos | Pendiente | Interpretaciones, evidencias y conclusiones |
@@ -134,7 +134,8 @@ Disponibles en GitHub al verificar main:
 - `datos/generar_dataset.py`: generador.
 - `datos/validacion.json` y `datos/validacion_postgresql.json`: pruebas previas.
 - `datos/advertencias_fuente.csv`: archivo de advertencias.
-- `imagenes/limpieza.png` y `imagenes/conciliacion.png`: capturas.
+- `imagenes/limpieza.png` y `imagenes/conciliacion.png`: capturas del paso 3.
+- `imagenes/conteos_tablas.png`: captura del resultado de los siete conteos en pgAdmin; todos coinciden con los esperados. La imagen no muestra la consulta ni el nombre de la base. El SQL se incluye como texto en el README y permanece en validaciones.sql.
 - `PROJECT_STATE.md`: creado en esta actualización.
 
 Publicados en esta actualización: `estructura.sql`, los 13 CSV del paquete (incluida `fuente_original.csv`), `sha256_csv.json`, `perfil_fuente.json` y `resumen_dataset.json`. Se recuperó el paquete preparado y se verificaron las huellas SHA-256 de los 13 CSV. El SQL coincide byte por byte con el preparado previamente. El repositorio incluye los insumos para cargar y regenerar el dataset; no se ejecutó una nueva carga en la base local del usuario.
@@ -143,7 +144,6 @@ Referencia previa a la creación de este archivo: commit `a17c5a3e4a691e831d47ca
 
 ## 9. Evidencias y documentación pendientes
 
-- Captura del conteo conjunto de todas las tablas en pgAdmin.
 - Resultados y capturas legibles de las consultas de negocio, a medida que se revisen.
 - Interpretaciones, conclusiones y limitaciones específicas por consulta.
 - Revisar el nombre real de la base local frente a capstone_project antes de dar la configuración por plenamente verificada.
@@ -161,7 +161,7 @@ Conservar la diferencia entre datos reales, derivados y sintéticos. Separar evi
 
 ## 11. Último punto y siguiente tarea
 
-Último punto: con autorización explícita del usuario, se publicaron el SQL de estructura, los CSV y los auxiliares del paquete. Se actualizaron el README raíz, datos/README.md y este archivo para cerrar el pendiente de publicación. La consigna y la rúbrica permanecen registradas arriba.
+Último punto: se recibió y verificó la captura de los siete conteos de pgAdmin, todos coincidentes con el dataset esperado. Se incorporó como imagenes/conteos_tablas.png y se documentó la consulta como texto en el README. Se cerró el pendiente de evidencia del paso 2; el nombre de la base local sigue sin confirmarse porque no aparece en la imagen.
 
 Siguiente tarea de trabajo: retomar la primera consulta de analisis.sql con el usuario, ejecutarla en su base ya cargada (o revisar el resultado que aporte), comprobar los cinco clientes, interpretar los importes y documentar resultado/evidencia. Luego avanzar consulta por consulta.
 

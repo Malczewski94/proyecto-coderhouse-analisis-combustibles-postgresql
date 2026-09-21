@@ -60,7 +60,25 @@ Cada pedido pertenece a un cliente y a un operador. Cada detalle pertenece a un 
 3. Actualizar el explorador y comprobar las tablas bajo `Schemas → combustibles → Tables`.
 4. Ejecutar [validaciones.sql](validaciones.sql) para revisar conteos, limpieza y conciliación.
 
-Los conteos de la tabla anterior proceden del paquete validado. La carga ya se realizó en pgAdmin y las capturas del paso 3 comprueban la entrada, el detalle limpio y la conciliación. Queda pendiente incorporar una captura del conteo conjunto de todas las tablas.
+### Evidencia de conteos generales
+
+La captura aportada desde pgAdmin confirma los siete conteos esperados de la tabla anterior: 18 operadores, 7 productos, 432 clientes, 4.909 pedidos, 22.894 detalles limpios, 1.007 registros fuente y 22.953 filas de entrada. Todos coinciden con el paquete validado.
+
+![Conteos de las siete tablas en pgAdmin](imagenes/conteos_tablas.png)
+
+Consulta de control, también incluida al comienzo de [validaciones.sql](validaciones.sql):
+
+```sql
+SELECT 'operadores' AS tabla, COUNT(*) AS filas FROM combustibles.operadores
+UNION ALL SELECT 'productos', COUNT(*) FROM combustibles.productos
+UNION ALL SELECT 'clientes', COUNT(*) FROM combustibles.clientes
+UNION ALL SELECT 'pedidos', COUNT(*) FROM combustibles.pedidos
+UNION ALL SELECT 'detalle_pedido', COUNT(*) FROM combustibles.detalle_pedido
+UNION ALL SELECT 'fuente_ventas', COUNT(*) FROM combustibles.fuente_ventas
+UNION ALL SELECT 'detalle_pedido_entrada', COUNT(*) FROM combustibles.detalle_pedido_entrada;
+```
+
+La imagen conserva únicamente el resultado; el SQL se documenta como texto. El nombre de la última tabla aparece abreviado por el ancho de la columna. La consulta identifica esa fila como `detalle_pedido_entrada`. Este control comprueba cantidades de filas; la limpieza y la conciliación se documentan en el paso 3.
 
 Los CSV están publicados en `datos/`, incluida la muestra congelada `fuente_original.csv` que necesita el generador. El [generador](datos/generar_dataset.py) usa la semilla `20250915`. Se puede ejecutar desde la raíz con `python3 datos/generar_dataset.py`; regenera los archivos derivados y `estructura.sql`. La extracción y selección previa de la base Access se documentan por separado y no se repiten al ejecutar este generador.
 
