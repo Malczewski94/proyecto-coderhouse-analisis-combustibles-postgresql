@@ -1,26 +1,30 @@
--- Crea y carga el esquema combustibles para el modelo de mayorista ficticio.
--- Vincula establecimientos reales con cuentas cliente y pedidos mensuales simulados.
--- La transacción agrupa la creación de tablas, la carga, la limpieza y las vistas.
+-- Separo identidad real y relación comercial simulada para no atribuir compras mayoristas a la fuente.
+-- Uso una transacción para evitar que una carga fallida deje un modelo parcialmente construido.
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS combustibles;
 SET search_path TO combustibles;
+-- Identifico establecimientos por inscripción y ubicación porque un CUIT puede tener varias sucursales.
 CREATE TABLE operadores (
  id_operador TEXT PRIMARY KEY, nro_inscripcion TEXT NOT NULL, cuit TEXT NOT NULL,
  nombre_operador TEXT NOT NULL, bandera TEXT NOT NULL, provincia TEXT NOT NULL,
  localidad TEXT NOT NULL, direccion TEXT NOT NULL, tipo_negocio TEXT, origen TEXT NOT NULL,
  UNIQUE(nro_inscripcion,cuit,provincia,localidad,direccion)
 );
+-- Conservo unidades por producto para no sumar litros y m3 como si fueran un mismo volumen.
 CREATE TABLE productos (
  id_producto TEXT PRIMARY KEY, nombre_original TEXT NOT NULL UNIQUE,
  categoria TEXT NOT NULL, unidad_venta TEXT NOT NULL CHECK(unidad_venta IN ('L','m3')),
  unidad_precio TEXT NOT NULL, origen_nombre TEXT NOT NULL, origen_categoria TEXT NOT NULL
 );
+-- La relación única con operador evita duplicar cuentas para un mismo establecimiento.
 CREATE TABLE clientes (
  id_cliente TEXT PRIMARY KEY, id_operador TEXT NOT NULL UNIQUE REFERENCES operadores,
  nombre TEXT NOT NULL, provincia TEXT NOT NULL,
  origen_identidad TEXT NOT NULL CHECK(origen_identidad='real'),
  relacion_comercial TEXT NOT NULL CHECK(relacion_comercial='simulada')
 );
+-- Conservo el registro fuente para justificar cantidades y precios de cada detalle simulado.
+-- NUMERIC preserva precisión decimal y el CHECK de conversión evita inconsistencias entre m3 y litros.
 CREATE TABLE fuente_ventas (
  id_fuente TEXT PRIMARY KEY, fila_extraida INTEGER NOT NULL UNIQUE,
  id_operador TEXT NOT NULL REFERENCES operadores, periodo DATE NOT NULL,
@@ -33,6 +37,8 @@ CREATE TABLE fuente_ventas (
  precio_surtidor_ars NUMERIC(18,2), origen TEXT NOT NULL,
  CHECK(cantidad_venta=volumen_original_m3*CASE WHEN unidad_venta='L' THEN 1000 ELSE 1 END)
 );
+-- La unicidad y el primer día fijan un pedido por cliente y mes, conforme a la granularidad de la fuente.
+-- El estado concretado es un supuesto del caso; no hay evidencia de cancelaciones en este modelo.
 CREATE TABLE pedidos (
  id_pedido TEXT PRIMARY KEY, fecha DATE NOT NULL, id_cliente TEXT NOT NULL REFERENCES clientes,
  estado TEXT NOT NULL CHECK(estado='Concretado'),
@@ -40,10 +46,12 @@ CREATE TABLE pedidos (
  UNIQUE(id_cliente,fecha),
  CHECK(fecha >= DATE '2025-01-01' AND fecha < DATE '2026-01-01' AND EXTRACT(DAY FROM fecha)=1)
 );
+-- Permito nulos y duplicados en la entrada para representar incidencias didácticas antes de limpiarlas.
 CREATE TABLE detalle_pedido_entrada (
  id_detalle TEXT, id_pedido TEXT, id_producto TEXT, id_fuente TEXT,
  cantidad NUMERIC(18,3), precio_unitario_ars NUMERIC(18,2), origen TEXT
 );
+-- Exijo una única línea por fuente y valores positivos para evitar duplicar o invalidar su valoración.
 CREATE TABLE detalle_pedido (
  id_detalle TEXT PRIMARY KEY, id_pedido TEXT NOT NULL REFERENCES pedidos,
  id_producto TEXT NOT NULL REFERENCES productos, id_fuente TEXT NOT NULL UNIQUE REFERENCES fuente_ventas,
@@ -2348,13 +2356,15 @@ INSERT INTO detalle_pedido_entrada (id_detalle,id_pedido,id_producto,id_fuente,c
 ('D0000462','V000198','P003','F122324',125570.00,1427.69,'simulado_con_referencia_minorista'),
 ('D0000851','V000155','P007','F222534',114290.00,1664.03,'simulado_con_referencia_minorista');
 
--- Elimina duplicados exactos de la entrada y recupera los precios nulos con COALESCE.
--- Cada precio procede del registro fuente asociado, según el criterio de la simulación.
+-- DISTINCT es válido porque las repeticiones didácticas son copias exactas, no ventas diferentes.
+-- Recupero el precio de la misma fuente porque ese valor se asigna al pedido por diseño.
+-- No uso un promedio ni cero, ya que alterarían el importe de referencia de la simulación.
 INSERT INTO detalle_pedido
 SELECT DISTINCT e.id_detalle,e.id_pedido,e.id_producto,e.id_fuente,e.cantidad,
  COALESCE(e.precio_unitario_ars,f.precio_promedio_con_impuestos_ars),e.origen
 FROM detalle_pedido_entrada e JOIN fuente_ventas f ON f.id_fuente=e.id_fuente;
 
+-- Centralizo las relaciones y el importe para reutilizar una definición consistente de venta simulada.
 CREATE VIEW v_ventas AS
 SELECT d.id_detalle,p.id_pedido,p.fecha,p.id_cliente,c.id_operador,
  d.id_producto,pr.categoria,pr.unidad_venta,d.id_fuente,d.cantidad,d.precio_unitario_ars,
@@ -2362,6 +2372,8 @@ SELECT d.id_detalle,p.id_pedido,p.fecha,p.id_cliente,c.id_operador,
 FROM detalle_pedido d JOIN pedidos p USING(id_pedido)
 JOIN clientes c USING(id_cliente) JOIN productos pr USING(id_producto);
 
+-- LEFT JOIN conserva fuentes sin detalle para que una pérdida de registros sea visible.
+-- COALESCE representa ausencia de cantidad conciliada; no imputa precios faltantes.
 CREATE VIEW v_conciliacion AS
 SELECT f.id_fuente,f.unidad_venta,f.cantidad_venta AS cantidad_fuente,
  COALESCE(SUM(d.cantidad),0) AS cantidad_pedidos,
@@ -2372,6 +2384,6 @@ FROM fuente_ventas f LEFT JOIN detalle_pedido d USING(id_fuente)
 GROUP BY f.id_fuente,f.unidad_venta,f.cantidad_venta,f.precio_promedio_con_impuestos_ars;
 COMMIT;
 
--- Identifica registros con diferencias de cantidad o importe respecto de la fuente.
+-- Destaco discrepancias para detectar si la carga o limpieza alteró cantidades o importes de origen.
 SELECT * FROM combustibles.v_conciliacion
 WHERE diferencia_cantidad<>0 OR diferencia_importe_ars<>0;

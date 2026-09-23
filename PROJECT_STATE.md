@@ -20,7 +20,7 @@ Cada captura debe estar acompañada por la consulta SQL que produce su resultado
 
 La sección de reemplazo de la carga se retiró del README. Para una reconstrucción expresamente solicitada: reiniciar_esquema.sql comprueba capstone_project y elimina combustibles y combustibles_v1 con sus objetos; luego estructura.sql reconstruye el modelo. Esta ruta es destructiva y no corresponde ejecutarla ahora, porque la carga ya fue comprobada.
 
-Los comentarios de todos los .sql deben describir la finalidad y el funcionamiento del bloque, sin instrucciones al lector, pendientes ni resultados esperados. Mantener sincronizados los comentarios SQL de datos/generar_dataset.py. Los resultados observados se documentan en el README junto a la consulta y captura.
+Los comentarios de todos los .sql deben justificar por qué se eligen filtros, agrupaciones, uniones y tratamientos; describir solo qué hace una cláusula no satisface el criterio. Colocar las justificaciones junto al código relevante, sin instrucciones al lector, pendientes ni resultados esperados. Mantener sincronizados los comentarios SQL de datos/generar_dataset.py. Los resultados observados se documentan en el README junto a la consulta y captura.
 
 ## 2. Decisión central aprobada y alcance
 
@@ -174,3 +174,7 @@ El usuario indica que los nombres truncados y otros detalles de presentación se
 Preferencia explícita: al documentar una captura, incluir en la respuesta el siguiente paso concreto y su consulta; no responder solamente confirmando la actualización. Continuar de una consulta a la vez.
 
 Las seis consultas y las conclusiones globales están documentadas. La revisión final solicitada para el cierre sigue pendiente.
+
+## Revisión de comentarios SQL
+
+Se revisaron analisis.sql, validaciones.sql, estructura.sql y reiniciar_esquema.sql para explicar decisiones junto al código: unidades comparables, granularidad mensual, conteos sin duplicar, empates, denominadores, ponderación y recuperación del precio fuente. Se sincronizaron las consultas equivalentes del README y los comentarios emitidos por datos/generar_dataset.py. Se comprobó que los cuatro scripts mantienen el mismo SQL ejecutable al excluir comentarios y espacios. No requiere nueva carga ni nuevas capturas. Esta revisión puntual no sustituye la revisión integral pendiente.

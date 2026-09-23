@@ -75,6 +75,7 @@ Defino claves primarias y foráneas, restricciones de valores positivos y unicid
 Para comprobar el número de registros de las siete tablas, utilizo esta consulta:
 
 ```sql
+-- Comparo el tamaño de las tablas para detectar cargas incompletas o multiplicación de filas.
 SELECT 'operadores' AS tabla, COUNT(*) AS filas FROM combustibles.operadores
 UNION ALL SELECT 'productos', COUNT(*) FROM combustibles.productos
 UNION ALL SELECT 'clientes', COUNT(*) FROM combustibles.clientes
@@ -97,6 +98,9 @@ Introduzco ocho precios nulos y tres duplicados exactos exclusivamente en `detal
 Utilizo `DISTINCT` para eliminar las copias idénticas y `COALESCE` para recuperar cada precio faltante desde su registro fuente:
 
 ```sql
+-- DISTINCT elimina copias exactas sin confundirlas con ventas distintas.
+-- Recupero el precio fuente porque es el asignado al pedido por diseño;
+-- sustituirlo por cero o por otro promedio alteraría la valoración.
 INSERT INTO combustibles.detalle_pedido
 SELECT DISTINCT
     e.id_detalle, e.id_pedido, e.id_producto, e.id_fuente,
@@ -112,6 +116,7 @@ Recupero el precio del mismo registro porque es la referencia asignada al pedido
 Para comparar la entrada con el detalle limpio, ejecuto:
 
 ```sql
+-- Comparo entrada y salida para comprobar que la limpieza trata las incidencias sin perder detalle válido.
 SELECT
     'Entrada antes de limpiar' AS etapa,
     COUNT(*) AS filas,
@@ -143,6 +148,7 @@ Conservo tres decimales en las cantidades y dos en los precios. Calculo el impor
 Comparo las cantidades y los importes de cada registro fuente con los de su detalle de pedido mediante la vista `v_conciliacion`. Compruebo las diferencias con esta consulta:
 
 ```sql
+-- Contrasto cantidades e importes con la fuente para detectar pérdidas o alteraciones durante la transformación.
 SELECT
     COUNT(*) AS registros_comprobados,
     COUNT(*) FILTER (
@@ -163,6 +169,7 @@ Los totales del dataset son **93.213.130 litros de combustibles líquidos**, **8
 Compruebo que los pedidos pertenezcan a 2025 y utilicen el primer día del mes como representación del período.
 
 ```sql
+-- Restrinjo las fechas a 2025 y al primer día porque representan meses contables, no entregas diarias.
 SELECT COUNT(*) FILTER (WHERE fecha IS NULL) AS fechas_nulas,
        COUNT(*) FILTER (WHERE fecha < DATE '2025-01-01'
            OR fecha >= DATE '2026-01-01' OR EXTRACT(DAY FROM fecha) <> 1) AS fechas_invalidas,
@@ -179,6 +186,8 @@ Obtengo 0 fechas nulas, 0 inválidas y 12 meses distintos.
 Agrupo los pedidos por cliente y mes para detectar grupos cuya cantidad de pedidos difiera de uno.
 
 ```sql
+-- Busco repeticiones dentro de cada cliente y mes porque el modelo admite un único pedido mensual.
+-- Este control solo ve meses presentes; lo complemento con el control de cobertura por cliente.
 SELECT id_cliente, DATE_TRUNC('month', fecha) AS mes, COUNT(*) AS pedidos
 FROM combustibles.pedidos
 GROUP BY id_cliente, DATE_TRUNC('month', fecha)
@@ -194,6 +203,8 @@ La consulta no devuelve filas: cada combinación de cliente y mes presente tiene
 Cuento los pedidos de cada cliente mediante LEFT JOIN, incluyendo a quienes pudieran no tener pedidos.
 
 ```sql
+-- Uso LEFT JOIN para incluir cuentas sin pedidos y comprobar la cobertura anual del modelo.
+-- Cuento la clave del pedido, no COUNT(*), para que una cuenta sin pedidos compute cero.
 SELECT c.id_cliente, COUNT(p.id_pedido) AS pedidos
 FROM combustibles.clientes c LEFT JOIN combustibles.pedidos p USING(id_cliente)
 GROUP BY c.id_cliente HAVING COUNT(p.id_pedido) <> 12;
@@ -208,6 +219,8 @@ La consulta no devuelve filas: todos los clientes tienen doce pedidos. Junto con
 Relaciono detalles, pedidos, clientes y fuente para comprobar la correspondencia del establecimiento, período y producto.
 
 ```sql
+-- Compruebo establecimiento, período y producto para evitar asociar una venta a un detalle ajeno.
+-- Comparo también las filas unidas con el detalle para detectar pérdidas o multiplicación por el JOIN.
 SELECT COUNT(*) AS filas_unidas,
        COUNT(*) FILTER (WHERE c.id_operador <> f.id_operador
            OR p.fecha <> f.periodo OR d.id_producto <> f.id_producto) AS errores_trazabilidad
@@ -226,6 +239,8 @@ Obtengo 1.007 filas unidas y 0 errores de trazabilidad. El JOIN conserva el núm
 Consulto el catálogo de columnas para comprobar los tipos definidos y la precisión numérica.
 
 ```sql
+-- Verifico DATE y NUMERIC para sostener agrupaciones temporales y cálculos decimales consistentes.
+-- Limito la consulta al esquema del proyecto para no confundir columnas homónimas de otras bases lógicas.
 SELECT table_name, column_name, data_type, numeric_precision, numeric_scale
 FROM information_schema.columns
 WHERE table_schema = 'combustibles'
@@ -248,19 +263,25 @@ Conservo también los reportes técnicos de [Python Decimal](datos/validacion.js
 Identifico los establecimientos que acumulan el mayor importe de compra simulado durante 2025. Calculo el gasto de referencia como la suma de cantidad × precio y cuento los pedidos con `COUNT(DISTINCT id_pedido)` para evitar contar cada línea de producto como un pedido diferente. Considero los pedidos con estado `Concretado`.
 
 ```sql
+-- Priorizo las cinco cuentas con mayor peso en el importe de referencia de la cartera.
+-- Los precios minoristas permiten una valoración común de la simulación; no son ingresos mayoristas reales.
 SELECT
     c.id_cliente,
     c.nombre,
     o.localidad,
     c.provincia,
+    -- Evito inflar la frecuencia por las múltiples líneas de un mismo pedido.
     COUNT(DISTINCT p.id_pedido) AS cantidad_pedidos,
     ROUND(SUM(d.cantidad * d.precio_unitario_ars), 2) AS gasto_referencia_ars
 FROM combustibles.clientes AS c
 JOIN combustibles.operadores AS o ON o.id_operador = c.id_operador
 JOIN combustibles.pedidos AS p ON p.id_cliente = c.id_cliente
 JOIN combustibles.detalle_pedido AS d ON d.id_pedido = p.id_pedido
+-- Delimito el análisis a ventas concretadas; hoy todas lo son por supuesto del modelo.
 WHERE p.estado = 'Concretado'
+-- Conservo cada establecimiento como cuenta; no consolido sucursales por nombre o CUIT.
 GROUP BY c.id_cliente, c.nombre, o.localidad, c.provincia
+-- Desempato por identificador para obtener cinco cuentas reproducibles.
 ORDER BY SUM(d.cantidad * d.precio_unitario_ars) DESC, c.id_cliente
 LIMIT 5;
 ```
@@ -279,8 +300,11 @@ Dentro de la simulación, utilizaría el ranking para priorizar el seguimiento c
 Agrupo los pedidos por mes y calculo el importe total de referencia. Cuento pedidos y clientes distintos para contextualizar cada período.
 
 ```sql
+-- Comparo períodos mensuales porque la fuente y los pedidos tienen esa granularidad.
+-- El importe es nominal: su variación combina precios, cantidades y composición de productos.
 SELECT
     DATE_TRUNC('month', p.fecha)::date AS mes,
+    -- El JOIN repite cabeceras; DISTINCT evita confundir líneas con pedidos o clientes.
     COUNT(DISTINCT p.id_pedido) AS cantidad_pedidos,
     COUNT(DISTINCT p.id_cliente) AS cantidad_clientes,
     ROUND(
@@ -290,6 +314,7 @@ SELECT
 FROM combustibles.pedidos AS p
 JOIN combustibles.detalle_pedido AS d
     ON d.id_pedido = p.id_pedido
+-- Delimito el análisis a ventas concretadas; hoy todas lo son por supuesto del modelo.
 WHERE p.estado = 'Concretado'
 GROUP BY DATE_TRUNC('month', p.fecha)::date
 ORDER BY mes;
@@ -311,6 +336,8 @@ Utilizaría esta evolución para identificar períodos que requieren un análisi
 Comparo el volumen acumulado de los productos medidos en litros y selecciono los tres de menor cantidad. Excluyo GNC de este ranking porque su volumen está expresado en m³; mantengo esa unidad separada.
 
 ```sql
+-- Identifico productos de menor volumen para orientar una revisión de surtido y cobertura.
+-- El volumen por sí solo no permite decidir su rentabilidad ni recomendar su retiro.
 SELECT
     pr.id_producto,
     pr.nombre_original AS producto,
@@ -321,7 +348,9 @@ JOIN combustibles.detalle_pedido AS d
     ON d.id_producto = pr.id_producto
 JOIN combustibles.pedidos AS p
     ON p.id_pedido = d.id_pedido
+-- Delimito el análisis a ventas concretadas; hoy todas lo son por supuesto del modelo.
 WHERE p.estado = 'Concretado'
+  -- Excluyo GNC para no comparar litros con m3 en un mismo ranking de volumen.
   AND pr.unidad_venta = 'L'
 GROUP BY
     pr.id_producto,
@@ -345,6 +374,8 @@ Calculo el importe de cada pedido dentro de cada categoría y utilizo `RANK()` p
 La unidad de análisis es **pedido y categoría**: si un pedido incluye nafta y gasoil, aparece en ambos rankings con el importe correspondiente a cada categoría. Comparo importes en ARS, por lo que incluyo GNC sin sumar sus m³ a los litros.
 
 ```sql
+-- Comparo operaciones dentro de cada categoría para identificar pedidos relevantes en cada rubro.
+-- Agrego primero las líneas por pedido y categoría para no clasificar productos individuales.
 WITH importes_por_categoria AS (
     SELECT
         pr.categoria,
@@ -360,13 +391,16 @@ WITH importes_por_categoria AS (
         ON d.id_pedido = p.id_pedido
     JOIN combustibles.productos AS pr
         ON pr.id_producto = d.id_producto
+    -- Delimito el análisis a ventas concretadas; hoy todas lo son por supuesto del modelo.
     WHERE p.estado = 'Concretado'
     GROUP BY pr.categoria, p.id_pedido, p.fecha, c.id_cliente, c.nombre
 ),
 ranking AS (
     SELECT
         *,
+        -- Conservo empates: importes iguales merecen la misma posición comercial.
         RANK() OVER (
+            -- Cada categoría tiene su propia clasificación, sin competir con otros rubros.
             PARTITION BY categoria
             ORDER BY importe_categoria DESC
         ) AS posicion
@@ -379,8 +413,10 @@ SELECT
     fecha,
     id_cliente,
     cliente,
+    -- Redondeo solo la presentación para no crear empates artificiales al clasificar.
     ROUND(importe_categoria, 2) AS importe_referencia_ars
 FROM ranking
+-- Incluyo las tres primeras posiciones; los empates pueden ampliar el número de filas.
 WHERE posicion <= 3
 ORDER BY categoria, posicion, id_pedido;
 ```
@@ -405,6 +441,8 @@ Utilizaría el ranking para seleccionar pedidos cuyo volumen y composición conv
 Calculo qué porcentaje del importe total de la cartera corresponde a los cinco clientes de mayor gasto de referencia. Selecciono exactamente cinco cuentas con el mismo desempate por identificador utilizado en el top 5. La métrica es `importe_top_5 / importe_total * 100`.
 
 ```sql
+-- Mido cuánto depende el importe de referencia de las cinco cuentas principales.
+-- Mantengo el mismo criterio de selección del top 5 para que ambos análisis sean comparables.
 WITH gasto_por_cliente AS (
     SELECT
         p.id_cliente,
@@ -412,6 +450,7 @@ WITH gasto_por_cliente AS (
     FROM combustibles.pedidos AS p
     JOIN combustibles.detalle_pedido AS d
         ON d.id_pedido = p.id_pedido
+    -- Delimito el análisis a ventas concretadas; hoy todas lo son por supuesto del modelo.
     WHERE p.estado = 'Concretado'
     GROUP BY p.id_cliente
 ),
@@ -419,17 +458,20 @@ clientes_ordenados AS (
     SELECT
         id_cliente,
         importe,
+        -- Necesito exactamente cinco cuentas, incluso si hay importes empatados.
         ROW_NUMBER() OVER (
             ORDER BY importe DESC, id_cliente
         ) AS posicion
     FROM gasto_por_cliente
 )
+-- FILTER limita solo el numerador: el denominador debe conservar toda la cartera.
 SELECT
     ROUND(SUM(importe) FILTER (WHERE posicion <= 5), 2)
         AS importe_top_5_ars,
     ROUND(SUM(importe), 2) AS importe_total_ars,
     ROUND(
         100.0 * SUM(importe) FILTER (WHERE posicion <= 5)
+        -- Un total cero no define una participación; NULLIF evita dividir por cero.
         / NULLIF(SUM(importe), 0),
         2
     ) AS participacion_top_5_pct
@@ -451,15 +493,19 @@ Utilizaría este indicador para priorizar el seguimiento de las cuentas principa
 Calculo el precio medio de referencia dando mayor peso a los registros con mayor volumen. Utilizo `SUM(cantidad * precio) / SUM(cantidad)` para cada producto y mes, en lugar de un promedio simple que asignaría el mismo peso a volúmenes diferentes.
 
 ```sql
+-- Pondero por volumen para que una venta pequeña no pese igual que una grande en el precio medio.
+-- Comparo cada producto consigo mismo por mes, conservando su unidad de precio.
 SELECT
     DATE_TRUNC('month', p.fecha)::date AS mes,
     pr.id_producto,
     pr.nombre_original AS producto,
     pr.unidad_precio,
+    -- La cobertura ayuda a detectar cambios de composición entre meses.
     COUNT(DISTINCT p.id_cliente) AS cantidad_clientes,
     SUM(d.cantidad) AS volumen_total,
     ROUND(
         SUM(d.cantidad * d.precio_unitario_ars)
+        -- Sin volumen no hay precio ponderado definido; evito una división por cero.
         / NULLIF(SUM(d.cantidad), 0),
         2
     ) AS precio_ponderado_ars
@@ -468,7 +514,9 @@ JOIN combustibles.detalle_pedido AS d
     ON d.id_pedido = p.id_pedido
 JOIN combustibles.productos AS pr
     ON pr.id_producto = d.id_producto
+-- Delimito el análisis a ventas concretadas; hoy todas lo son por supuesto del modelo.
 WHERE p.estado = 'Concretado'
+-- No completo meses sin registros: su ausencia no equivale a un precio cero.
 GROUP BY
     DATE_TRUNC('month', p.fecha)::date,
     pr.id_producto,

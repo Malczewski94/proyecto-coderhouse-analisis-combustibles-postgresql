@@ -1,6 +1,6 @@
--- Comprueba que la conexión corresponde a capstone_project.
--- Elimina los esquemas combustibles y combustibles_v1 y sus objetos dependientes con CASCADE.
--- La transacción agrupa la comprobación de la base y la eliminación de ambos esquemas.
+-- Limito el reinicio a capstone_project para reducir el riesgo de borrar objetos en otra base.
+-- Elimino solo los esquemas del proyecto para reconstruir la simulación sin conservar una carga anterior.
+-- CASCADE retira sus dependencias; la transacción evita un reinicio parcialmente aplicado.
 BEGIN;
 DO $$
 BEGIN
