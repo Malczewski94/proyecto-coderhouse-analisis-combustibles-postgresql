@@ -200,4 +200,10 @@ Se revisaron analisis.sql, validaciones.sql, estructura.sql y reiniciar_esquema.
 
 A solicitud del usuario, se corrigió la jerarquía del README y se preparó un checklist punto por punto. Se explicitó la comunicación en 2.5 y los controles en 4.1–4.4, incluido el criterio de no agregar índices sin evidencia de necesidad. Se verificó que estructura.sql no contiene CREATE INDEX adicional. El apartado 3 contextualiza el caso propio sin atribuirle análisis de canastas, PostGIS o JSON no realizados. Se conservaron los 15 bloques SQL del README y se comprobaron sus enlaces internos. Las conclusiones del apartado 6 se conservaron sin revisarlas en esta tarea.
 
-Esta es una revisión de cobertura documental y estructura, no una nueva ejecución integral del SQL ni una inspección visual de todas las capturas. Pendientes: revisión final de legibilidad (nombres truncados), prueba integral de reproducción si se exige el cierre técnico y revisión conjunta del apartado 6. El requisito de ejecutabilidad tiene evidencias previas; no marcarlo como nuevamente probado durante este checklist.
+Esta es una revisión de cobertura documental y estructura, no una nueva ejecución integral del SQL ni una inspección visual de todas las capturas. Pendientes: prueba integral de reproducción si se exige el cierre técnico y revisión conjunta del apartado 6. La revisión de legibilidad se cerró con las seis capturas de reemplazo. El requisito de ejecutabilidad tiene evidencias previas; no marcarlo como nuevamente probado durante este checklist.
+
+## Cierre de legibilidad de capturas
+
+Se recibieron y revisaron las seis capturas ampliadas: conteos_tablas.png, limpieza.png, tipos_datos.png, top_5_clientes.png, productos_menos_vendidos.png y ranking_pedidos_categoria.png. Se sustituyeron en las mismas rutas de imagenes/, sin duplicados ni cambios de enlaces en README. Los nombres de tablas, columnas, clientes, localidades y productos quedan completos; los resultados coinciden con las evidencias anteriores. Las otras siete capturas no requieren reemplazo según la revisión realizada. Queda resuelto el pendiente de nombres truncados.
+
+Siguiente paso: revisar conjuntamente el apartado 6, comprobando que las conclusiones distingan hallazgos, propuestas y límites de la simulación. No es necesaria una nueva carga de datos.
