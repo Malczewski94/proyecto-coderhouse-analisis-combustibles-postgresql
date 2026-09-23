@@ -102,4 +102,4 @@ Las instrucciones de carga desde cero están en el [README principal](../README.
 
 ## Alcance de la entrega
 
-Se prepara y verifica el modelo V2. `analisis.sql` contiene únicamente la primera consulta de negocio adaptada; su revisión conjunta y las cinco restantes están pendientes. No se declara terminado el proyecto.
+El modelo está cargado y validado. Documento el top 5 con su resultado e interpretación en el README principal. Incluyo una segunda consulta para la evolución mensual, cuyo resultado aún no incorporo. Las cuatro consultas restantes y las conclusiones globales están en desarrollo.

@@ -98,7 +98,7 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
 | 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos, fechas, pedidos mensuales, trazabilidad y tipos confirmados mediante capturas locales (23/09/2026) |
 | 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
-| 4. Análisis | Primera consulta adaptada; prueba técnica exitosa; resultado e interpretación con usuario pendientes |
+| 4. Análisis | Top 5 ejecutado y documentado; consulta mensual preparada, pendiente ejecución |
 | 5. Hallazgos | Pendientes de revisión conjunta |
 
 Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
@@ -122,8 +122,8 @@ La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/
 
 ## 7. Preguntas y forma de trabajar
 
-1. Cinco clientes con mayor gasto de referencia: SQL adaptado, pendiente captura/interpretación V2.
-2. Evolución mensual de importes: pendiente.
+1. Cinco clientes con mayor gasto de referencia: ejecutado por el usuario, captura publicada e interpretación descriptiva documentada en README.
+2. Evolución mensual de importes: segunda consulta preparada en analisis.sql; pendiente ejecución, captura e interpretación.
 3. Tres productos líquidos menos vendidos, GNC aparte: pendiente.
 4. Ranking de pedidos por categoría con RANK(): pendiente.
 5. Concentración del top 5: pendiente.
@@ -147,6 +147,10 @@ Los ocho controles de validaciones.sql están confirmados mediante capturas del 
 
 Las imágenes muestran resultados de la ejecución del usuario; no hay conexión directa al servidor. La base capstone_project ya está confirmada. No repetir carga ni reinicio.
 
-Siguiente tarea: retomar el top 5 de analisis.sql, explicar la consulta, revisar el resultado e interpretación con el usuario y documentarlos antes de desarrollar otra consulta. Análisis y conclusiones de negocio siguen pendientes.
+El usuario aportó la captura del top 5, publicada en imagenes/top_5_clientes.png. Orden e importes en ARS: C0012 26229253774.57; C0011 16697526321.86; C0001 12936900987.89; C0006 12487467190.62; C0017 9822274048.88. Todos tienen 12 pedidos. El nombre truncado de C0001 se completó desde datos/clientes.csv. Interpretación documentada: SUCATA encabeza el ranking; cuentas en Santa Fe y Córdoba; la frecuencia fija no mide fidelidad, y el importe no mide rentabilidad.
 
-Esta actualización modifica comentarios SQL y documentación; no cambia sentencias ejecutables ni datos. Los comentarios del generador se actualizan para preservar la coherencia al regenerar estructura.sql.
+Siguiente tarea: ejecutar la segunda consulta de analisis.sql (evolución mensual), recibir la captura de las doce filas e interpretar los resultados. La consulta agrupa DATE_TRUNC por mes, cuenta pedidos/clientes distintos y suma cantidad por precio. No se ha ejecutado ni validado contra el servidor del usuario. No anticipar máximos, mínimos ni causas.
+
+Preferencia explícita: al documentar una captura, incluir en la respuesta el siguiente paso concreto y su consulta; no responder solamente confirmando la actualización. Continuar de una consulta a la vez.
+
+Las consultas restantes y las conclusiones globales siguen pendientes.

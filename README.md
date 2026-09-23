@@ -247,11 +247,66 @@ Conservo también los reportes técnicos de [Python Decimal](datos/validacion.js
 
 ## 4. Análisis de negocio
 
-En [analisis.sql](analisis.sql) desarrollo las consultas para responder las preguntas del proyecto. La primera identifica los cinco establecimientos con mayor importe de referencia y devuelve cliente, localidad, provincia, cantidad de pedidos e importe acumulado.
+### 4.1. Cinco clientes con mayor gasto de referencia
 
-Calculo el gasto de referencia como la suma de cantidad × precio y cuento los pedidos con `COUNT(DISTINCT id_pedido)` para evitar contar cada línea de producto como un pedido diferente.
+Identifico los establecimientos que acumulan el mayor importe de compra simulado durante 2025. Calculo el gasto de referencia como la suma de cantidad × precio y cuento los pedidos con `COUNT(DISTINCT id_pedido)` para evitar contar cada línea de producto como un pedido diferente. Considero los pedidos con estado `Concretado`.
 
-**El análisis de negocio está en desarrollo.** Aún no presento resultados interpretados del top 5 ni conclusiones para las demás preguntas.
+```sql
+SELECT
+    c.id_cliente,
+    c.nombre,
+    o.localidad,
+    c.provincia,
+    COUNT(DISTINCT p.id_pedido) AS cantidad_pedidos,
+    ROUND(SUM(d.cantidad * d.precio_unitario_ars), 2) AS gasto_referencia_ars
+FROM combustibles.clientes AS c
+JOIN combustibles.operadores AS o ON o.id_operador = c.id_operador
+JOIN combustibles.pedidos AS p ON p.id_cliente = c.id_cliente
+JOIN combustibles.detalle_pedido AS d ON d.id_pedido = p.id_pedido
+WHERE p.estado = 'Concretado'
+GROUP BY c.id_cliente, c.nombre, o.localidad, c.provincia
+ORDER BY SUM(d.cantidad * d.precio_unitario_ars) DESC, c.id_cliente
+LIMIT 5;
+```
+
+![Cinco clientes con mayor gasto de referencia en 2025](imagenes/top_5_clientes.png)
+
+| Cliente | Establecimiento | Localidad | Provincia | Pedidos | Importe de referencia (ARS) |
+| --- | --- | --- | --- | ---: | ---: |
+| C0012 | SUCATA S.A. | San Lorenzo | Santa Fe | 12 | 26.229.253.774,57 |
+| C0011 | SANTA BARBARA SA | Córdoba | Córdoba | 12 | 16.697.526.321,86 |
+| C0001 | ESTACION EL SURTIDOR S.R.L. | Rosario | Santa Fe | 12 | 12.936.900.987,89 |
+| C0006 | D.G.B. S.R.L. | Villa Dolores | Córdoba | 12 | 12.487.467.190,62 |
+| C0017 | MARIJO S.A. | Río Cuarto | Córdoba | 12 | 9.822.274.048,88 |
+
+Identifico a **SUCATA S.A.** como la cuenta de mayor importe de referencia, seguida por SANTA BARBARA SA. Los cinco establecimientos se ubican en Santa Fe y Córdoba: dos en la primera provincia y tres en la segunda. Este resultado describe las cuentas seleccionadas y no un ranking provincial del mercado.
+
+Los cinco clientes tienen doce pedidos porque esa frecuencia está fijada en el modelo. Interpreto las diferencias de importe a partir de las cantidades y los precios de los productos adquiridos, sin atribuirlas a una mayor frecuencia ni a fidelidad.
+
+Dentro de la simulación, utilizaría el ranking para priorizar el seguimiento comercial de estas cuentas y profundizar en su composición de compra. El importe por sí solo no permite identificar a los clientes más rentables: no dispongo de costos ni márgenes, y utilizo precios minoristas como referencia.
+
+### 4.2. Evolución mensual de las ventas simuladas
+
+Agrupo los pedidos por mes y calculo el importe total de referencia. Cuento pedidos y clientes distintos para contextualizar cada período.
+
+```sql
+SELECT
+    DATE_TRUNC('month', p.fecha)::date AS mes,
+    COUNT(DISTINCT p.id_pedido) AS cantidad_pedidos,
+    COUNT(DISTINCT p.id_cliente) AS cantidad_clientes,
+    ROUND(
+        SUM(d.cantidad * d.precio_unitario_ars),
+        2
+    ) AS ventas_referencia_ars
+FROM combustibles.pedidos AS p
+JOIN combustibles.detalle_pedido AS d
+    ON d.id_pedido = p.id_pedido
+WHERE p.estado = 'Concretado'
+GROUP BY DATE_TRUNC('month', p.fecha)::date
+ORDER BY mes;
+```
+
+La consulta está preparada; todavía no incorporo su resultado ni una interpretación de la evolución mensual. Analizaré los importes como pesos nominales, considerando conjuntamente cantidades, precios y composición por productos.
 
 ## 5. Límites de interpretación
 
