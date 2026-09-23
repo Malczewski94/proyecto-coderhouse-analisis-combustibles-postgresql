@@ -1,6 +1,6 @@
--- V2: mayorista ficticio, clientes con identidad real y precios minoristas de referencia.
--- Dataset híbrido. Ejecutar en una base capstone_project creada previamente.
--- Crea un esquema propio. Si ya existe con tablas, la carga se detiene: no borra datos.
+-- Crea y carga el esquema combustibles para el modelo de mayorista ficticio.
+-- Vincula establecimientos reales con cuentas cliente y pedidos mensuales simulados.
+-- La transacción agrupa la creación de tablas, la carga, la limpieza y las vistas.
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS combustibles;
 SET search_path TO combustibles;
@@ -2348,10 +2348,8 @@ INSERT INTO detalle_pedido_entrada (id_detalle,id_pedido,id_producto,id_fuente,c
 ('D0000462','V000198','P003','F122324',125570.00,1427.69,'simulado_con_referencia_minorista'),
 ('D0000851','V000155','P007','F222534',114290.00,1664.03,'simulado_con_referencia_minorista');
 
--- Limpieza anterior al análisis. Duplicados y nulos se introdujeron SOLO en esta
--- entrada sintética. Es válido recuperar el precio mensual porque el generador
--- lo asignó a todos los pedidos asociados al mismo id_fuente.
--- No convertir un precio desconocido en cero ni usar este supuesto en ventas reales.
+-- Elimina duplicados exactos de la entrada y recupera los precios nulos con COALESCE.
+-- Cada precio procede del registro fuente asociado, según el criterio de la simulación.
 INSERT INTO detalle_pedido
 SELECT DISTINCT e.id_detalle,e.id_pedido,e.id_producto,e.id_fuente,e.cantidad,
  COALESCE(e.precio_unitario_ars,f.precio_promedio_con_impuestos_ars),e.origen
@@ -2374,6 +2372,6 @@ FROM fuente_ventas f LEFT JOIN detalle_pedido d USING(id_fuente)
 GROUP BY f.id_fuente,f.unidad_venta,f.cantidad_venta,f.precio_promedio_con_impuestos_ars;
 COMMIT;
 
--- Debe devolver cero filas. El GNC se mantiene separado de los líquidos.
+-- Identifica registros con diferencias de cantidad o importe respecto de la fuente.
 SELECT * FROM combustibles.v_conciliacion
 WHERE diferencia_cantidad<>0 OR diferencia_importe_ars<>0;

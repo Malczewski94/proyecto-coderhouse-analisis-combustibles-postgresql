@@ -162,7 +162,88 @@ Obtengo **1.007 registros comprobados y 0 con diferencias**. Esto confirma que l
 
 Los totales del dataset son **93.213.130 litros de combustibles líquidos**, **8.638.800,20 m³ de GNC** y **141.717.574.607,79 ARS de referencia**. Mantengo separadas las dos unidades de volumen.
 
-Complemento estos controles con comprobaciones de fechas, pedidos mensuales, claves y relaciones. Los reportes técnicos de [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json) registran sus resultados. Las capturas de esta sección muestran los controles de conteos, limpieza y conciliación ejecutados en pgAdmin.
+### Validez y cobertura de las fechas
+
+Compruebo que los pedidos pertenezcan a 2025 y utilicen el primer día del mes como representación del período.
+
+```sql
+SELECT COUNT(*) FILTER (WHERE fecha IS NULL) AS fechas_nulas,
+       COUNT(*) FILTER (WHERE fecha < DATE '2025-01-01'
+           OR fecha >= DATE '2026-01-01' OR EXTRACT(DAY FROM fecha) <> 1) AS fechas_invalidas,
+       COUNT(DISTINCT fecha) AS meses
+FROM combustibles.pedidos;
+```
+
+![Validez y cobertura de las fechas: resultado en pgAdmin](imagenes/fechas.png)
+
+Obtengo 0 fechas nulas, 0 inválidas y 12 meses distintos.
+
+### Unicidad del pedido mensual
+
+Agrupo los pedidos por cliente y mes para detectar grupos cuya cantidad de pedidos difiera de uno.
+
+```sql
+SELECT id_cliente, DATE_TRUNC('month', fecha) AS mes, COUNT(*) AS pedidos
+FROM combustibles.pedidos
+GROUP BY id_cliente, DATE_TRUNC('month', fecha)
+HAVING COUNT(*) <> 1;
+```
+
+![Unicidad del pedido mensual: resultado en pgAdmin](imagenes/pedidos_por_mes.png)
+
+La consulta no devuelve filas: cada combinación de cliente y mes presente tiene un solo pedido.
+
+### Cobertura anual por cliente
+
+Cuento los pedidos de cada cliente mediante LEFT JOIN, incluyendo a quienes pudieran no tener pedidos.
+
+```sql
+SELECT c.id_cliente, COUNT(p.id_pedido) AS pedidos
+FROM combustibles.clientes c LEFT JOIN combustibles.pedidos p USING(id_cliente)
+GROUP BY c.id_cliente HAVING COUNT(p.id_pedido) <> 12;
+```
+
+![Cobertura anual por cliente: resultado en pgAdmin](imagenes/pedidos_por_cliente.png)
+
+La consulta no devuelve filas: todos los clientes tienen doce pedidos. Junto con los controles de fechas y unicidad, esto confirma un pedido por mes de 2025 para cada cliente.
+
+### Trazabilidad de las relaciones
+
+Relaciono detalles, pedidos, clientes y fuente para comprobar la correspondencia del establecimiento, período y producto.
+
+```sql
+SELECT COUNT(*) AS filas_unidas,
+       COUNT(*) FILTER (WHERE c.id_operador <> f.id_operador
+           OR p.fecha <> f.periodo OR d.id_producto <> f.id_producto) AS errores_trazabilidad
+FROM combustibles.detalle_pedido d
+JOIN combustibles.pedidos p USING(id_pedido)
+JOIN combustibles.clientes c USING(id_cliente)
+JOIN combustibles.fuente_ventas f USING(id_fuente);
+```
+
+![Trazabilidad de las relaciones: resultado en pgAdmin](imagenes/trazabilidad.png)
+
+Obtengo 1.007 filas unidas y 0 errores de trazabilidad. El JOIN conserva el número de detalles y las relaciones comprobadas coinciden con la fuente.
+
+### Tipos de datos
+
+Consulto el catálogo de columnas para comprobar los tipos definidos y la precisión numérica.
+
+```sql
+SELECT table_name, column_name, data_type, numeric_precision, numeric_scale
+FROM information_schema.columns
+WHERE table_schema = 'combustibles'
+  AND ((table_name = 'pedidos' AND column_name = 'fecha')
+    OR (table_name = 'fuente_ventas' AND column_name = 'periodo')
+    OR (table_name = 'detalle_pedido' AND column_name IN ('cantidad','precio_unitario_ars')))
+ORDER BY table_name, column_name;
+```
+
+![Tipos de datos: resultado en pgAdmin](imagenes/tipos_datos.png)
+
+Confirmo DATE en las fechas, NUMERIC(18,3) en la cantidad y NUMERIC(18,2) en el precio. Los valores NULL de precisión y escala en las fechas indican que esos atributos numéricos no corresponden al tipo DATE.
+
+Conservo también los reportes técnicos de [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json) como comprobaciones complementarias.
 
 ## 4. Análisis de negocio
 

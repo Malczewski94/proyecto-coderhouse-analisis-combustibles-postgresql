@@ -1,10 +1,8 @@
--- Modelo V2: mayorista ficticio; establecimientos reales como clientes.
--- Primera pregunta: ¿qué cinco establecimientos acumulan mayor importe de referencia?
--- Precio minorista mensual con impuestos: no representa gasto mayorista observado.
--- COUNT DISTINCT evita contar las líneas de producto como pedidos separados.
--- Cada cliente tiene 12 pedidos por diseño: esa frecuencia no demuestra fidelidad.
--- Se incluyen solo pedidos concretados, estado supuesto para esta simulación.
--- Pendiente: ejecución/captura V2 en pgAdmin e interpretación conjunta.
+-- Identifica los cinco establecimientos con mayor importe de referencia acumulado.
+-- Agrupa por cliente y ubicación, suma cantidad por precio y ordena de mayor a menor.
+-- COUNT DISTINCT cuenta cada pedido una sola vez aunque incluya varios productos.
+-- Filtra pedidos concretados y utiliza precios minoristas mensuales con impuestos.
+-- La frecuencia mensual es un supuesto del modelo; no mide fidelidad comercial.
 SELECT
     c.id_cliente,
     c.nombre,

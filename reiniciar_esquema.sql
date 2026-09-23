@@ -1,7 +1,6 @@
--- Reinicio autorizado del proyecto: carga desde cero, sin esquema de respaldo.
--- Ejecutar en pgAdmin conectado a capstone_project ANTES de estructura.sql.
--- Elimina todos los objetos de los dos esquemas indicados mediante CASCADE.
--- No elimina la base ni otros esquemas. Después ejecutar estructura.sql completo.
+-- Comprueba que la conexión corresponde a capstone_project.
+-- Elimina los esquemas combustibles y combustibles_v1 y sus objetos dependientes con CASCADE.
+-- La transacción agrupa la comprobación de la base y la eliminación de ambos esquemas.
 BEGIN;
 DO $$
 BEGIN

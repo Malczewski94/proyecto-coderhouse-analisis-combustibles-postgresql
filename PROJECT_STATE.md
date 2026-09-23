@@ -18,7 +18,7 @@ Cada captura debe estar acompañada por la consulta SQL que produce su resultado
 
 La sección de reemplazo de la carga se retiró del README. Para una reconstrucción expresamente solicitada: reiniciar_esquema.sql comprueba capstone_project y elimina combustibles y combustibles_v1 con sus objetos; luego estructura.sql reconstruye el modelo. Esta ruta es destructiva y no corresponde ejecutarla ahora, porque la carga ya fue comprobada.
 
-La revisión editorial no ejecuta nuevas validaciones ni completa análisis pendientes.
+Los comentarios de todos los .sql deben describir la finalidad y el funcionamiento del bloque, sin instrucciones al lector, pendientes ni resultados esperados. Mantener sincronizados los comentarios SQL de datos/generar_dataset.py. Los resultados observados se documentan en el README junto a la consulta y captura.
 
 ## 2. Decisión central aprobada y alcance
 
@@ -96,7 +96,7 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | Paso del pipeline | Estado V2 |
 | --- | --- |
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
-| 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos locales confirmados mediante captura (23/09/2026) |
+| 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos, fechas, pedidos mensuales, trazabilidad y tipos confirmados mediante capturas locales (23/09/2026) |
 | 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
 | 4. Análisis | Primera consulta adaptada; prueba técnica exitosa; resultado e interpretación con usuario pendientes |
 | 5. Hallazgos | Pendientes de revisión conjunta |
@@ -133,17 +133,20 @@ Las secciones 1–6 de la actividad son orientación, pipeline, ejemplos, contro
 
 Para cada consulta: pregunta y métrica → explicación y ejecución del usuario → control del resultado → interpretación conjunta y límites → SQL/README/evidencia/estado en GitHub. No añadir análisis futuros para adelantarse al aprendizaje.
 
-## 8. Siguiente tarea concreta
+## 8. Estado de las evidencias y siguiente tarea
 
-El 23/09/2026 el usuario aportó tres capturas de pgAdmin, publicadas en `imagenes/`:
-- `conteos_tablas.png`: siete conteos coincidentes con el modelo.
-- `limpieza.png`: entrada 1.010 filas / 3 repeticiones / 8 precios nulos; salida 1.007 / 0 / 0.
-- `conciliacion.png`: 1.007 registros comprobados / 0 diferencias.
+Los ocho controles de validaciones.sql están confirmados mediante capturas del usuario en pgAdmin y publicados en imagenes/, con consulta e interpretación en el README:
+- Conteos: 18 operadores, 7 productos, 18 clientes, 216 pedidos, 1.007 detalles, 1.007 fuentes y 1.010 entradas.
+- Limpieza: entrada 1.010 / 3 repeticiones / 8 precios nulos; salida 1.007 / 0 / 0.
+- Conciliación: 1.007 registros, 0 diferencias.
+- Fechas: 0 nulas, 0 inválidas, 12 meses.
+- Pedidos por cliente/mes: consulta de anomalías sin filas.
+- Doce pedidos por cliente: consulta de anomalías sin filas.
+- Trazabilidad: 1.007 filas unidas, 0 errores.
+- Tipos: DATE para período y fecha; NUMERIC(18,3) para cantidad y NUMERIC(18,2) para precio.
 
-Son resultados observados en imágenes, no una conexión directa a su servidor. El nombre `capstone_project` está confirmado por el usuario, aunque no aparece en los recortes. No solicitar otra carga ni volver a ejecutar el reinicio.
+Las imágenes muestran resultados de la ejecución del usuario; no hay conexión directa al servidor. La base capstone_project ya está confirmada. No repetir carga ni reinicio.
 
-1. Completar los bloques restantes de `validaciones.sql`: fechas (0 nulas/invalidas, 12 meses), un pedido mensual y doce pedidos por cliente (ambas consultas sin filas), trazabilidad (1.007 filas, 0 errores) y tipos DATE/NUMERIC.
-2. Registrar los resultados locales confirmados sin atribuirles los resultados de las pruebas técnicas.
-3. Retomar el top 5 de `analisis.sql`, revisar el resultado e interpretación con el usuario y documentarlos antes de avanzar a otra consulta.
+Siguiente tarea: retomar el top 5 de analisis.sql, explicar la consulta, revisar el resultado e interpretación con el usuario y documentarlos antes de desarrollar otra consulta. Análisis y conclusiones de negocio siguen pendientes.
 
-No dar por terminados análisis, conclusiones ni reproducción final. Mantener las evidencias actuales y no fabricar capturas.
+Esta actualización modifica comentarios SQL y documentación; no cambia sentencias ejecutables ni datos. Los comentarios del generador se actualizan para preservar la coherencia al regenerar estructura.sql.
