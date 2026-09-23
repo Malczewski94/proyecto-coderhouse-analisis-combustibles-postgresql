@@ -1,6 +1,6 @@
 # Estado del proyecto y guía de continuidad
 
-Última actualización: 2026-09-21. Versión vigente del modelo: **V2**.
+Última actualización: 2026-09-23. Versión vigente del modelo: **V2**.
 Repositorio: https://github.com/Malczewski94/proyecto-coderhouse-analisis-combustibles-postgresql
 Rama publicada: main.
 
@@ -65,7 +65,7 @@ Total: 100 puntos. Aprobación: 70 puntos. No confundir esta entrega con el proy
 
 ## 4. Modelo vigente
 
-Base requerida: capstone_project. Esquema V2: combustibles. Una cuenta por establecimiento, no por CUIT consolidado.
+Base confirmada por el usuario: capstone_project. Esquema vigente: combustibles. Una cuenta por establecimiento, no por CUIT consolidado.
 
 | Tabla | Filas | Función |
 | --- | ---: | --- |
@@ -93,20 +93,20 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 
 Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
 
-Python Decimal comprueba claves, doce meses, limpieza y conservación exacta de volúmenes/importes. PGlite 0.5.8 (PostgreSQL 18.3) ejecutó estructura.sql, validaciones.sql y primera consulta, comprobó 1.007 fuentes sin diferencias, fechas/tipos, JOIN sin multiplicación y restricciones mensuales. También comprobó migración V1→V2, preservación de 432 clientes antiguos y rechazo de migración repetida. Reportes en datos/validacion.json y datos/validacion_postgresql.json. No equivalen a ejecución en pgAdmin del usuario.
+Python Decimal comprueba claves, doce meses, limpieza y conservación exacta de volúmenes/importes. PGlite 0.5.8 (PostgreSQL 18.3) ejecutó estructura.sql, validaciones.sql y primera consulta, comprobó 1.007 fuentes sin diferencias, fechas/tipos, JOIN sin multiplicación y restricciones mensuales. Reportes en datos/validacion.json y datos/validacion_postgresql.json. No equivalen a ejecución en pgAdmin del usuario.
 
 ## 6. Archivos modificados y evidencias
 
 - estructura.sql y datos/generar_dataset.py: modelo V2 determinista, sin reparto aleatorio ni semilla.
 - CSV derivados, incidencias, conciliacion, resumen, hashes y validaciones: regenerados V2.
 - fuente_original.csv, fuente_ventas.csv, operadores.csv, productos.csv y auxiliares de selección conservan la fuente original.
-- migrar_v1.sql: renombra combustibles a combustibles_v1 sin borrar datos, con guardas.
+- reiniciar_esquema.sql: comprueba capstone_project y elimina los esquemas del proyecto antes de la carga desde cero.
 - validaciones.sql: mantiene conteos/limpieza/conciliación y agrega fechas, pedidos mensuales, JOIN y tipos.
 - analisis.sql: top 5 con nombres reales, localidad, provincia, cantidad_pedidos y gasto_referencia_ars.
 - README y diccionario: actualizados; README incluye relaciones mediante Mermaid.
-- historico/v1/: capturas y validación PostgreSQL anterior, claramente excluidas como evidencia V2.
+- Capturas de conteos, limpieza y conciliación: retiradas las antiguas; pendientes las nuevas en imagenes/.
 
-V1 completa se conserva en el historial, commit d81d873cd2004164bb0cdb330f045efe1a54add9. No eliminar el respaldo local del usuario. El top 5 antiguo con C0265 y demás clientes ficticios es obsoleto y no debe interpretarse ni documentarse como V2.
+El usuario indicó «borrón y cuenta nueva»: no conservar carpetas históricas, capturas anteriores ni esquemas de respaldo. Se retiran esos archivos y la ruta de migración de la entrega vigente. Los commits normales de Git no se reescriben. La carga del modelo en el PostgreSQL del usuario sigue pendiente de evidencia.
 
 La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/2026. La actualización del modelo y sus archivos fue autorizada explícitamente en esta conversación.
 
@@ -125,11 +125,12 @@ Para cada consulta: pregunta y métrica → explicación y ejecución del usuari
 
 ## 8. Siguiente tarea concreta
 
-Guiar la actualización en pgAdmin antes de retomar análisis:
+La base `capstone_project` ya fue confirmada; no volver a preguntarlo. El modelo mayorista ya está en SQL, CSV y generador. La limpieza documental y de archivos completa la última petición del chat anterior.
 
-1. Pedir resultado de SELECT current_database(); el nombre local aún no está confirmado.
-2. En la base que contiene V1, ejecutar migrar_v1.sql una sola vez; conserva el esquema antiguo. Luego estructura.sql V2 completo. En base nueva vacía solo estructura.sql.
-3. Ejecutar validaciones.sql por bloques y pedir capturas V2: conteos generales, limpieza y conciliación. Confirmar también fechas (0 nulas/invalidas, 12 meses) y trazabilidad (1.007 filas, 0 errores).
-4. Incorporar las nuevas evidencias, cerrar los pendientes locales y retomar el top 5 V2.
+1. Guiar al usuario en pgAdmin, conectado a `capstone_project`: ejecutar `reiniciar_esquema.sql` y luego `estructura.sql` completo. El reinicio elimina `combustibles` y `combustibles_v1` sin respaldo, según su decisión.
+2. Ejecutar `validaciones.sql` por bloques. Pedir nuevas capturas de conteos, limpieza y conciliación, con los resultados esperados del README.
+3. Comprobar también fechas (0 nulas/invalidas, 12 meses), pedidos mensuales y trazabilidad (1.007 filas, 0 errores).
+4. Incorporar las tres imágenes a `imagenes/`, enlazarlas en las secciones 2 y 3 del README y cerrar los pendientes de evidencia.
+5. Retomar el top 5, revisar su resultado con el usuario y documentar su interpretación antes de avanzar a otra consulta.
 
-No pedir de nuevo autorización para estas modificaciones: ya fue concedida. Si una carga falla, conservar el respaldo y diagnosticar sin borrar esquemas. No presentar la entrega completa hasta revisar análisis, conclusiones y reproducción final.
+No fabricar ni reutilizar capturas de una carga distinta. No dar por ejecutado el reinicio ni la carga en la computadora del usuario. Si hay un error, revisar el mensaje y el estado real antes de repetir scripts. No presentar la entrega completa hasta revisar análisis, conclusiones y reproducción final.

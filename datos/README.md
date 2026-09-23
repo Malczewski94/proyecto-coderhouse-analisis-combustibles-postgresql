@@ -92,13 +92,13 @@ La conciliación compara cada uno de los 1.007 registros con su detalle y debe d
 - `sha256_csv.json`: huellas de todos los CSV.
 - `validacion_postgresql.json`: prueba técnica V2 separada, realizada con PGlite 0.5.8 / PostgreSQL 18.3.
 - `../estructura.sql`: DDL, INSERT, limpieza y vistas V2.
-- `../migrar_v1.sql`: conserva el esquema anterior como combustibles_v1 antes de la carga nueva.
+- `../reiniciar_esquema.sql`: elimina los esquemas del proyecto en capstone_project antes de una carga desde cero.
 
 CSV en UTF-8, separados por coma, punto decimal y encabezado. Los campos vacíos corresponden a valores ausentes; no convertir automáticamente identificadores, fechas o decimales al abrirlos en Excel.
 
 Desde la raíz: `python3 datos/generar_dataset.py` (Python 3.10+, biblioteca estándar). Regenera tablas, SQL y controles Python; no descarga datos ni repite la extracción/selección desde Access. El reporte PostgreSQL debe verificarse por separado si cambia el generador.
 
-Las instrucciones de carga y migración están en el [README principal](../README.md). Las capturas V2 de pgAdmin están pendientes; [historico/v1](../historico/v1/README.md) conserva las anteriores. El dataset está publicado con autorización del usuario para incluir nombres y CUIT de la fuente pública (21/09/2026).
+Las instrucciones de carga desde cero están en el [README principal](../README.md). Las nuevas capturas de pgAdmin (conteos, limpieza y conciliación) están pendientes. No se conservan evidencias del enfoque descartado. El dataset está publicado con autorización del usuario para incluir nombres y CUIT de la fuente pública (21/09/2026).
 
 ## Alcance de la entrega
 

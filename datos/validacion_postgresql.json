@@ -84,7 +84,5 @@
   ],
   "top_5_consulta_ejecutable": true,
   "restricciones_pedido_mensual_verificadas": true,
-  "migracion_preserva_v1": true,
-  "migracion_repetida_rechazada": true,
-  "alcance": "Validación técnica V2. Pendiente ejecución y capturas en pgAdmin del usuario; interpretación de negocio pendiente."
+  "alcance": "Resultados técnicos existentes de la carga del modelo mayorista. No valida reiniciar_esquema.sql. Pendiente ejecución y nuevas capturas en pgAdmin del usuario; interpretación de negocio pendiente."
 }

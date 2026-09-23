@@ -1,10 +1,10 @@
 # Análisis de combustibles con PostgreSQL
 
-Proyecto final Coderhouse. **Versión 2: mayorista ficticio que abastece a establecimientos reales.** El Gobierno publica los datos utilizados; no participa como vendedor en el caso.
+Proyecto final Coderhouse. **Mayorista ficticio que abastece a establecimientos reales.** El Gobierno publica los datos utilizados; no participa como vendedor en el caso.
 
 Los establecimientos seleccionados son nuestros clientes dentro de la simulación. Sus identidades, productos, volúmenes mensuales y precios proceden de datos públicos. Su relación con nuestro mayorista, los pedidos y el estado `Concretado` son supuestos educativos. Los precios originales se conservan como **referencias minoristas con impuestos**, no como precios mayoristas observados.
 
-Estado: modelo V2 preparado y verificado técnicamente. Pendientes carga/capturas V2 en el PostgreSQL del usuario y análisis de negocio conjunto. Las capturas V1 se conservan como antecedentes en [historico/v1](historico/v1/README.md).
+Estado: modelo preparado y verificado técnicamente. Pendientes carga desde cero y nuevas capturas en el PostgreSQL del usuario, y análisis de negocio conjunto. No se conservan carpetas ni evidencias del enfoque descartado.
 
 ## 1. Definición del problema
 
@@ -45,7 +45,7 @@ Líquidos: volumen original en m³ × 1.000 = litros; precio en ARS/L. GNC: m³ 
 
 Base requerida: `capstone_project`. Esquema actual: `combustibles`.
 
-| Tabla | Función V2 | Filas |
+| Tabla | Función | Filas |
 | --- | --- | ---: |
 | operadores | Identidad original de cada establecimiento | 18 |
 | clientes | Cuentas del mayorista, una por establecimiento | 18 |
@@ -77,28 +77,37 @@ erDiagram
 
 Con psql, desde la raíz del repositorio y con una base vacía creada: `psql -d capstone_project -v ON_ERROR_STOP=1 -f estructura.sql`.
 
-### Si ya está cargada la versión anterior
+### Reemplazo de la carga existente
 
-Primero ejecutar `SELECT current_database();` en el Query Tool para confirmar la base. En la base que contiene V1:
+La base del usuario ya está confirmada: `capstone_project`. Se acordó reemplazar el enfoque anterior desde cero, sin conservar un esquema de respaldo.
 
-1. Ejecutar [migrar_v1.sql](migrar_v1.sql) una sola vez. Renombra el esquema existente a `combustibles_v1` y conserva sus datos, tablas y vistas. No sobrescribe un respaldo ni acepta un esquema que no reconozca como V1.
-2. Ejecutar el nuevo `estructura.sql` completo para crear `combustibles` V2.
-3. Ejecutar `validaciones.sql` sobre V2. No volver a ejecutar `migrar_v1.sql` si el respaldo ya existe. Si la nueva carga falla, el respaldo permanece y debe revisarse el error antes de repetir la carga.
+1. Conectarse a `capstone_project` en pgAdmin.
+2. Ejecutar [reiniciar_esquema.sql](reiniciar_esquema.sql). El script comprueba el nombre de la base y elimina únicamente los esquemas del proyecto `combustibles` y `combustibles_v1`, con sus objetos. No elimina la base ni otros esquemas.
+3. Ejecutar completo `estructura.sql` para cargar el modelo actual.
+4. Ejecutar `validaciones.sql` por bloques y obtener las nuevas capturas.
 
-No ejecutar `estructura.sql` V2 directamente sobre las tablas V1 ni repetirlo sobre V2 ya cargada. No se elimina ningún esquema automáticamente. Si la base local tiene otro nombre, conservarla y acordar cómo ajustar la entrega a `capstone_project`.
+El reinicio elimina los datos existentes en esos esquemas. No ejecutarlo después de la carga nueva salvo que se quiera repetirla desde cero. `estructura.sql` por sí solo no borra una carga existente.
 
-### Evidencia pendiente
+### Evidencia pendiente de reemplazo
 
-La captura conjunta de conteos V2 debe mostrar los siete valores de la tabla anterior. Las capturas V1 documentan otra versión y no se presentan como prueba de esta carga. El nombre de la base local sigue pendiente de confirmación.
+Las imágenes del enfoque descartado se retiraron. Las nuevas deben salir de la ejecución real del usuario en pgAdmin; no se fabrican capturas.
+
+| Paso | Nueva imagen prevista | Resultado esperado |
+| --- | --- | --- |
+| 2. Preparación y carga | `imagenes/conteos_tablas.png` | Los siete conteos de la tabla anterior |
+| 3. Limpieza | `imagenes/limpieza.png` | Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos; salida: 1.007, 0 y 0 |
+| 3. Conciliación | `imagenes/conciliacion.png` | 1.007 registros comprobados y 0 con diferencias |
+
+Estos nombres son destinos previstos; las imágenes todavía no están incorporadas. También verificar fechas, pedidos mensuales, trazabilidad y tipos con los demás bloques de `validaciones.sql`. Si una captura muestra el nombre de la base, debe ser `capstone_project`.
 
 ## 3. Limpieza y transformación
 
-Las incidencias se introducen exclusivamente en `detalle_pedido_entrada`, no en la fuente real: 8 precios nulos y 3 duplicados exactos. En V2 ninguno de los duplicados repite un precio nulo.
+Las incidencias se introducen exclusivamente en `detalle_pedido_entrada`, no en la fuente real: 8 precios nulos y 3 duplicados exactos. En la entrada ninguno de los duplicados repite un precio nulo.
 
 | Etapa | Filas | Repeticiones de identificador | Precios nulos |
 | --- | ---: | ---: | ---: |
-| Entrada V2 | 1.010 | 3 | 8 |
-| Detalle limpio V2 | 1.007 | 0 | 0 |
+| Entrada actual | 1.010 | 3 | 8 |
+| Detalle limpio actual | 1.007 | 0 | 0 |
 
 La carga aplica:
 
@@ -123,13 +132,13 @@ Los períodos de origen están completos. No se inventan nulos de fecha: se tran
 
 `validaciones.sql` comprueba además un pedido por cliente/mes, doce pedidos por cliente, tipos de datos y 1.007 filas después de los JOIN, con cero inconsistencias de establecimiento, producto y período. Esto controla la multiplicación accidental de filas.
 
-Validaciones técnicas V2: [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json). La prueba técnica incluye carga nueva y migración preservando V1. No sustituye las nuevas capturas del usuario en pgAdmin, todavía pendientes.
+Validaciones técnicas del modelo: [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json). El reporte conserva los resultados técnicos de la carga del modelo actual. No sustituye las nuevas capturas del usuario en pgAdmin, todavía pendientes.
 
 ## 4. Análisis — en desarrollo
 
 `analisis.sql` contiene la primera consulta adaptada a clientes con identidad real. Devuelve identificador, nombre, localidad, provincia, doce pedidos y gasto de referencia. La cantidad de pedidos es constante por diseño; la diferencia entre clientes procede de cantidades y precios/productos de referencia.
 
-El antiguo resultado con nombres «Cliente ficticio» quedó invalidado por el cambio de modelo. Falta ejecutar/revisar el resultado V2 con el usuario y desarrollar las otras cinco consultas de forma gradual. La verificación técnica no se presenta como análisis de negocio completado.
+Falta ejecutar/revisar el resultado actual con el usuario y desarrollar las otras cinco consultas de forma gradual. La verificación técnica no se presenta como análisis de negocio completado.
 
 Para cada consulta se documentarán pregunta, métrica, filtros, resultado, interpretación, limitación y evidencia.
 
@@ -139,8 +148,8 @@ Al revisar cada consulta se incorporará su interpretación. Al finalizar se sin
 
 ## Archivos y reproducción
 
-- `estructura.sql`: definición, carga, limpieza y vistas V2.
-- `migrar_v1.sql`: conservación del esquema anterior antes de cargar V2.
+- `estructura.sql`: definición, carga, limpieza y vistas del modelo actual.
+- `reiniciar_esquema.sql`: reinicio de los esquemas del proyecto en `capstone_project` para una carga desde cero.
 - `validaciones.sql`: conteos, limpieza, conciliación, fechas y relaciones.
 - `analisis.sql`: primera consulta; desarrollo gradual de las restantes.
 - [datos/README.md](datos/README.md): selección y metodología.
@@ -148,7 +157,6 @@ Al revisar cada consulta se incorporará su interpretación. Al finalizar se sin
 - `datos/generar_dataset.py`: regeneración determinista con Python 3.10+, sin dependencias externas.
 - `datos/sha256_csv.json`: huellas de integridad de todos los CSV.
 - [PROJECT_STATE.md](PROJECT_STATE.md): decisiones y continuidad.
-- `historico/v1/`: evidencias anteriores, excluidas de la validación V2.
 
 Ejecutar desde la raíz `python3 datos/generar_dataset.py`. Usa `datos/fuente_original.csv` y reemplaza derivados y `estructura.sql`. No descarga novedades ni repite la selección desde Access. La validación PostgreSQL se ejecuta por separado; no la genera Python.
 
