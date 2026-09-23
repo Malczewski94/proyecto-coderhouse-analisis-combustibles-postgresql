@@ -542,7 +542,20 @@ Utilizaría esta métrica para seguir los precios de referencia por producto y c
 
 
 
-## 5. Conclusiones de negocio
+## 5. Glosario aplicado al proyecto
+
+Utilizo estos conceptos en la preparación, limpieza y análisis de la base. Reúno sus definiciones y aplicaciones para facilitar la lectura del modelo y de las consultas.
+
+| Concepto | Significado | Aplicación en el proyecto |
+| --- | --- | --- |
+| **Schema (esquema)** | Espacio de nombres que agrupa tablas, vistas y otros objetos dentro de una base de datos. | Organizo los objetos en `combustibles`, dentro de la base `capstone_project`. Uso nombres como `combustibles.pedidos` para identificar la tabla y su esquema. |
+| **Query (consulta)** | Sentencia SQL con la que solicito o proceso información de la base. | Respondo seis preguntas de negocio mediante las consultas de [analisis.sql](analisis.sql), acompañadas de resultados e interpretación en el [apartado 4](#4-análisis-de-negocio). |
+| **CTE (Common Table Expression)** | Resultado con nombre definido mediante `WITH`, cuyo alcance es la sentencia que lo utiliza. No crea una tabla temporal independiente. | En el ranking separo el cálculo en `importes_por_categoria` y `ranking`. En la concentración utilizo `gasto_por_cliente` y `clientes_ordenados`. Esta separación permite revisar cada etapa del cálculo. |
+| **ER Diagram (diagrama entidad-relación)** | Representación de las entidades y sus relaciones, que ayuda a comprender las claves y cardinalidades del modelo. | Presento el diagrama en el [apartado 2](#2-preparación-y-estructura-de-la-base): relaciono operadores, clientes, pedidos, productos, detalles y registros fuente. |
+
+Aplico el esquema para organizar los objetos, las consultas para responder preguntas y las CTE para descomponer cálculos complejos. Con el diagrama hago visible cómo conecto los datos y cómo puedo rastrear un detalle de pedido hasta su registro fuente.
+
+## 6. Conclusiones y próximos pasos
 
 Identifico una cartera cuyo importe de referencia se concentra en pocas cuentas: los cinco principales clientes reúnen el **55,16 %** del total anual, y SUCATA S.A. encabeza el ranking. Priorizaría el seguimiento de estas cuentas y analizaría oportunidades para diversificar la cartera, sin equiparar su importe con rentabilidad.
 
@@ -552,11 +565,17 @@ Identifico kerosene, nafta común y nafta premium como los líquidos de menor vo
 
 Concluyo que el modelo permite describir concentración, composición y evolución de una cartera simulada mediante consultas reproducibles. Para convertir estos hallazgos en decisiones comerciales reales, necesitaría precios de venta mayoristas, costos, inventarios y condiciones de los clientes.
 
-## 6. Límites de interpretación
+### 6.1. Límites de interpretación
 
 Delimito las conclusiones a los establecimientos seleccionados y al período 2025. Considero el efecto conjunto de cantidades, precios y composición por productos al interpretar los importes.
 
 No extrapolo la muestra al país ni interpreto una variación nominal como crecimiento real ajustado por inflación. Tampoco calculo rentabilidad, porque no dispongo de costos de compra del mayorista.
+
+### 6.2. Próximos pasos
+
+Para ampliar el análisis, incorporaría costos y precios mayoristas reales para evaluar márgenes, e inventarios para contrastar el supuesto que equipara compras con ventas al público. También descompondría la variación del importe entre precios, volúmenes y composición, y ampliaría el período observado para estudiar patrones que un único año no permite establecer.
+
+Estas ampliaciones requieren información adicional y no forman parte de los resultados obtenidos en este proyecto.
 
 ## Archivos y reproducción
 

@@ -34,6 +34,23 @@ Se conserva la muestra de 2025: tres establecimientos en cada una de Buenos Aire
 
 Se leyó el material guardado como “Markdown.md pegado” y se contrastó el entregable y la rúbrica con “program-summary (1).pdf”, páginas 248–250. Este apartado es una síntesis fiel para continuidad, no una transcripción íntegra. El material original no está incorporado al repositorio.
 
+### Numeración y criterios de la actividad
+
+El 23/09/2026 el usuario volvió a proporcionar el texto completo de la actividad. Distinguir sus seis apartados generales (conversación con datos; pipeline; casos de industria; errores a evitar; glosario; conclusión) de los cinco pasos del pipeline incluidos dentro del apartado 2. No confundir ninguno con la numeración editorial del README.
+
+Por pedido del usuario, el README incorpora un apartado 5 de glosario aplicado que señala dónde se utilizan Schema, Query, CTE y ERD, y ubica las conclusiones y próximos pasos en el apartado 6. Los apartados 1–4 del README conservan la organización del proyecto (problema, preparación, limpieza y análisis); no son una transcripción de los títulos didácticos de la actividad. Los límites de interpretación quedan en 6.1 y las ampliaciones futuras en 6.2.
+
+Criterios explícitos del texto recibido para la revisión final:
+- Al menos cinco preguntas de negocio: hay seis documentadas.
+- README con contexto, hallazgos interpretados y reproducción.
+- SQL de creación e inserciones o instrucciones de carga, y SQL de análisis comentado.
+- JOIN entre al menos dos tablas; GROUP BY y una función avanzada (ventana o CASE).
+- Limpieza previa al análisis, con tratamiento justificado de nulos y control de filas en JOIN.
+- Comentarios que expliquen por qué se toman las decisiones.
+- Scripts sin errores de sintaxis y ejecutables en PostgreSQL: distinguir las pruebas técnicas previas de la ejecución local documentada; no declarar una nueva prueba integral sin realizarla.
+
+El glosario es apoyo conceptual y queda explícito en README por solicitud editorial. Los casos de industria son ejemplos de inspiración, no exigencias de reproducir esas tecnologías. El texto pegado no aporta nuevos porcentajes de evaluación: conservar la rúbrica previamente recuperada hasta contrastar las instrucciones detalladas del entregable. No inventar puntajes ni declarar finalizada la revisión integral.
+
 ### Pipeline del módulo
 
 1. Definición del problema y preguntas de negocio.
