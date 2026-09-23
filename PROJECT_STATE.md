@@ -38,7 +38,7 @@ Se leyó el material guardado como “Markdown.md pegado” y se contrastó el e
 
 El 23/09/2026 el usuario volvió a proporcionar el texto completo de la actividad. Distinguir sus seis apartados generales (conversación con datos; pipeline; casos de industria; errores a evitar; glosario; conclusión) de los cinco pasos del pipeline incluidos dentro del apartado 2. No confundir ninguno con la numeración editorial del README.
 
-Por pedido del usuario, el README incorpora un apartado 5 de glosario aplicado que señala dónde se utilizan Schema, Query, CTE y ERD, y ubica las conclusiones y próximos pasos en el apartado 6. Los apartados 1–4 del README conservan la organización del proyecto (problema, preparación, limpieza y análisis); no son una transcripción de los títulos didácticos de la actividad. Los límites de interpretación quedan en 6.1 y las ampliaciones futuras en 6.2.
+El README ahora sigue los seis apartados generales de la actividad: 1 contexto del análisis; 2 pipeline con 2.1 problema, 2.2 preparación/carga, 2.3 limpieza, 2.4 análisis y 2.5 comunicación; 3 aplicación al contexto de negocio (los casos de industria son orientación); 4 controles con cuatro subapartados; 5 glosario; 6 conclusiones. Las seis consultas se numeran 2.4.1–2.4.6. Incluye índice y enlaces internos corregidos. No volver a mezclar la numeración principal con la del pipeline.
 
 Criterios explícitos del texto recibido para la revisión final:
 - Al menos cinco preguntas de negocio: hay seis documentadas.
@@ -195,3 +195,9 @@ Las seis consultas y las conclusiones globales están documentadas. La revisión
 ## Revisión de comentarios SQL
 
 Se revisaron analisis.sql, validaciones.sql, estructura.sql y reiniciar_esquema.sql para explicar decisiones junto al código: unidades comparables, granularidad mensual, conteos sin duplicar, empates, denominadores, ponderación y recuperación del precio fuente. Se sincronizaron las consultas equivalentes del README y los comentarios emitidos por datos/generar_dataset.py. Se comprobó que los cuatro scripts mantienen el mismo SQL ejecutable al excluir comentarios y espacios. No requiere nueva carga ni nuevas capturas. Esta revisión puntual no sustituye la revisión integral pendiente.
+
+## Revisión de correspondencia con la actividad
+
+A solicitud del usuario, se corrigió la jerarquía del README y se preparó un checklist punto por punto. Se explicitó la comunicación en 2.5 y los controles en 4.1–4.4, incluido el criterio de no agregar índices sin evidencia de necesidad. Se verificó que estructura.sql no contiene CREATE INDEX adicional. El apartado 3 contextualiza el caso propio sin atribuirle análisis de canastas, PostGIS o JSON no realizados. Se conservaron los 15 bloques SQL del README y se comprobaron sus enlaces internos. Las conclusiones del apartado 6 se conservaron sin revisarlas en esta tarea.
+
+Esta es una revisión de cobertura documental y estructura, no una nueva ejecución integral del SQL ni una inspección visual de todas las capturas. Pendientes: revisión final de legibilidad (nombres truncados), prueba integral de reproducción si se exige el cierre técnico y revisión conjunta del apartado 6. El requisito de ejecutabilidad tiene evidencias previas; no marcarlo como nuevamente probado durante este checklist.

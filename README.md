@@ -4,7 +4,23 @@ Desarrollo este proyecto final de Coderhouse para analizar una cartera de client
 
 Trabajo con 18 establecimientos de seis provincias, siete productos y los doce meses de 2025. Cada establecimiento representa un cliente del mayorista y tiene un pedido mensual. Distingo los datos de origen de los supuestos comerciales para que los resultados puedan interpretarse dentro del alcance del ejercicio.
 
-## 1. Problema de negocio y alcance
+## Índice
+
+- [1. El análisis de datos como una conversación](#1-el-análisis-de-datos-como-una-conversación)
+- [2. Flujo de trabajo del proyecto](#2-flujo-de-trabajo-del-proyecto): [2.1 Problema](#21-definición-del-problema), [2.2 Preparación](#22-preparación-y-carga), [2.3 Limpieza](#23-limpieza-y-transformación), [2.4 Análisis](#24-análisis-y-extracción-de-hallazgos) y [2.5 Comunicación](#25-comunicación-de-hallazgos).
+- [3. Aplicación al contexto de negocio](#3-aplicación-al-contexto-de-negocio)
+- [4. Controles para evitar errores de análisis](#4-controles-para-evitar-errores-de-análisis)
+- [5. Glosario aplicado al proyecto](#5-glosario-aplicado-al-proyecto)
+- [6. Conclusiones y próximos pasos](#6-conclusiones-y-próximos-pasos)
+- [Archivos y reproducción](#archivos-y-reproducción)
+
+## 1. El análisis de datos como una conversación
+
+Utilizo PostgreSQL para transformar preguntas sobre una cartera comercial en resultados comprobables. Relaciono clientes, pedidos y productos, resumo importes y volúmenes y comparo operaciones mediante funciones de ventana. Vinculo cada resultado con una interpretación de negocio y explicito los límites de la simulación.
+
+## 2. Flujo de trabajo del proyecto
+
+### 2.1. Definición del problema
 
 Mi objetivo es identificar las cuentas con mayor peso comercial y comprender cómo se distribuyen los volúmenes y los importes de referencia. Planteo estas preguntas:
 
@@ -17,7 +33,7 @@ Mi objetivo es identificar las cuentas con mayor peso comercial y comprender có
 | ¿Qué porcentaje del importe concentran los cinco principales clientes? | Importe del top 5 / importe total × 100. |
 | ¿Cómo evoluciona el precio ponderado de cada producto? | `SUM(cantidad * precio) / SUM(cantidad)`, por producto y mes. |
 
-### Fuente de datos
+#### Fuente de datos
 
 Utilizo el conjunto público [Precios y volúmenes EESS, Resolución 1104/04](https://datos.gob.ar/ar/dataset/energia-precios-volumenes-eess---resolucion-110404), a partir del archivo `precios_eess_2025_en_adelante.accdb` y su tabla `public_vi_access_eess_2025_en_adelante`.
 
@@ -25,7 +41,7 @@ Selecciono registros del canal **Al público**, que describen ventas de estacion
 
 Mi muestra incluye tres establecimientos de cada provincia: Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe. Conservo 1.013 filas originales para mantener la trazabilidad y utilizo 1.007, tras excluir seis correspondientes a otros canales. La selección es intencional y no representa todo el mercado argentino.
 
-### Supuestos del modelo
+#### Supuestos del modelo
 
 - Identifico cada cuenta cliente por establecimiento. Un mismo CUIT puede corresponder a más de una ubicación.
 - Genero un pedido por cliente y mes. Represento el período con el primer día del mes, sin atribuirle una fecha real de entrega.
@@ -35,13 +51,13 @@ Mi muestra incluye tres establecimientos de cada provincia: Buenos Aires, Chaco,
 
 Los nombres, ubicaciones, productos, volúmenes y precios proceden de la fuente pública. Los pedidos y la relación comercial con el mayorista son simulados. Interpreto los importes como **ARS nominales de referencia**, sin atribuirles carácter de facturación mayorista real o rentabilidad. Los doce pedidos por cliente son una regla del modelo y no permiten medir fidelidad.
 
-### Unidades
+#### Unidades
 
 Convierto los volúmenes de combustibles líquidos de m³ a litros multiplicando por 1.000 y conservo sus precios en ARS/L. Para GNC mantengo m³ y ARS/m³.
 
 Analizo los volúmenes de líquidos y GNC por separado. Puedo sumar sus importes porque están expresados en ARS bajo el mismo criterio de valoración.
 
-## 2. Preparación y estructura de la base
+### 2.2. Preparación y carga
 
 Organizo los datos en la base `capstone_project`, dentro del esquema `combustibles`. Utilizo PostgreSQL para almacenar y consultar la información, y pgAdmin para ejecutar las consultas e inspeccionar los resultados.
 
@@ -70,7 +86,7 @@ erDiagram
 
 Defino claves primarias y foráneas, restricciones de valores positivos y unicidad de cliente y mes. Uso `DATE` para fechas, `NUMERIC(18,3)` para cantidades y `NUMERIC(18,2)` para precios.
 
-### Comprobación de la carga
+#### Comprobación de la carga
 
 Para comprobar el número de registros de las siete tablas, utilizo esta consulta:
 
@@ -89,11 +105,11 @@ UNION ALL SELECT 'detalle_pedido_entrada', COUNT(*) FROM combustibles.detalle_pe
 
 Obtengo los siete conteos previstos: 18 operadores, 7 productos, 18 clientes, 216 pedidos, 1.007 detalles, 1.007 registros fuente y 1.010 filas de entrada.
 
-## 3. Limpieza y transformación
+### 2.3. Limpieza y transformación
 
 Introduzco ocho precios nulos y tres duplicados exactos exclusivamente en `detalle_pedido_entrada` para demostrar el tratamiento de estas incidencias. Mantengo intacta la fuente real y registro las alteraciones en `datos/incidencias_simuladas.csv`.
 
-### Tratamiento de duplicados y precios nulos
+#### Tratamiento de duplicados y precios nulos
 
 Utilizo `DISTINCT` para eliminar las copias idénticas y `COALESCE` para recuperar cada precio faltante desde su registro fuente:
 
@@ -137,13 +153,13 @@ FROM combustibles.detalle_pedido;
 
 El resultado confirma que elimino las tres filas duplicadas y recupero los ocho precios faltantes, conservando los 1.007 detalles previstos.
 
-### Fechas y precisión numérica
+#### Fechas y precisión numérica
 
 Transformo los períodos de origen al tipo `DATE` mediante el primer día del mes. Como los períodos de la muestra están completos, no imputo fechas.
 
 Conservo tres decimales en las cantidades y dos en los precios. Calculo el importe como cantidad × precio y redondeo para su presentación, evitando introducir diferencias en la conciliación.
 
-### Conciliación con la fuente
+#### Conciliación con la fuente
 
 Comparo las cantidades y los importes de cada registro fuente con los de su detalle de pedido mediante la vista `v_conciliacion`. Compruebo las diferencias con esta consulta:
 
@@ -164,7 +180,7 @@ Obtengo **1.007 registros comprobados y 0 con diferencias**. Esto confirma que l
 
 Los totales del dataset son **93.213.130 litros de combustibles líquidos**, **8.638.800,20 m³ de GNC** y **141.717.574.607,79 ARS de referencia**. Mantengo separadas las dos unidades de volumen.
 
-### Validez y cobertura de las fechas
+#### Validez y cobertura de las fechas
 
 Compruebo que los pedidos pertenezcan a 2025 y utilicen el primer día del mes como representación del período.
 
@@ -181,7 +197,7 @@ FROM combustibles.pedidos;
 
 Obtengo 0 fechas nulas, 0 inválidas y 12 meses distintos.
 
-### Unicidad del pedido mensual
+#### Unicidad del pedido mensual
 
 Agrupo los pedidos por cliente y mes para detectar grupos cuya cantidad de pedidos difiera de uno.
 
@@ -198,7 +214,7 @@ HAVING COUNT(*) <> 1;
 
 La consulta no devuelve filas: cada combinación de cliente y mes presente tiene un solo pedido.
 
-### Cobertura anual por cliente
+#### Cobertura anual por cliente
 
 Cuento los pedidos de cada cliente mediante LEFT JOIN, incluyendo a quienes pudieran no tener pedidos.
 
@@ -214,7 +230,7 @@ GROUP BY c.id_cliente HAVING COUNT(p.id_pedido) <> 12;
 
 La consulta no devuelve filas: todos los clientes tienen doce pedidos. Junto con los controles de fechas y unicidad, esto confirma un pedido por mes de 2025 para cada cliente.
 
-### Trazabilidad de las relaciones
+#### Trazabilidad de las relaciones
 
 Relaciono detalles, pedidos, clientes y fuente para comprobar la correspondencia del establecimiento, período y producto.
 
@@ -234,7 +250,7 @@ JOIN combustibles.fuente_ventas f USING(id_fuente);
 
 Obtengo 1.007 filas unidas y 0 errores de trazabilidad. El JOIN conserva el número de detalles y las relaciones comprobadas coinciden con la fuente.
 
-### Tipos de datos
+#### Tipos de datos
 
 Consulto el catálogo de columnas para comprobar los tipos definidos y la precisión numérica.
 
@@ -256,9 +272,9 @@ Confirmo DATE en las fechas, NUMERIC(18,3) en la cantidad y NUMERIC(18,2) en el 
 
 Conservo también los reportes técnicos de [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json) como comprobaciones complementarias.
 
-## 4. Análisis de negocio
+### 2.4. Análisis y extracción de hallazgos
 
-### 4.1. Cinco clientes con mayor gasto de referencia
+#### 2.4.1. Cinco clientes con mayor gasto de referencia
 
 Identifico los establecimientos que acumulan el mayor importe de compra simulado durante 2025. Calculo el gasto de referencia como la suma de cantidad × precio y cuento los pedidos con `COUNT(DISTINCT id_pedido)` para evitar contar cada línea de producto como un pedido diferente. Considero los pedidos con estado `Concretado`.
 
@@ -295,7 +311,7 @@ Los cinco clientes tienen doce pedidos porque esa frecuencia está fijada en el 
 
 Dentro de la simulación, utilizaría el ranking para priorizar el seguimiento comercial de estas cuentas y profundizar en su composición de compra. El importe por sí solo no permite identificar a los clientes más rentables: no dispongo de costos ni márgenes, y utilizo precios minoristas como referencia.
 
-### 4.2. Evolución mensual de las ventas simuladas
+#### 2.4.2. Evolución mensual de las ventas simuladas
 
 Agrupo los pedidos por mes y calculo el importe total de referencia. Cuento pedidos y clientes distintos para contextualizar cada período.
 
@@ -331,7 +347,7 @@ En cada mes cuento 18 pedidos y 18 clientes, de acuerdo con la frecuencia establ
 
 Utilizaría esta evolución para identificar períodos que requieren un análisis adicional de cantidades y precios. Con un solo año de datos no concluyo que el pico de diciembre sea un patrón estacional.
 
-### 4.3. Tres combustibles líquidos menos vendidos
+#### 2.4.3. Tres combustibles líquidos menos vendidos
 
 Comparo el volumen acumulado de los productos medidos en litros y selecciono los tres de menor cantidad. Excluyo GNC de este ranking porque su volumen está expresado en m³; mantengo esa unidad separada.
 
@@ -367,7 +383,7 @@ Identifico al queroseno como el producto de menor volumen de la cartera, seguido
 
 Utilizaría este resultado para revisar la cobertura comercial de estos productos: cuántos establecimientos los compran y durante cuántos meses. Un volumen bajo puede estar relacionado con su presencia en menos establecimientos o períodos; esta consulta no demuestra por sí sola una menor demanda entre quienes los ofrecen. No recomendaría retirar un producto sin conocer esa cobertura, sus costos y su función en la oferta.
 
-### 4.4. Ranking de pedidos por categoría
+#### 2.4.4. Ranking de pedidos por categoría
 
 Calculo el importe de cada pedido dentro de cada categoría y utilizo `RANK()` para ordenar los pedidos de mayor a menor importe. Muestro las posiciones uno a tres por categoría para comparar las operaciones de mayor valor.
 
@@ -436,7 +452,7 @@ Observo que D.G.B. S.R.L. ocupa las tres primeras posiciones de GNC y ESTACION E
 
 Utilizaría el ranking para seleccionar pedidos cuyo volumen y composición conviene revisar con mayor detalle. Cada importe corresponde únicamente a la categoría indicada; no representa necesariamente el importe completo del pedido ni permite inferir rentabilidad.
 
-### 4.5. Concentración del importe en los cinco principales clientes
+#### 2.4.5. Concentración del importe en los cinco principales clientes
 
 Calculo qué porcentaje del importe total de la cartera corresponde a los cinco clientes de mayor gasto de referencia. Selecciono exactamente cinco cuentas con el mismo desempate por identificador utilizado en el top 5. La métrica es `importe_top_5 / importe_total * 100`.
 
@@ -488,7 +504,7 @@ Cinco de los dieciocho establecimientos reúnen más de la mitad del importe de 
 
 Utilizaría este indicador para priorizar el seguimiento de las cuentas principales y evaluar oportunidades de diversificación de la cartera. La métrica describe importes simulados a precios de referencia; no informa sobre incumplimientos, contratos ni probabilidad de pérdida de clientes.
 
-### 4.6. Precio ponderado por producto y mes
+#### 2.4.6. Precio ponderado por producto y mes
 
 Calculo el precio medio de referencia dando mayor peso a los registros con mayor volumen. Utilizo `SUM(cantidad * precio) / SUM(cantidad)` para cada producto y mes, en lugar de un promedio simple que asignaría el mismo peso a volúmenes diferentes.
 
@@ -542,6 +558,36 @@ Utilizaría esta métrica para seguir los precios de referencia por producto y c
 
 
 
+### 2.5. Comunicación de hallazgos
+
+Presento cada pregunta del apartado 2.4 con su consulta SQL, evidencia del resultado e interpretación de negocio. Explico qué mide el indicador, qué decisión podría orientar y qué información falta para sostener una conclusión más amplia. Conservo los precios ponderados completos en CSV para que puedan consultarse los 83 resultados.
+
+Distingo hechos observados, supuestos y propuestas: la concentración del 55,16 % es un resultado del cálculo; el seguimiento de las cuentas principales es una posible acción. No atribuyo causalidad a una variación de importes ni equiparo ventas de referencia con rentabilidad. Reúno las conclusiones generales en el [apartado 6](#6-conclusiones-y-próximos-pasos).
+
+## 3. Aplicación al contexto de negocio
+
+Aplico el enfoque de análisis comercial a la distribución simulada de combustibles: identifico cuentas relevantes, comparo períodos y productos y selecciono pedidos para revisión. Utilizo estos resultados para orientar preguntas sobre concentración de cartera y cobertura del surtido.
+
+Delimito el alcance a datos relacionales y períodos mensuales. No desarrollo recomendaciones de compra conjunta, análisis geoespacial ni explotación de JSON: esas líneas requerirían preguntas y datos adicionales. La aplicación de este proyecto se concentra en los seis análisis del apartado 2.4.
+
+## 4. Controles para evitar errores de análisis
+
+### 4.1. Multiplicación de filas en los JOIN
+
+Verifico las relaciones mediante claves y comparo el número de detalles con las filas del JOIN. Documento 1.007 filas unidas y cero discrepancias de establecimiento, período y producto en [Trazabilidad de las relaciones](#trazabilidad-de-las-relaciones). En los indicadores de frecuencia utilizo `COUNT(DISTINCT ...)` para no contar varias veces un pedido con múltiples líneas.
+
+### 4.2. Tratamiento de valores nulos
+
+Justifico la recuperación de precios desde su registro fuente y la eliminación de copias exactas en [Tratamiento de duplicados y precios nulos](#tratamiento-de-duplicados-y-precios-nulos). No sustituyo valores desconocidos por cero. En las divisiones utilizo `NULLIF` para que un denominador cero produzca un resultado no definido, y no invento precios para meses sin registros.
+
+### 4.3. Criterio de índices
+
+Mantengo las restricciones de clave primaria y unicidad del modelo. No agrego índices mediante `CREATE INDEX` sin una necesidad de rendimiento medida. Si ampliara el dataset, evaluaría los planes de ejecución y los tiempos de las consultas antes de decidir índices adicionales; no presento una optimización de rendimiento como resultado de este trabajo.
+
+### 4.4. Comentarios que justifican decisiones
+
+Incluyo comentarios `--` junto a las decisiones relevantes de los scripts: por qué comparo solo litros en el ranking de volumen, evito duplicar pedidos, conservo empates con `RANK()`, selecciono exactamente cinco cuentas con `ROW_NUMBER()` y pondero precios por cantidad. Mantengo esas explicaciones en las consultas del apartado 2.4 y separo la justificación técnica de la interpretación del resultado.
+
 ## 5. Glosario aplicado al proyecto
 
 Utilizo estos conceptos en la preparación, limpieza y análisis de la base. Reúno sus definiciones y aplicaciones para facilitar la lectura del modelo y de las consultas.
@@ -549,9 +595,9 @@ Utilizo estos conceptos en la preparación, limpieza y análisis de la base. Re�
 | Concepto | Significado | Aplicación en el proyecto |
 | --- | --- | --- |
 | **Schema (esquema)** | Espacio de nombres que agrupa tablas, vistas y otros objetos dentro de una base de datos. | Organizo los objetos en `combustibles`, dentro de la base `capstone_project`. Uso nombres como `combustibles.pedidos` para identificar la tabla y su esquema. |
-| **Query (consulta)** | Sentencia SQL con la que solicito o proceso información de la base. | Respondo seis preguntas de negocio mediante las consultas de [analisis.sql](analisis.sql), acompañadas de resultados e interpretación en el [apartado 4](#4-análisis-de-negocio). |
+| **Query (consulta)** | Sentencia SQL con la que solicito o proceso información de la base. | Respondo seis preguntas de negocio mediante las consultas de [analisis.sql](analisis.sql), acompañadas de resultados e interpretación en el [apartado 2.4](#24-análisis-y-extracción-de-hallazgos). |
 | **CTE (Common Table Expression)** | Resultado con nombre definido mediante `WITH`, cuyo alcance es la sentencia que lo utiliza. No crea una tabla temporal independiente. | En el ranking separo el cálculo en `importes_por_categoria` y `ranking`. En la concentración utilizo `gasto_por_cliente` y `clientes_ordenados`. Esta separación permite revisar cada etapa del cálculo. |
-| **ER Diagram (diagrama entidad-relación)** | Representación de las entidades y sus relaciones, que ayuda a comprender las claves y cardinalidades del modelo. | Presento el diagrama en el [apartado 2](#2-preparación-y-estructura-de-la-base): relaciono operadores, clientes, pedidos, productos, detalles y registros fuente. |
+| **ER Diagram (diagrama entidad-relación)** | Representación de las entidades y sus relaciones, que ayuda a comprender las claves y cardinalidades del modelo. | Presento el diagrama en el [apartado 2.2](#22-preparación-y-carga): relaciono operadores, clientes, pedidos, productos, detalles y registros fuente. |
 
 Aplico el esquema para organizar los objetos, las consultas para responder preguntas y las CTE para descomponer cálculos complejos. Con el diagrama hago visible cómo conecto los datos y cómo puedo rastrear un detalle de pedido hasta su registro fuente.
 
