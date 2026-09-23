@@ -270,7 +270,7 @@ ORDER BY table_name, column_name;
 
 Confirmo DATE en las fechas, NUMERIC(18,3) en la cantidad y NUMERIC(18,2) en el precio. Los valores NULL de precisión y escala en las fechas indican que esos atributos numéricos no corresponden al tipo DATE.
 
-Conservo también los reportes técnicos de [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json) como comprobaciones complementarias.
+Conservo también los reportes técnicos de [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_final_postgresql.json) como comprobaciones complementarias.
 
 ### 2.4. Análisis y extracción de hallazgos
 
@@ -636,8 +636,6 @@ Compruebo los cinco criterios del cierre de la actividad mediante los archivos y
 | Limpieza antes del análisis | Documento en 2.3 la eliminación de tres duplicados y la recuperación de ocho precios, con conciliación de 1.007 registros sin diferencias. |
 
 Conservo el [reporte de verificación técnica](datos/validacion_final_postgresql.json), que identifica los archivos mediante SHA-256. También compruebo los quince bloques SQL del README. Distingo esta prueba aislada de las capturas de pgAdmin y del CSV de precios ponderados, que documentan la ejecución en la base del proyecto.
-
-En el script auxiliar de reinicio verifico el rechazo de una conexión a una base distinta de `capstone_project`. No ejecuto su ruta destructiva en esta prueba; no es necesaria para reproducir la entrega en una base vacía.
 
 ## Archivos y reproducción
 

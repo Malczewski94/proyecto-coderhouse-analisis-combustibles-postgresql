@@ -5,10 +5,9 @@
   "version": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
   "current_database": "postgres",
   "archivos_sha256": {
-    "estructura.sql": "0250fa03d437a5c01c0e8db73cf8c09b55fe860f55676dd5cb2fb71dd1ee8e30",
-    "validaciones.sql": "6826746ca1beda8b137e6e7a97e6a90575306f0220b8790119f2eba5571eaab4",
-    "analisis.sql": "547eea144b23477ca99c2e9b5b86ea13b472e73344544f62517ab883a83519e6",
-    "reiniciar_esquema.sql": "bc05eea1535a44d854a56241352ab85531fb066d7f73f1d7705c1dc50f6426a1"
+    "estructura.sql": "dd4b6479881f56d470f15d923ab9391b68ae4a59d6c4de7c2acdcf4acb99e42e",
+    "validaciones.sql": "262522d3903da889506fa43ab449c6d6f755b7b83c4d53463d496f43d2f698ca",
+    "analisis.sql": "0e708e68921ead5923bbd6791aa7b2442eabd6d300142f91c4792a61e11362c7"
   },
   "estructura_sql_ejecutada": true,
   "validaciones": [
@@ -140,10 +139,6 @@
     }
   ],
   "bloques_sql_readme_ejecutados": 15,
-  "reinicio": {
-    "proteccion_base_incorrecta": "Reinicio cancelado: conectarse a capstone_project. Base actual: postgres",
-    "ruta_destructiva_en_capstone_project": "No ejecutada en este entorno"
-  },
-  "alcance": "Prueba aislada; no conecta al servidor del usuario. Las capturas de pgAdmin y el CSV constituyen evidencias separadas.",
-  "commit_sql_verificado": "9f0ae83511203512ce67c220779b8c42c5af6398"
+  "alcance": "Prueba aislada de la estructura, las validaciones y los análisis; no utiliza el servidor de la base del proyecto. Las capturas de pgAdmin y el CSV constituyen evidencias separadas.",
+  "commit_sql_verificado": "f87d01c548ab9cb8bc00c0f0805ec2809df721e5"
 }

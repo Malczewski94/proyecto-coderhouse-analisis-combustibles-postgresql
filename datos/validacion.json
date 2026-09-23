@@ -1,6 +1,5 @@
 {
   "resultado": "CORRECTO",
-  "version_modelo": 2,
   "un_cliente_por_establecimiento": true,
   "un_pedido_por_cliente_mes": true,
   "fechas_validas_2025": true,

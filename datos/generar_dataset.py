@@ -1,5 +1,5 @@
 """Reconstruye el dataset desde fuente_original.csv. Python 3.10+, biblioteca estándar.
-V2: establecimientos reales como clientes de un mayorista ficticio. Pedidos mensuales.
+El modelo utiliza establecimientos reales como clientes de un mayorista ficticio y crea pedidos mensuales.
 """
 from pathlib import Path
 from collections import defaultdict
@@ -8,7 +8,6 @@ import csv, hashlib, json
 from datetime import date
 
 ROOT=Path(__file__).resolve().parent
-VERSION=2
 MAPA={
  'Nafta (súper) entre 92 y 95 Ron':('Nafta','L'),
  'Nafta (premium) de más de 95 Ron':('Nafta','L'),
@@ -92,7 +91,7 @@ def main():
  # Verificaciones independientes usando Decimal, claves y datos leídos desde CSV.
  validate(tables,incidents)
  build_sql(tables)
- summary={'version_modelo':VERSION,'modelo':'Mayorista ficticio; establecimientos reales como clientes; un pedido mensual; precios minoristas de referencia','conteos':{k:len(v) for k,v in tables.items()},'filas_originales_muestra':len(raw),'filas_excluidas':len(excluded),'precios_nulos_simulados':sum(x['incidencia']=='nulo_sintetico' for x in incidents),'duplicados_simulados':len(duplicates),'advertencias_fuente':len(warnings),'productos':products,'periodos':sorted({s['periodo'] for s in sources}),'provincias':sorted({o['provincia'] for o in ops}),'totales_por_unidad':{u:fmt(sum((s['cantidad_venta'] for s in sources if s['unidad_venta']==u),D(0))) for u in ('L','m3')},'importe_referencia_ars':fmt(sum((s['cantidad_venta']*s['precio_promedio_con_impuestos_ars'] for s in sources),D(0))),'interpretacion_importe':'Estimación a precios promedio mensuales declarados, asignados a pedidos sintéticos. No facturación auditada.'}
+ summary={'modelo':'Mayorista ficticio; establecimientos reales como clientes; un pedido mensual; precios minoristas de referencia','conteos':{k:len(v) for k,v in tables.items()},'filas_originales_muestra':len(raw),'filas_excluidas':len(excluded),'precios_nulos_simulados':sum(x['incidencia']=='nulo_sintetico' for x in incidents),'duplicados_simulados':len(duplicates),'advertencias_fuente':len(warnings),'productos':products,'periodos':sorted({s['periodo'] for s in sources}),'provincias':sorted({o['provincia'] for o in ops}),'totales_por_unidad':{u:fmt(sum((s['cantidad_venta'] for s in sources if s['unidad_venta']==u),D(0))) for u in ('L','m3')},'importe_referencia_ars':fmt(sum((s['cantidad_venta']*s['precio_promedio_con_impuestos_ars'] for s in sources),D(0))),'interpretacion_importe':'Estimación a precios promedio mensuales declarados, asignados a pedidos sintéticos. No facturación auditada.'}
  (ROOT/'resumen_dataset.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding='utf8')
  hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(ROOT.glob('*.csv'))}
  (ROOT/'sha256_csv.json').write_text(json.dumps(hashes,indent=2))
@@ -134,7 +133,7 @@ def validate(tables,incidents):
   clean[d['id_detalle']]=d
  assert clean=={r['id_detalle']:r for r in read('detalle_pedido.csv')}
  write('conciliacion.csv',reconciled)
- (ROOT/'validacion.json').write_text(json.dumps({'resultado':'CORRECTO','version_modelo':VERSION,'un_cliente_por_establecimiento':True,'un_pedido_por_cliente_mes':True,'fechas_validas_2025':True,'claves_primarias_unicas':True,'relaciones_sin_huerfanos':True,'operador_producto_periodo_coinciden':True,'doce_meses_por_establecimiento':True,'filas_fuente_conciliadas':len(reconciled),'diferencia_total_cantidad_por_registro':'0','diferencia_importe_por_registro_ars':'0','limpieza_recupera_detalle_exacto':True,'motor_validacion':'Python Decimal; PostgreSQL se verifica por separado si está disponible'},ensure_ascii=False,indent=2))
+ (ROOT/'validacion.json').write_text(json.dumps({'resultado':'CORRECTO','un_cliente_por_establecimiento':True,'un_pedido_por_cliente_mes':True,'fechas_validas_2025':True,'claves_primarias_unicas':True,'relaciones_sin_huerfanos':True,'operador_producto_periodo_coinciden':True,'doce_meses_por_establecimiento':True,'filas_fuente_conciliadas':len(reconciled),'diferencia_total_cantidad_por_registro':'0','diferencia_importe_por_registro_ars':'0','limpieza_recupera_detalle_exacto':True,'motor_validacion':'Python Decimal; PostgreSQL se verifica por separado si está disponible'},ensure_ascii=False,indent=2))
 
 def build_sql(t):
  ddl='''-- Separo identidad real y relación comercial simulada para no atribuir compras mayoristas a la fuente.
@@ -245,3 +244,4 @@ WHERE diferencia_cantidad<>0 OR diferencia_importe_ars<>0;
 ''')
 
 if __name__=='__main__':main()
+

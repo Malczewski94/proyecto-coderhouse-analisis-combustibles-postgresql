@@ -31,7 +31,7 @@ Una fila representa un establecimiento de referencia. La combinación inscripci�
 
 ## Clientes
 
-Una fila es una cuenta del mayorista ficticio asociada a un establecimiento real. Su identidad es real y su relación comercial es simulada. Se trabaja por establecimiento, no por CUIT consolidado.
+Una fila es una cuenta del mayorista ficticio asociada a un establecimiento real. Su identidad es real y su relación comercial es simulada. Trabajo por establecimiento, no por CUIT consolidado.
 
 | Campo | Tipo | Significado |
 | --- | --- | --- |
@@ -42,7 +42,7 @@ Una fila es una cuenta del mayorista ficticio asociada a un establecimiento real
 | origen_identidad | TEXT | `real` |
 | relacion_comercial | TEXT | `simulada` |
 
-Nombre y provincia se copian al generar la cuenta; el generador los obtiene de operadores. Para localidad, dirección, CUIT y bandera consultar operadores mediante id_operador. V2 elimina el segmento inventado.
+Copio nombre y provincia de `operadores` al generar la cuenta. Para localidad, dirección, CUIT y bandera, consulto esa tabla mediante `id_operador`.
 
 ## Pedidos
 
@@ -54,11 +54,11 @@ Nombre y provincia se copian al generar la cuenta; el generador los obtiene de o
 | estado | TEXT | `Concretado`, supuesto del caso |
 | origen | TEXT | `sintetico_mensual` |
 
-UNIQUE(id_cliente, fecha) y CHECK del primer día del mes garantizan un pedido por cliente/mes. Se generan doce por cliente, 216 en total. El operador se obtiene a través de clientes, sin repetirlo en pedidos.
+Las restricciones `UNIQUE(id_cliente, fecha)` y `CHECK` del primer día del mes impiden más de un pedido por cliente y mes. Genero doce por cliente, 216 en total, y compruebo la cobertura anual en `validaciones.sql`. Obtengo el operador a través de `clientes`, sin repetirlo en `pedidos`.
 
 ## Detalle de pedido
 
-Una fila representa un registro fuente completo asignado al pedido mensual del establecimiento. id_fuente es único en el detalle. La cantidad se interpreta con `productos.unidad_venta`.
+Una fila representa un registro fuente completo asignado al pedido mensual del establecimiento. `id_fuente` es único en el detalle. Interpreto la cantidad con `productos.unidad_venta`.
 
 | Campo | Tipo | Significado |
 | --- | --- | --- |
@@ -70,13 +70,13 @@ Una fila representa un registro fuente completo asignado al pedido mensual del e
 | precio_unitario_ars | NUMERIC(18,2) | Precio minorista mensual con impuestos usado como referencia; ARS por unidad |
 | origen | TEXT | `simulado_con_referencia_minorista` |
 
-El importe no se almacena en la tabla: `v_ventas` lo calcula como cantidad × precio. El producto puede tener hasta cinco decimales monetarios; redondear solo para presentación evita introducir diferencias de conciliación.
+El importe no se almacena en la tabla: `v_ventas` lo calcula como cantidad × precio. La multiplicación de una cantidad con tres decimales por un precio con dos decimales puede producir hasta cinco decimales; redondeo solo para presentación para evitar diferencias de conciliación.
 
 `detalle_pedido_entrada` tiene las mismas columnas, pero permite nulos y duplicados. No tiene clave primaria para conservar deliberadamente la entrada defectuosa. La carga SQL utiliza esta tabla y produce el detalle limpio.
 
 ## Fuente de ventas
 
-Una fila corresponde a un registro incluido de la extracción de Access. No es un ticket ni un pedido. No se agrupan ni se inventan ventas antes de guardar esta tabla.
+Una fila corresponde a un registro incluido de la extracción de Access. No es un ticket ni un pedido. No agrupo ni invento ventas antes de guardar esta tabla.
 
 | Campo | Tipo | Significado |
 | --- | --- | --- |
@@ -110,4 +110,4 @@ Una fila corresponde a un registro incluido de la extracción de Access. No es u
 
 ## Valores ausentes y límites
 
-CSV vacío corresponde a NULL al cargar en SQL. `N/D` se mantiene en el original y debe tratarse explícitamente como desconocido cuando corresponda. Los datos reales excluidos no alimentan los pedidos. Las cifras del dataset describen únicamente registros incluidos; ni el muestreo ni la imputación permiten inferir comportamiento de compradores reales.
+Un campo vacío en un CSV corresponde a NULL al cargarlo en SQL. `N/D` se mantiene en el original y debe tratarse explícitamente como desconocido cuando corresponda. Los datos reales excluidos no alimentan los pedidos. Las cifras del dataset describen únicamente registros incluidos; ni el muestreo ni la imputación permiten inferir comportamiento de compradores reales.

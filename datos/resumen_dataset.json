@@ -1,5 +1,4 @@
 {
-  "version_modelo": 2,
   "modelo": "Mayorista ficticio; establecimientos reales como clientes; un pedido mensual; precios minoristas de referencia",
   "conteos": {
     "operadores": 18,
