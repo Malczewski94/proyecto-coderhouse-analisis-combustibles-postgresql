@@ -4,7 +4,7 @@ Proyecto final Coderhouse. **Mayorista ficticio que abastece a establecimientos 
 
 Los establecimientos seleccionados son nuestros clientes dentro de la simulación. Sus identidades, productos, volúmenes mensuales y precios proceden de datos públicos. Su relación con nuestro mayorista, los pedidos y el estado `Concretado` son supuestos educativos. Los precios originales se conservan como **referencias minoristas con impuestos**, no como precios mayoristas observados.
 
-Estado: modelo preparado y verificado técnicamente. Pendientes carga desde cero y nuevas capturas en el PostgreSQL del usuario, y análisis de negocio conjunto. No se conservan carpetas ni evidencias del enfoque descartado.
+Estado: modelo cargado por el usuario; conteos, limpieza y conciliación comprobados mediante capturas de pgAdmin el 23/09/2026. Pendientes controles locales adicionales de fechas, pedidos mensuales, trazabilidad y tipos, y análisis de negocio conjunto. No se conservan carpetas ni evidencias del enfoque descartado.
 
 ## 1. Definición del problema
 
@@ -88,17 +88,13 @@ La base del usuario ya está confirmada: `capstone_project`. Se acordó reemplaz
 
 El reinicio elimina los datos existentes en esos esquemas. No ejecutarlo después de la carga nueva salvo que se quiera repetirla desde cero. `estructura.sql` por sí solo no borra una carga existente.
 
-### Evidencia pendiente de reemplazo
+### Evidencia de carga en pgAdmin
 
-Las imágenes del enfoque descartado se retiraron. Las nuevas deben salir de la ejecución real del usuario en pgAdmin; no se fabrican capturas.
+Captura aportada por el usuario el 23/09/2026. Los siete conteos coinciden con el modelo: 18 operadores, 7 productos, 18 clientes, 216 pedidos, 1.007 detalles, 1.007 registros fuente y 1.010 filas de entrada.
 
-| Paso | Nueva imagen prevista | Resultado esperado |
-| --- | --- | --- |
-| 2. Preparación y carga | `imagenes/conteos_tablas.png` | Los siete conteos de la tabla anterior |
-| 3. Limpieza | `imagenes/limpieza.png` | Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos; salida: 1.007, 0 y 0 |
-| 3. Conciliación | `imagenes/conciliacion.png` | 1.007 registros comprobados y 0 con diferencias |
+![Conteos de las siete tablas en pgAdmin](imagenes/conteos_tablas.png)
 
-Estos nombres son destinos previstos; las imágenes todavía no están incorporadas. También verificar fechas, pedidos mensuales, trazabilidad y tipos con los demás bloques de `validaciones.sql`. Si una captura muestra el nombre de la base, debe ser `capstone_project`.
+Las capturas muestran el panel de resultados. El nombre de la base fue confirmado por el usuario como `capstone_project`; no aparece en estos recortes. Quedan pendientes los controles locales adicionales de fechas, pedidos mensuales, trazabilidad y tipos de `validaciones.sql`.
 
 ## 3. Limpieza y transformación
 
@@ -108,6 +104,10 @@ Las incidencias se introducen exclusivamente en `detalle_pedido_entrada`, no en 
 | --- | ---: | ---: | ---: |
 | Entrada actual | 1.010 | 3 | 8 |
 | Detalle limpio actual | 1.007 | 0 | 0 |
+
+La captura del usuario confirma el resultado de limpieza: se eliminaron tres duplicados y se recuperaron ocho precios nulos.
+
+![Entrada y detalle limpio: filas, repeticiones y precios nulos](imagenes/limpieza.png)
 
 La carga aplica:
 
@@ -130,9 +130,13 @@ Los períodos de origen están completos. No se inventan nulos de fecha: se tran
 
 `v_conciliacion` debe comprobar 1.007 registros fuente con cero diferencias de cantidad e importe. Totales conservados: **93.213.130 L**, **8.638.800,20 m³ de GNC** e **importe de referencia 141.717.574.607,79 ARS**.
 
+La ejecución del usuario devolvió **1.007 registros comprobados y 0 con diferencias**:
+
+![Conciliación en pgAdmin: 1007 registros y cero diferencias](imagenes/conciliacion.png)
+
 `validaciones.sql` comprueba además un pedido por cliente/mes, doce pedidos por cliente, tipos de datos y 1.007 filas después de los JOIN, con cero inconsistencias de establecimiento, producto y período. Esto controla la multiplicación accidental de filas.
 
-Validaciones técnicas del modelo: [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json). El reporte conserva los resultados técnicos de la carga del modelo actual. No sustituye las nuevas capturas del usuario en pgAdmin, todavía pendientes.
+Validaciones técnicas del modelo: [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json). El reporte conserva los resultados técnicos de la carga del modelo actual. Las tres capturas anteriores documentan la ejecución del usuario para conteos, limpieza y conciliación. Los controles adicionales siguen pendientes de confirmación local.
 
 ## 4. Análisis — en desarrollo
 

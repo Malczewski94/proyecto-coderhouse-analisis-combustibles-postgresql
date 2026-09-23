@@ -86,8 +86,8 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | Paso del pipeline | Estado V2 |
 | --- | --- |
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
-| 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; carga local y captura pendientes |
-| 3. Limpieza | 8 precios nulos y 3 duplicados; validada técnicamente; capturas locales pendientes |
+| 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos locales confirmados mediante captura (23/09/2026) |
+| 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
 | 4. Análisis | Primera consulta adaptada; prueba técnica exitosa; resultado e interpretación con usuario pendientes |
 | 5. Hallazgos | Pendientes de revisión conjunta |
 
@@ -104,9 +104,9 @@ Python Decimal comprueba claves, doce meses, limpieza y conservación exacta de 
 - validaciones.sql: mantiene conteos/limpieza/conciliación y agrega fechas, pedidos mensuales, JOIN y tipos.
 - analisis.sql: top 5 con nombres reales, localidad, provincia, cantidad_pedidos y gasto_referencia_ars.
 - README y diccionario: actualizados; README incluye relaciones mediante Mermaid.
-- Capturas de conteos, limpieza y conciliación: retiradas las antiguas; pendientes las nuevas en imagenes/.
+- Capturas de conteos, limpieza y conciliación: publicadas las nuevas en imagenes/ y enlazadas en README.
 
-El usuario indicó «borrón y cuenta nueva»: no conservar carpetas históricas, capturas anteriores ni esquemas de respaldo. Se retiran esos archivos y la ruta de migración de la entrega vigente. Los commits normales de Git no se reescriben. La carga del modelo en el PostgreSQL del usuario sigue pendiente de evidencia.
+El usuario indicó «borrón y cuenta nueva»: no conservar carpetas históricas, capturas anteriores ni esquemas de respaldo. Se retiran esos archivos y la ruta de migración de la entrega vigente. Los commits normales de Git no se reescriben. Las capturas del usuario confirman los conteos, la limpieza y la conciliación del modelo cargado.
 
 La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/2026. La actualización del modelo y sus archivos fue autorizada explícitamente en esta conversación.
 
@@ -125,12 +125,15 @@ Para cada consulta: pregunta y métrica → explicación y ejecución del usuari
 
 ## 8. Siguiente tarea concreta
 
-La base `capstone_project` ya fue confirmada; no volver a preguntarlo. El modelo mayorista ya está en SQL, CSV y generador. La limpieza documental y de archivos completa la última petición del chat anterior.
+El 23/09/2026 el usuario aportó tres capturas de pgAdmin, publicadas en `imagenes/`:
+- `conteos_tablas.png`: siete conteos coincidentes con el modelo.
+- `limpieza.png`: entrada 1.010 filas / 3 repeticiones / 8 precios nulos; salida 1.007 / 0 / 0.
+- `conciliacion.png`: 1.007 registros comprobados / 0 diferencias.
 
-1. Guiar al usuario en pgAdmin, conectado a `capstone_project`: ejecutar `reiniciar_esquema.sql` y luego `estructura.sql` completo. El reinicio elimina `combustibles` y `combustibles_v1` sin respaldo, según su decisión.
-2. Ejecutar `validaciones.sql` por bloques. Pedir nuevas capturas de conteos, limpieza y conciliación, con los resultados esperados del README.
-3. Comprobar también fechas (0 nulas/invalidas, 12 meses), pedidos mensuales y trazabilidad (1.007 filas, 0 errores).
-4. Incorporar las tres imágenes a `imagenes/`, enlazarlas en las secciones 2 y 3 del README y cerrar los pendientes de evidencia.
-5. Retomar el top 5, revisar su resultado con el usuario y documentar su interpretación antes de avanzar a otra consulta.
+Son resultados observados en imágenes, no una conexión directa a su servidor. El nombre `capstone_project` está confirmado por el usuario, aunque no aparece en los recortes. No solicitar otra carga ni volver a ejecutar el reinicio.
 
-No fabricar ni reutilizar capturas de una carga distinta. No dar por ejecutado el reinicio ni la carga en la computadora del usuario. Si hay un error, revisar el mensaje y el estado real antes de repetir scripts. No presentar la entrega completa hasta revisar análisis, conclusiones y reproducción final.
+1. Completar los bloques restantes de `validaciones.sql`: fechas (0 nulas/invalidas, 12 meses), un pedido mensual y doce pedidos por cliente (ambas consultas sin filas), trazabilidad (1.007 filas, 0 errores) y tipos DATE/NUMERIC.
+2. Registrar los resultados locales confirmados sin atribuirles los resultados de las pruebas técnicas.
+3. Retomar el top 5 de `analisis.sql`, revisar el resultado e interpretación con el usuario y documentarlos antes de avanzar a otra consulta.
+
+No dar por terminados análisis, conclusiones ni reproducción final. Mantener las evidencias actuales y no fabricar capturas.

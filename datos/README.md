@@ -98,7 +98,7 @@ CSV en UTF-8, separados por coma, punto decimal y encabezado. Los campos vacíos
 
 Desde la raíz: `python3 datos/generar_dataset.py` (Python 3.10+, biblioteca estándar). Regenera tablas, SQL y controles Python; no descarga datos ni repite la extracción/selección desde Access. El reporte PostgreSQL debe verificarse por separado si cambia el generador.
 
-Las instrucciones de carga desde cero están en el [README principal](../README.md). Las nuevas capturas de pgAdmin (conteos, limpieza y conciliación) están pendientes. No se conservan evidencias del enfoque descartado. El dataset está publicado con autorización del usuario para incluir nombres y CUIT de la fuente pública (21/09/2026).
+Las instrucciones de carga desde cero están en el [README principal](../README.md). Las capturas de pgAdmin aportadas el 23/09/2026 confirman conteos, limpieza y conciliación y están incorporadas al README principal. Quedan pendientes los controles locales adicionales de fechas, pedidos mensuales, trazabilidad y tipos. No se conservan evidencias del enfoque descartado. El dataset está publicado con autorización del usuario para incluir nombres y CUIT de la fuente pública (21/09/2026).
 
 ## Alcance de la entrega
 
