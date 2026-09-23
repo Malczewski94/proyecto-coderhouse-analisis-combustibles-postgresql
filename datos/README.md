@@ -102,4 +102,4 @@ Las instrucciones de carga desde cero están en el [README principal](../README.
 
 ## Alcance de la entrega
 
-El modelo está cargado y validado. Documento el top 5 con su resultado e interpretación en el README principal. Incluyo una segunda consulta para la evolución mensual, cuyo resultado aún no incorporo. Las cuatro consultas restantes y las conclusiones globales están en desarrollo.
+El modelo está cargado y validado. Documento el top 5 y la evolución mensual con sus resultados e interpretaciones en el README principal. Incluyo una tercera consulta para los combustibles líquidos menos vendidos, cuyo resultado aún no incorporo. Las tres consultas restantes y las conclusiones globales están en desarrollo.

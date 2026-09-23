@@ -35,3 +35,24 @@ JOIN combustibles.detalle_pedido AS d
 WHERE p.estado = 'Concretado'
 GROUP BY DATE_TRUNC('month', p.fecha)::date
 ORDER BY mes;
+
+-- Identifica los tres combustibles líquidos con menor volumen vendido en la simulación.
+-- Suma litros de pedidos concretados; excluye GNC porque su cantidad está expresada en m3.
+SELECT
+    pr.id_producto,
+    pr.nombre_original AS producto,
+    pr.categoria,
+    SUM(d.cantidad) AS litros_vendidos
+FROM combustibles.productos AS pr
+JOIN combustibles.detalle_pedido AS d
+    ON d.id_producto = pr.id_producto
+JOIN combustibles.pedidos AS p
+    ON p.id_pedido = d.id_pedido
+WHERE p.estado = 'Concretado'
+  AND pr.unidad_venta = 'L'
+GROUP BY
+    pr.id_producto,
+    pr.nombre_original,
+    pr.categoria
+ORDER BY litros_vendidos ASC, pr.id_producto
+LIMIT 3;

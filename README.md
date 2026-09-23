@@ -306,7 +306,58 @@ GROUP BY DATE_TRUNC('month', p.fecha)::date
 ORDER BY mes;
 ```
 
-La consulta está preparada; todavía no incorporo su resultado ni una interpretación de la evolución mensual. Analizaré los importes como pesos nominales, considerando conjuntamente cantidades, precios y composición por productos.
+![Evolución mensual de las ventas simuladas en 2025](imagenes/ventas_mensuales.png)
+
+| Mes de 2025 | Pedidos | Clientes | Importe de referencia (ARS) |
+| --- | ---: | ---: | ---: |
+| Enero | 18 | 18 | 10.095.233.279,25 |
+| Febrero | 18 | 18 | 10.024.372.092,50 |
+| Marzo | 18 | 18 | 10.636.993.017,83 |
+| Abril | 18 | 18 | 10.213.597.094,02 |
+| Mayo | 18 | 18 | 10.765.760.001,72 |
+| Junio | 18 | 18 | 10.813.129.530,75 |
+| Julio | 18 | 18 | 12.004.274.839,26 |
+| Agosto | 18 | 18 | 12.260.514.811,11 |
+| Septiembre | 18 | 18 | 12.356.546.180,88 |
+| Octubre | 18 | 18 | 13.391.668.900,60 |
+| Noviembre | 18 | 18 | 13.295.202.542,47 |
+| Diciembre | 18 | 18 | 15.860.282.317,40 |
+
+Identifico **diciembre** como el mes de mayor importe, con **15.860.282.317,40 ARS**, y **febrero** como el menor, con **10.024.372.092,50 ARS**. La suma de los doce importes es **141.717.574.607,79 ARS**, coincidente con el total anual del dataset.
+
+Observo una tendencia nominal ascendente, con descensos respecto del mes anterior en febrero, abril y noviembre. Diciembre supera a enero en **57,11 %**, calculado como `(importe_diciembre / importe_enero - 1) * 100`.
+
+En cada mes cuento 18 pedidos y 18 clientes, de acuerdo con la frecuencia establecida en el modelo. Por eso, las variaciones del importe no se explican por incorporar más cuentas o registrar más pedidos. La consulta combina cantidades, precios y composición por productos; no permite separar sus efectos ni demostrar crecimiento real del volumen.
+
+Utilizaría esta evolución para identificar períodos que requieren un análisis adicional de cantidades y precios. Con un solo año de datos no concluyo que el pico de diciembre sea un patrón estacional.
+
+### 4.3. Tres combustibles líquidos menos vendidos
+
+Comparo el volumen acumulado de los productos medidos en litros y selecciono los tres de menor cantidad. Excluyo GNC de este ranking porque su volumen está expresado en m³; mantengo esa unidad separada.
+
+```sql
+SELECT
+    pr.id_producto,
+    pr.nombre_original AS producto,
+    pr.categoria,
+    SUM(d.cantidad) AS litros_vendidos
+FROM combustibles.productos AS pr
+JOIN combustibles.detalle_pedido AS d
+    ON d.id_producto = pr.id_producto
+JOIN combustibles.pedidos AS p
+    ON p.id_pedido = d.id_pedido
+WHERE p.estado = 'Concretado'
+  AND pr.unidad_venta = 'L'
+GROUP BY
+    pr.id_producto,
+    pr.nombre_original,
+    pr.categoria
+ORDER BY litros_vendidos ASC, pr.id_producto
+LIMIT 3;
+```
+
+La consulta está preparada; aún no incorporo resultados ni conclusiones sobre los productos de menor volumen.
+
 
 ## 5. Límites de interpretación
 

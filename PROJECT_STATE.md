@@ -98,7 +98,7 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
 | 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos, fechas, pedidos mensuales, trazabilidad y tipos confirmados mediante capturas locales (23/09/2026) |
 | 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
-| 4. Análisis | Top 5 ejecutado y documentado; consulta mensual preparada, pendiente ejecución |
+| 4. Análisis | Top 5 y evolución mensual ejecutados y documentados; consulta de productos preparada |
 | 5. Hallazgos | Pendientes de revisión conjunta |
 
 Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
@@ -123,8 +123,8 @@ La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/
 ## 7. Preguntas y forma de trabajar
 
 1. Cinco clientes con mayor gasto de referencia: ejecutado por el usuario, captura publicada e interpretación descriptiva documentada en README.
-2. Evolución mensual de importes: segunda consulta preparada en analisis.sql; pendiente ejecución, captura e interpretación.
-3. Tres productos líquidos menos vendidos, GNC aparte: pendiente.
+2. Evolución mensual de importes: ejecutada por el usuario; captura y doce importes documentados, con interpretación nominal.
+3. Tres productos líquidos menos vendidos, GNC aparte: consulta preparada; pendiente ejecución, captura e interpretación.
 4. Ranking de pedidos por categoría con RANK(): pendiente.
 5. Concentración del top 5: pendiente.
 6. Precio ponderado por producto/mes: pendiente.
@@ -149,7 +149,9 @@ Las imágenes muestran resultados de la ejecución del usuario; no hay conexión
 
 El usuario aportó la captura del top 5, publicada en imagenes/top_5_clientes.png. Orden e importes en ARS: C0012 26229253774.57; C0011 16697526321.86; C0001 12936900987.89; C0006 12487467190.62; C0017 9822274048.88. Todos tienen 12 pedidos. El nombre truncado de C0001 se completó desde datos/clientes.csv. Interpretación documentada: SUCATA encabeza el ranking; cuentas en Santa Fe y Córdoba; la frecuencia fija no mide fidelidad, y el importe no mide rentabilidad.
 
-Siguiente tarea: ejecutar la segunda consulta de analisis.sql (evolución mensual), recibir la captura de las doce filas e interpretar los resultados. La consulta agrupa DATE_TRUNC por mes, cuenta pedidos/clientes distintos y suma cantidad por precio. No se ha ejecutado ni validado contra el servidor del usuario. No anticipar máximos, mínimos ni causas.
+Evolución mensual confirmada mediante captura del usuario (imagenes/ventas_mensuales.png): 12 filas, 18 pedidos y 18 clientes cada mes. Importes enero-diciembre: 10095233279.25; 10024372092.50; 10636993017.83; 10213597094.02; 10765760001.72; 10813129530.75; 12004274839.26; 12260514811.11; 12356546180.88; 13391668900.60; 13295202542.47; 15860282317.40 ARS. Suma comprobada con Decimal: 141717574607.79 ARS. Máximo diciembre, mínimo febrero, variación diciembre/enero +57.11% nominal. No atribuir el incremento a inflación, volumen o estacionalidad sin análisis que lo sostenga.
+
+Siguiente tarea: ejecutar la tercera consulta de analisis.sql, recibir la captura de los tres combustibles líquidos menos vendidos por litros e interpretar sus resultados. Filtra unidad_venta='L' y pedidos concretados; GNC fuera del ranking por unidad distinta. La consulta se entrega preparada, no como ejecución confirmada. No anticipar resultados.
 
 Preferencia explícita: al documentar una captura, incluir en la respuesta el siguiente paso concreto y su consulta; no responder solamente confirmando la actualización. Continuar de una consulta a la vez.
 
