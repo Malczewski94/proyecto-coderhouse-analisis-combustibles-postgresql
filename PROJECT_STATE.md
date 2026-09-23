@@ -98,7 +98,7 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
 | 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos, fechas, pedidos mensuales, trazabilidad y tipos confirmados mediante capturas locales (23/09/2026) |
 | 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
-| 4. Análisis | Top 5 y evolución mensual ejecutados y documentados; consulta de productos preparada |
+| 4. Análisis | Top 5, evolución mensual y productos ejecutados y documentados; ranking por categoría preparado |
 | 5. Hallazgos | Pendientes de revisión conjunta |
 
 Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
@@ -124,8 +124,8 @@ La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/
 
 1. Cinco clientes con mayor gasto de referencia: ejecutado por el usuario, captura publicada e interpretación descriptiva documentada en README.
 2. Evolución mensual de importes: ejecutada por el usuario; captura y doce importes documentados, con interpretación nominal.
-3. Tres productos líquidos menos vendidos, GNC aparte: consulta preparada; pendiente ejecución, captura e interpretación.
-4. Ranking de pedidos por categoría con RANK(): pendiente.
+3. Tres productos líquidos menos vendidos: ejecutada; captura y resultados documentados con interpretación y límites.
+4. Ranking de pedidos por categoría con RANK(): consulta preparada; pendiente ejecución y captura de posiciones 1 a 3 por categoría.
 5. Concentración del top 5: pendiente.
 6. Precio ponderado por producto/mes: pendiente.
 
@@ -151,7 +151,11 @@ El usuario aportó la captura del top 5, publicada en imagenes/top_5_clientes.pn
 
 Evolución mensual confirmada mediante captura del usuario (imagenes/ventas_mensuales.png): 12 filas, 18 pedidos y 18 clientes cada mes. Importes enero-diciembre: 10095233279.25; 10024372092.50; 10636993017.83; 10213597094.02; 10765760001.72; 10813129530.75; 12004274839.26; 12260514811.11; 12356546180.88; 13391668900.60; 13295202542.47; 15860282317.40 ARS. Suma comprobada con Decimal: 141717574607.79 ARS. Máximo diciembre, mínimo febrero, variación diciembre/enero +57.11% nominal. No atribuir el incremento a inflación, volumen o estacionalidad sin análisis que lo sostenga.
 
-Siguiente tarea: ejecutar la tercera consulta de analisis.sql, recibir la captura de los tres combustibles líquidos menos vendidos por litros e interpretar sus resultados. Filtra unidad_venta='L' y pedidos concretados; GNC fuera del ranking por unidad distinta. La consulta se entrega preparada, no como ejecución confirmada. No anticipar resultados.
+La captura mensual se reemplazó por la versión con fechas completas en el mismo archivo imagenes/ventas_mensuales.png. Los importes coinciden y no cambian la interpretación.
+
+La tercera consulta quedó confirmada en imagenes/productos_menos_vendidos.png: P004 Kerosene 495530 L; P005 Nafta común 3405860 L; P006 Nafta premium 11885870 L. El nombre completo de P006 procede del catálogo de productos ya leído. El README documenta menor volumen, sin equipararlo a baja rentabilidad ni atribuir causas.
+
+Siguiente tarea: ejecutar la cuarta consulta de analisis.sql. Agrupa por pedido/categoría, calcula el importe exacto y aplica RANK PARTITION BY categoria ORDER BY importe DESC; muestra posiciones <=3, incluyendo empates. Solo redondea al presentar. Un pedido puede aparecer en más de una categoría con sus importes parciales; GNC participa por importe en ARS, sin mezclar volúmenes. La consulta está preparada, pendiente de ejecución del usuario. Pedir captura de todas las filas y columnas (pueden ser varias imágenes). No anticipar ganadores.
 
 Preferencia explícita: al documentar una captura, incluir en la respuesta el siguiente paso concreto y su consulta; no responder solamente confirmando la actualización. Continuar de una consulta a la vez.
 

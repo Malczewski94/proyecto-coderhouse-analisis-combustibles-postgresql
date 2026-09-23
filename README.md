@@ -356,7 +356,69 @@ ORDER BY litros_vendidos ASC, pr.id_producto
 LIMIT 3;
 ```
 
-La consulta está preparada; aún no incorporo resultados ni conclusiones sobre los productos de menor volumen.
+![Tres combustibles líquidos con menor volumen vendido](imagenes/productos_menos_vendidos.png)
+
+| Producto | Categoría | Litros vendidos |
+| --- | --- | ---: |
+| Kerosene | Queroseno | 495.530 |
+| Nafta (común) hasta 92 Ron | Nafta | 3.405.860 |
+| Nafta (premium) de más de 95 Ron | Nafta | 11.885.870 |
+
+Identifico al queroseno como el producto de menor volumen de la cartera, seguido por la nafta común y la nafta premium. Comparo litros acumulados durante 2025, por lo que este orden no representa un ranking de importes ni de rentabilidad.
+
+Utilizaría este resultado para revisar la cobertura comercial de estos productos: cuántos establecimientos los compran y durante cuántos meses. Un volumen bajo puede estar relacionado con su presencia en menos establecimientos o períodos; esta consulta no demuestra por sí sola una menor demanda entre quienes los ofrecen. No recomendaría retirar un producto sin conocer esa cobertura, sus costos y su función en la oferta.
+
+### 4.4. Ranking de pedidos por categoría
+
+Calculo el importe de cada pedido dentro de cada categoría y utilizo `RANK()` para ordenar los pedidos de mayor a menor importe. Muestro las posiciones uno a tres por categoría para comparar las operaciones de mayor valor.
+
+La unidad de análisis es **pedido y categoría**: si un pedido incluye nafta y gasoil, aparece en ambos rankings con el importe correspondiente a cada categoría. Comparo importes en ARS, por lo que incluyo GNC sin sumar sus m³ a los litros.
+
+```sql
+WITH importes_por_categoria AS (
+    SELECT
+        pr.categoria,
+        p.id_pedido,
+        p.fecha,
+        c.id_cliente,
+        c.nombre AS cliente,
+        SUM(d.cantidad * d.precio_unitario_ars) AS importe_categoria
+    FROM combustibles.pedidos AS p
+    JOIN combustibles.clientes AS c
+        ON c.id_cliente = p.id_cliente
+    JOIN combustibles.detalle_pedido AS d
+        ON d.id_pedido = p.id_pedido
+    JOIN combustibles.productos AS pr
+        ON pr.id_producto = d.id_producto
+    WHERE p.estado = 'Concretado'
+    GROUP BY pr.categoria, p.id_pedido, p.fecha, c.id_cliente, c.nombre
+),
+ranking AS (
+    SELECT
+        *,
+        RANK() OVER (
+            PARTITION BY categoria
+            ORDER BY importe_categoria DESC
+        ) AS posicion
+    FROM importes_por_categoria
+)
+SELECT
+    categoria,
+    posicion,
+    id_pedido,
+    fecha,
+    id_cliente,
+    cliente,
+    ROUND(importe_categoria, 2) AS importe_referencia_ars
+FROM ranking
+WHERE posicion <= 3
+ORDER BY categoria, posicion, id_pedido;
+```
+
+Clasifico por el importe sin redondear y redondeo únicamente para mostrarlo. Los empates comparten posición y generan saltos en la siguiente; el filtro puede devolver más de tres filas por categoría si hay empates. El identificador del pedido ordena la presentación sin romper esos empates.
+
+La consulta está preparada; todavía no incorporo su resultado ni conclusiones sobre los pedidos destacados.
+
 
 
 ## 5. Límites de interpretación

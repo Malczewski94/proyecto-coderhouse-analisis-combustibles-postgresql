@@ -56,3 +56,45 @@ GROUP BY
     pr.categoria
 ORDER BY litros_vendidos ASC, pr.id_producto
 LIMIT 3;
+
+-- Suma el importe de cada pedido dentro de cada categoría de producto.
+-- RANK clasifica los pedidos por importe dentro de su categoría y conserva empates.
+-- Selecciona las posiciones uno a tres de cada categoría.
+WITH importes_por_categoria AS (
+    SELECT
+        pr.categoria,
+        p.id_pedido,
+        p.fecha,
+        c.id_cliente,
+        c.nombre AS cliente,
+        SUM(d.cantidad * d.precio_unitario_ars) AS importe_categoria
+    FROM combustibles.pedidos AS p
+    JOIN combustibles.clientes AS c
+        ON c.id_cliente = p.id_cliente
+    JOIN combustibles.detalle_pedido AS d
+        ON d.id_pedido = p.id_pedido
+    JOIN combustibles.productos AS pr
+        ON pr.id_producto = d.id_producto
+    WHERE p.estado = 'Concretado'
+    GROUP BY pr.categoria, p.id_pedido, p.fecha, c.id_cliente, c.nombre
+),
+ranking AS (
+    SELECT
+        *,
+        RANK() OVER (
+            PARTITION BY categoria
+            ORDER BY importe_categoria DESC
+        ) AS posicion
+    FROM importes_por_categoria
+)
+SELECT
+    categoria,
+    posicion,
+    id_pedido,
+    fecha,
+    id_cliente,
+    cliente,
+    ROUND(importe_categoria, 2) AS importe_referencia_ars
+FROM ranking
+WHERE posicion <= 3
+ORDER BY categoria, posicion, id_pedido;
