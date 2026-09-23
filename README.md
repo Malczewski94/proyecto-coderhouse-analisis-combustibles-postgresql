@@ -1,61 +1,61 @@
 # Análisis de combustibles con PostgreSQL
 
-Proyecto final Coderhouse. **Mayorista ficticio que abastece a establecimientos reales.** El Gobierno publica los datos utilizados; no participa como vendedor en el caso.
+Desarrollo este proyecto final de Coderhouse para analizar una cartera de clientes de un **distribuidor mayorista ficticio de combustibles**. Utilizo datos públicos de establecimientos reales y construyo un modelo relacional en PostgreSQL para estudiar los importes de venta simulados, la evolución mensual y la composición por productos.
 
-Los establecimientos seleccionados son nuestros clientes dentro de la simulación. Sus identidades, productos, volúmenes mensuales y precios proceden de datos públicos. Su relación con nuestro mayorista, los pedidos y el estado `Concretado` son supuestos educativos. Los precios originales se conservan como **referencias minoristas con impuestos**, no como precios mayoristas observados.
+Trabajo con 18 establecimientos de seis provincias, siete productos y los doce meses de 2025. Cada establecimiento representa un cliente del mayorista y tiene un pedido mensual. Distingo los datos de origen de los supuestos comerciales para que los resultados puedan interpretarse dentro del alcance del ejercicio.
 
-Estado: modelo cargado por el usuario; conteos, limpieza y conciliación comprobados mediante capturas de pgAdmin el 23/09/2026. Pendientes controles locales adicionales de fechas, pedidos mensuales, trazabilidad y tipos, y análisis de negocio conjunto. No se conservan carpetas ni evidencias del enfoque descartado.
+## 1. Problema de negocio y alcance
 
-## 1. Definición del problema
-
-Un mayorista ficticio necesita identificar sus principales cuentas, la evolución mensual de los importes y la composición por productos para orientar el seguimiento comercial. Se construye una cartera de 18 establecimientos y un pedido por cliente y mes de 2025.
+Mi objetivo es identificar las cuentas con mayor peso comercial y comprender cómo se distribuyen los volúmenes y los importes de referencia. Planteo estas preguntas:
 
 | Pregunta | Métrica y criterio |
 | --- | --- |
-| ¿Cuáles son los cinco clientes con mayor gasto de referencia? | Suma de cantidad × precio de referencia por establecimiento cliente. |
-| ¿Cómo evolucionan las ventas mensuales simuladas? | Importe de referencia por mes. |
-| ¿Cuáles son los tres productos menos vendidos? | Volumen en litros entre seis combustibles líquidos; GNC aparte. |
-| ¿Qué pedidos tienen mayor importe dentro de cada categoría? | Importe del pedido en cada categoría; `RANK()` por categoría. |
-| ¿Qué porcentaje del importe concentran los cinco principales clientes? | Importe top 5 / importe total × 100. |
-| ¿Cómo evoluciona el precio ponderado de cada producto? | SUM(cantidad × precio) / SUM(cantidad), por producto y mes. |
+| ¿Cuáles son los cinco clientes con mayor gasto de referencia? | Suma de cantidad × precio de referencia por establecimiento. |
+| ¿Cómo evolucionan las ventas mensuales simuladas? | Importe de referencia agrupado por mes. |
+| ¿Cuáles son los tres productos menos vendidos? | Volumen en litros entre los seis combustibles líquidos; GNC por separado. |
+| ¿Qué pedidos tienen mayor importe dentro de cada categoría? | Importe del pedido por categoría y posición mediante `RANK()`. |
+| ¿Qué porcentaje del importe concentran los cinco principales clientes? | Importe del top 5 / importe total × 100. |
+| ¿Cómo evoluciona el precio ponderado de cada producto? | `SUM(cantidad * precio) / SUM(cantidad)`, por producto y mes. |
 
-Las seis preguntas cubren las cinco solicitadas por la actividad y los cuatro análisis enumerados por el entregable, que pide resolver al menos tres. No se inventan resultados ni explicaciones causales antes de revisar cada consulta.
+### Fuente de datos
 
-### Fuente y supuestos
+Utilizo el conjunto público [Precios y volúmenes EESS, Resolución 1104/04](https://datos.gob.ar/ar/dataset/energia-precios-volumenes-eess---resolucion-110404), a partir del archivo `precios_eess_2025_en_adelante.accdb` y su tabla `public_vi_access_eess_2025_en_adelante`.
 
-Fuente pública: [Precios y volúmenes EESS, Resolución 1104/04](https://datos.gob.ar/ar/dataset/energia-precios-volumenes-eess---resolucion-110404). Archivo `precios_eess_2025_en_adelante.accdb`, tabla `public_vi_access_eess_2025_en_adelante`. El artículo 9 de la [normativa](https://www.argentina.gob.ar/normativa/nacional/norma-100848/actualizacion) describe ventas por boca de expendio. Nuestra selección corresponde al canal `Al público`, no a compras a distribuidores. El archivo mayorista aportado inicialmente no se utiliza.
+Selecciono registros del canal **Al público**, que describen ventas de estaciones a consumidores. El Gobierno publica estos datos; la fuente no acredita compras de las estaciones a distribuidores. Por eso, la relación entre mi mayorista ficticio y sus clientes forma parte de la simulación.
 
-Muestra intencional de 2025: 18 establecimientos, tres en cada provincia de Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe. Se conservan 1.013 filas originales y se incluyen 1.007 tras excluir seis de otros canales. No representa todo el mercado argentino.
+Mi muestra incluye tres establecimientos de cada provincia: Buenos Aires, Chaco, Córdoba, Corrientes, Misiones y Santa Fe. Conservo 1.013 filas originales para mantener la trazabilidad y utilizo 1.007, tras excluir seis correspondientes a otros canales. La selección es intencional y no representa todo el mercado argentino.
 
-Supuestos aprobados:
+### Supuestos del modelo
 
-- Cada establecimiento constituye una cuenta cliente; un CUIT no identifica por sí solo un establecimiento.
-- Un pedido mensual por establecimiento. La fecha se representa con el primer día del mes, no con una fecha de entrega conocida.
-- Cantidad comprada simulada = volumen vendido al público declarado por el establecimiento en ese mes. Se omiten variaciones de existencias.
-- Se conserva el precio promedio mensual minorista con impuestos como referencia del ejercicio. No se inventan descuentos ni márgenes mayoristas.
-- No hay compradores ficticios adicionales, segmentos inventados ni reparto aleatorio de cantidades.
+- Identifico cada cuenta cliente por establecimiento. Un mismo CUIT puede corresponder a más de una ubicación.
+- Genero un pedido por cliente y mes. Represento el período con el primer día del mes, sin atribuirle una fecha real de entrega.
+- Asigno como cantidad comprada simulada el volumen mensual vendido al público por ese establecimiento. No modelo variaciones de existencias.
+- Conservo el precio promedio mensual minorista con impuestos como referencia. No aplico descuentos ni estimo márgenes mayoristas.
+- Asigno el estado `Concretado` a todos los pedidos como supuesto del caso.
 
-Los importes son ARS nominales de referencia: no facturación mayorista real, rentabilidad ni crecimiento ajustado por inflación. Doce pedidos por cliente son una regla del modelo y no una medida de fidelidad.
+Los nombres, ubicaciones, productos, volúmenes y precios proceden de la fuente pública. Los pedidos y la relación comercial con el mayorista son simulados. Interpreto los importes como **ARS nominales de referencia**, sin atribuirles carácter de facturación mayorista real o rentabilidad. Los doce pedidos por cliente son una regla del modelo y no permiten medir fidelidad.
 
 ### Unidades
 
-Líquidos: volumen original en m³ × 1.000 = litros; precio en ARS/L. GNC: m³ y ARS/m³. No sumar litros y m³ como una cantidad única. Los importes sí se pueden sumar por estar expresados en ARS bajo el mismo criterio.
+Convierto los volúmenes de combustibles líquidos de m³ a litros multiplicando por 1.000 y conservo sus precios en ARS/L. Para GNC mantengo m³ y ARS/m³.
 
-## 2. Preparación y carga
+Analizo los volúmenes de líquidos y GNC por separado. Puedo sumar sus importes porque están expresados en ARS bajo el mismo criterio de valoración.
 
-Base requerida: `capstone_project`. Esquema actual: `combustibles`.
+## 2. Preparación y estructura de la base
+
+Organizo los datos en la base `capstone_project`, dentro del esquema `combustibles`. Utilizo PostgreSQL para almacenar y consultar la información, y pgAdmin para ejecutar las consultas e inspeccionar los resultados.
 
 | Tabla | Función | Filas |
 | --- | --- | ---: |
 | operadores | Identidad original de cada establecimiento | 18 |
-| clientes | Cuentas del mayorista, una por establecimiento | 18 |
-| productos | Productos, categorías y unidades | 7 |
-| pedidos | Un pedido mensual por cliente | 216 |
-| detalle_pedido | Un detalle por registro fuente incluido | 1.007 |
-| fuente_ventas | Ventas al público originales utilizadas como referencia | 1.007 |
-| detalle_pedido_entrada | Detalles con incidencias didácticas | 1.010 |
+| clientes | Cuenta comercial vinculada a un establecimiento | 18 |
+| productos | Combustibles, categorías y unidades | 7 |
+| pedidos | Cabecera del pedido mensual de cada cliente | 216 |
+| detalle_pedido | Producto, cantidad y precio de cada línea | 1.007 |
+| fuente_ventas | Registros originales utilizados como referencia | 1.007 |
+| detalle_pedido_entrada | Entrada con incidencias didácticas para la limpieza | 1.010 |
 
-`clientes.id_operador` es único y referencia a `operadores`. No representa un proveedor: relaciona la cuenta comercial con su identidad de origen. `pedidos` referencia al cliente sin duplicar `id_operador`. Los detalles enlazan pedido, producto y registro fuente. Hay claves primarias/foráneas, restricciones de valores positivos, `DATE`, `NUMERIC` y unicidad cliente/mes.
+Relaciono cada cliente con su establecimiento mediante `clientes.id_operador`, una clave foránea única. Vinculo los pedidos con los clientes y cada detalle con su pedido, producto y registro fuente. Así puedo rastrear el origen de las cantidades y los precios.
 
 ```mermaid
 erDiagram
@@ -68,48 +68,33 @@ erDiagram
     fuente_ventas ||--|| detalle_pedido : sustenta
 ```
 
-### Carga nueva
+Defino claves primarias y foráneas, restricciones de valores positivos y unicidad de cliente y mes. Uso `DATE` para fechas, `NUMERIC(18,3)` para cantidades y `NUMERIC(18,2)` para precios.
 
-1. Crear una base vacía llamada `capstone_project` en pgAdmin y conectarse a ella.
-2. Abrir y ejecutar completo [estructura.sql](estructura.sql). Incluye creación, INSERT, limpieza y vistas en una transacción; no requiere importar CSV.
-3. Ejecutar los bloques de [validaciones.sql](validaciones.sql) y comparar los resultados con este README.
-4. Ejecutar la primera consulta de [analisis.sql](analisis.sql) cuando se haya comprobado la carga.
+### Comprobación de la carga
 
-Con psql, desde la raíz del repositorio y con una base vacía creada: `psql -d capstone_project -v ON_ERROR_STOP=1 -f estructura.sql`.
+Para comprobar el número de registros de las siete tablas, utilizo esta consulta:
 
-### Reemplazo de la carga existente
+```sql
+SELECT 'operadores' AS tabla, COUNT(*) AS filas FROM combustibles.operadores
+UNION ALL SELECT 'productos', COUNT(*) FROM combustibles.productos
+UNION ALL SELECT 'clientes', COUNT(*) FROM combustibles.clientes
+UNION ALL SELECT 'pedidos', COUNT(*) FROM combustibles.pedidos
+UNION ALL SELECT 'detalle_pedido', COUNT(*) FROM combustibles.detalle_pedido
+UNION ALL SELECT 'fuente_ventas', COUNT(*) FROM combustibles.fuente_ventas
+UNION ALL SELECT 'detalle_pedido_entrada', COUNT(*) FROM combustibles.detalle_pedido_entrada;
+```
 
-La base del usuario ya está confirmada: `capstone_project`. Se acordó reemplazar el enfoque anterior desde cero, sin conservar un esquema de respaldo.
+![Resultado de la consulta de conteos de las siete tablas](imagenes/conteos_tablas.png)
 
-1. Conectarse a `capstone_project` en pgAdmin.
-2. Ejecutar [reiniciar_esquema.sql](reiniciar_esquema.sql). El script comprueba el nombre de la base y elimina únicamente los esquemas del proyecto `combustibles` y `combustibles_v1`, con sus objetos. No elimina la base ni otros esquemas.
-3. Ejecutar completo `estructura.sql` para cargar el modelo actual.
-4. Ejecutar `validaciones.sql` por bloques y obtener las nuevas capturas.
-
-El reinicio elimina los datos existentes en esos esquemas. No ejecutarlo después de la carga nueva salvo que se quiera repetirla desde cero. `estructura.sql` por sí solo no borra una carga existente.
-
-### Evidencia de carga en pgAdmin
-
-Captura aportada por el usuario el 23/09/2026. Los siete conteos coinciden con el modelo: 18 operadores, 7 productos, 18 clientes, 216 pedidos, 1.007 detalles, 1.007 registros fuente y 1.010 filas de entrada.
-
-![Conteos de las siete tablas en pgAdmin](imagenes/conteos_tablas.png)
-
-Las capturas muestran el panel de resultados. El nombre de la base fue confirmado por el usuario como `capstone_project`; no aparece en estos recortes. Quedan pendientes los controles locales adicionales de fechas, pedidos mensuales, trazabilidad y tipos de `validaciones.sql`.
+Obtengo los siete conteos previstos: 18 operadores, 7 productos, 18 clientes, 216 pedidos, 1.007 detalles, 1.007 registros fuente y 1.010 filas de entrada.
 
 ## 3. Limpieza y transformación
 
-Las incidencias se introducen exclusivamente en `detalle_pedido_entrada`, no en la fuente real: 8 precios nulos y 3 duplicados exactos. En la entrada ninguno de los duplicados repite un precio nulo.
+Introduzco ocho precios nulos y tres duplicados exactos exclusivamente en `detalle_pedido_entrada` para demostrar el tratamiento de estas incidencias. Mantengo intacta la fuente real y registro las alteraciones en `datos/incidencias_simuladas.csv`.
 
-| Etapa | Filas | Repeticiones de identificador | Precios nulos |
-| --- | ---: | ---: | ---: |
-| Entrada actual | 1.010 | 3 | 8 |
-| Detalle limpio actual | 1.007 | 0 | 0 |
+### Tratamiento de duplicados y precios nulos
 
-La captura del usuario confirma el resultado de limpieza: se eliminaron tres duplicados y se recuperaron ocho precios nulos.
-
-![Entrada y detalle limpio: filas, repeticiones y precios nulos](imagenes/limpieza.png)
-
-La carga aplica:
+Utilizo `DISTINCT` para eliminar las copias idénticas y `COALESCE` para recuperar cada precio faltante desde su registro fuente:
 
 ```sql
 INSERT INTO combustibles.detalle_pedido
@@ -122,46 +107,102 @@ FROM combustibles.detalle_pedido_entrada e
 JOIN combustibles.fuente_ventas f ON f.id_fuente = e.id_fuente;
 ```
 
-Este bloque ya está incluido en `estructura.sql`. No ejecutarlo nuevamente sobre el detalle cargado. El precio se recupera del mismo registro fuente porque por diseño es el precio de referencia asignado al pedido; no se rellena con cero ni con un promedio arbitrario.
+Recupero el precio del mismo registro porque es la referencia asignada al pedido por diseño. Esto evita introducir un cero o un promedio ajeno a la operación. Incluyo esta transformación en la carga inicial.
 
-Los períodos de origen están completos. No se inventan nulos de fecha: se transforman a `DATE` usando el primer día del mes y se verifica que sean doce meses de 2025, sin fechas nulas ni días distintos de 1. Cantidades y precios se definen como `NUMERIC(18,3)` y `NUMERIC(18,2)`.
+Para comparar la entrada con el detalle limpio, ejecuto:
 
-### Conciliación y relaciones
+```sql
+SELECT
+    'Entrada antes de limpiar' AS etapa,
+    COUNT(*) AS filas,
+    COUNT(*) - COUNT(DISTINCT id_detalle) AS filas_repetidas,
+    COUNT(*) FILTER (WHERE precio_unitario_ars IS NULL) AS precios_nulos
+FROM combustibles.detalle_pedido_entrada
+UNION ALL
+SELECT
+    'Detalle limpio',
+    COUNT(*),
+    COUNT(*) - COUNT(DISTINCT id_detalle),
+    COUNT(*) FILTER (WHERE precio_unitario_ars IS NULL)
+FROM combustibles.detalle_pedido;
+```
 
-`v_conciliacion` debe comprobar 1.007 registros fuente con cero diferencias de cantidad e importe. Totales conservados: **93.213.130 L**, **8.638.800,20 m³ de GNC** e **importe de referencia 141.717.574.607,79 ARS**.
+![Comparación de filas, repeticiones y precios nulos antes y después de la limpieza](imagenes/limpieza.png)
 
-La ejecución del usuario devolvió **1.007 registros comprobados y 0 con diferencias**:
+| Etapa | Filas | Repeticiones de identificador | Precios nulos |
+| --- | ---: | ---: | ---: |
+| Entrada antes de limpiar | 1.010 | 3 | 8 |
+| Detalle limpio | 1.007 | 0 | 0 |
 
-![Conciliación en pgAdmin: 1007 registros y cero diferencias](imagenes/conciliacion.png)
+El resultado confirma que elimino las tres filas duplicadas y recupero los ocho precios faltantes, conservando los 1.007 detalles previstos.
 
-`validaciones.sql` comprueba además un pedido por cliente/mes, doce pedidos por cliente, tipos de datos y 1.007 filas después de los JOIN, con cero inconsistencias de establecimiento, producto y período. Esto controla la multiplicación accidental de filas.
+### Fechas y precisión numérica
 
-Validaciones técnicas del modelo: [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json). El reporte conserva los resultados técnicos de la carga del modelo actual. Las tres capturas anteriores documentan la ejecución del usuario para conteos, limpieza y conciliación. Los controles adicionales siguen pendientes de confirmación local.
+Transformo los períodos de origen al tipo `DATE` mediante el primer día del mes. Como los períodos de la muestra están completos, no imputo fechas.
 
-## 4. Análisis — en desarrollo
+Conservo tres decimales en las cantidades y dos en los precios. Calculo el importe como cantidad × precio y redondeo para su presentación, evitando introducir diferencias en la conciliación.
 
-`analisis.sql` contiene la primera consulta adaptada a clientes con identidad real. Devuelve identificador, nombre, localidad, provincia, doce pedidos y gasto de referencia. La cantidad de pedidos es constante por diseño; la diferencia entre clientes procede de cantidades y precios/productos de referencia.
+### Conciliación con la fuente
 
-Falta ejecutar/revisar el resultado actual con el usuario y desarrollar las otras cinco consultas de forma gradual. La verificación técnica no se presenta como análisis de negocio completado.
+Comparo las cantidades y los importes de cada registro fuente con los de su detalle de pedido mediante la vista `v_conciliacion`. Compruebo las diferencias con esta consulta:
 
-Para cada consulta se documentarán pregunta, métrica, filtros, resultado, interpretación, limitación y evidencia.
+```sql
+SELECT
+    COUNT(*) AS registros_comprobados,
+    COUNT(*) FILTER (
+        WHERE diferencia_cantidad <> 0
+           OR diferencia_importe_ars <> 0
+    ) AS registros_con_diferencias
+FROM combustibles.v_conciliacion;
+```
 
-## 5. Comunicación de hallazgos — pendiente
+![Resultado de conciliación: 1007 registros comprobados y cero con diferencias](imagenes/conciliacion.png)
 
-Al revisar cada consulta se incorporará su interpretación. Al finalizar se sintetizarán hallazgos y posibles decisiones para el mayorista ficticio. No se extrapolarán las cifras al país ni se interpretarán como compras reales de estaciones, precios mayoristas, márgenes o fidelidad.
+Obtengo **1.007 registros comprobados y 0 con diferencias**. Esto confirma que la transformación conserva las cantidades y los importes de referencia de los registros incluidos.
+
+Los totales del dataset son **93.213.130 litros de combustibles líquidos**, **8.638.800,20 m³ de GNC** y **141.717.574.607,79 ARS de referencia**. Mantengo separadas las dos unidades de volumen.
+
+Complemento estos controles con comprobaciones de fechas, pedidos mensuales, claves y relaciones. Los reportes técnicos de [Python Decimal](datos/validacion.json) y [PostgreSQL mediante PGlite](datos/validacion_postgresql.json) registran sus resultados. Las capturas de esta sección muestran los controles de conteos, limpieza y conciliación ejecutados en pgAdmin.
+
+## 4. Análisis de negocio
+
+En [analisis.sql](analisis.sql) desarrollo las consultas para responder las preguntas del proyecto. La primera identifica los cinco establecimientos con mayor importe de referencia y devuelve cliente, localidad, provincia, cantidad de pedidos e importe acumulado.
+
+Calculo el gasto de referencia como la suma de cantidad × precio y cuento los pedidos con `COUNT(DISTINCT id_pedido)` para evitar contar cada línea de producto como un pedido diferente.
+
+**El análisis de negocio está en desarrollo.** Aún no presento resultados interpretados del top 5 ni conclusiones para las demás preguntas.
+
+## 5. Límites de interpretación
+
+Delimito las conclusiones a los establecimientos seleccionados y al período 2025. Considero el efecto conjunto de cantidades, precios y composición por productos al interpretar los importes.
+
+No extrapolo la muestra al país ni interpreto una variación nominal como crecimiento real ajustado por inflación. Tampoco calculo rentabilidad, porque no dispongo de costos de compra del mayorista.
 
 ## Archivos y reproducción
 
-- `estructura.sql`: definición, carga, limpieza y vistas del modelo actual.
-- `reiniciar_esquema.sql`: reinicio de los esquemas del proyecto en `capstone_project` para una carga desde cero.
-- `validaciones.sql`: conteos, limpieza, conciliación, fechas y relaciones.
-- `analisis.sql`: primera consulta; desarrollo gradual de las restantes.
-- [datos/README.md](datos/README.md): selección y metodología.
-- [datos/diccionario.md](datos/diccionario.md): campos, relaciones y unidades.
-- `datos/generar_dataset.py`: regeneración determinista con Python 3.10+, sin dependencias externas.
-- `datos/sha256_csv.json`: huellas de integridad de todos los CSV.
-- [PROJECT_STATE.md](PROJECT_STATE.md): decisiones y continuidad.
+| Archivo | Contenido |
+| --- | --- |
+| [estructura.sql](estructura.sql) | Tablas, inserciones, limpieza y vistas |
+| [analisis.sql](analisis.sql) | Consultas de negocio comentadas |
+| [validaciones.sql](validaciones.sql) | Consultas de control de carga, limpieza, conciliación y relaciones |
+| [datos/README.md](datos/README.md) | Fuente, selección y metodología del dataset |
+| [datos/diccionario.md](datos/diccionario.md) | Definición de campos, relaciones y unidades |
+| [datos/generar_dataset.py](datos/generar_dataset.py) | Generación determinista de los datos derivados |
+| [datos/sha256_csv.json](datos/sha256_csv.json) | Huellas de integridad de los CSV |
+| [imagenes/](imagenes/) | Resultados de las consultas en pgAdmin |
 
-Ejecutar desde la raíz `python3 datos/generar_dataset.py`. Usa `datos/fuente_original.csv` y reemplaza derivados y `estructura.sql`. No descarga novedades ni repite la selección desde Access. La validación PostgreSQL se ejecuta por separado; no la genera Python.
+Para reproducir la base, utilizo una base vacía llamada `capstone_project` y ejecuto completo `estructura.sql`. El archivo contiene las inserciones y la limpieza en una transacción, por lo que no requiere importar los CSV por separado. Desde la raíz del repositorio, puedo cargarlo con:
 
-La publicación de nombres y CUIT de los operadores de la fuente pública fue autorizada por el usuario el 21/09/2026. Se conserva atribución y no se asigna una licencia nueva a los datos de terceros.
+```bash
+psql -d capstone_project -v ON_ERROR_STOP=1 -f estructura.sql
+```
+
+Para regenerar los datos derivados, utilizo Python 3.10 o superior, sin dependencias externas:
+
+```bash
+python3 datos/generar_dataset.py
+```
+
+El generador utiliza la muestra congelada `datos/fuente_original.csv` y reemplaza los derivados y `estructura.sql`. No descarga novedades ni repite la selección desde Access. La validación PostgreSQL se realiza por separado.
+
+Mantengo la atribución de la fuente pública y no asigno una licencia nueva a los datos de terceros.

@@ -10,6 +10,16 @@ Leer este archivo, README.md, datos/README.md, datos/diccionario.md y los commit
 
 Actualizar este archivo con cada avance, diferenciando preparado, validado técnicamente, ejecutado por el usuario y publicado. No dar por ejecutadas tareas en el PostgreSQL local del usuario: no hay conexión a esa base.
 
+### Criterio editorial del README
+
+El usuario requiere documentación en primera persona, con voz del autor del proyecto. El README explica problema, modelo, decisiones metodológicas, consultas, resultados y límites; no relata conversaciones, autorizaciones, cambios de enfoque ni entregas de capturas. Evitar expresiones como «el usuario confirmó», «se acordó» o «captura aportada por el usuario».
+
+Cada captura debe estar acompañada por la consulta SQL que produce su resultado y una interpretación. Un enlace o una referencia a validaciones.sql no sustituye mostrar esa consulta. Mantener las instrucciones mínimas de reproducción, exigidas por la entrega, separadas de la descripción del proyecto. El seguimiento operativo y los pendientes detallados pertenecen a PROJECT_STATE.md.
+
+La sección de reemplazo de la carga se retiró del README. Para una reconstrucción expresamente solicitada: reiniciar_esquema.sql comprueba capstone_project y elimina combustibles y combustibles_v1 con sus objetos; luego estructura.sql reconstruye el modelo. Esta ruta es destructiva y no corresponde ejecutarla ahora, porque la carga ya fue comprobada.
+
+La revisión editorial no ejecuta nuevas validaciones ni completa análisis pendientes.
+
 ## 2. Decisión central aprobada y alcance
 
 El usuario confirmó que la intención original era usar operadores como clientes de un mayorista ficticio. El modelo V1 con compradores ficticios no reflejaba esa intención. Autorizó modificar los archivos, un pedido mensual por establecimiento y precios originales como referencia.
