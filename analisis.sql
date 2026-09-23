@@ -98,3 +98,35 @@ SELECT
 FROM ranking
 WHERE posicion <= 3
 ORDER BY categoria, posicion, id_pedido;
+
+-- Calcula el importe acumulado por cliente de los pedidos concretados.
+-- Selecciona cinco clientes por importe y compara su suma con el total de la cartera.
+WITH gasto_por_cliente AS (
+    SELECT
+        p.id_cliente,
+        SUM(d.cantidad * d.precio_unitario_ars) AS importe
+    FROM combustibles.pedidos AS p
+    JOIN combustibles.detalle_pedido AS d
+        ON d.id_pedido = p.id_pedido
+    WHERE p.estado = 'Concretado'
+    GROUP BY p.id_cliente
+),
+clientes_ordenados AS (
+    SELECT
+        id_cliente,
+        importe,
+        ROW_NUMBER() OVER (
+            ORDER BY importe DESC, id_cliente
+        ) AS posicion
+    FROM gasto_por_cliente
+)
+SELECT
+    ROUND(SUM(importe) FILTER (WHERE posicion <= 5), 2)
+        AS importe_top_5_ars,
+    ROUND(SUM(importe), 2) AS importe_total_ars,
+    ROUND(
+        100.0 * SUM(importe) FILTER (WHERE posicion <= 5)
+        / NULLIF(SUM(importe), 0),
+        2
+    ) AS participacion_top_5_pct
+FROM clientes_ordenados;

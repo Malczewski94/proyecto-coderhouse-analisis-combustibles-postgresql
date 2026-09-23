@@ -129,10 +129,6 @@ FROM combustibles.detalle_pedido;
 
 ![Comparación de filas, repeticiones y precios nulos antes y después de la limpieza](imagenes/limpieza.png)
 
-| Etapa | Filas | Repeticiones de identificador | Precios nulos |
-| --- | ---: | ---: | ---: |
-| Entrada antes de limpiar | 1.010 | 3 | 8 |
-| Detalle limpio | 1.007 | 0 | 0 |
 
 El resultado confirma que elimino las tres filas duplicadas y recupero los ocho precios faltantes, conservando los 1.007 detalles previstos.
 
@@ -271,13 +267,6 @@ LIMIT 5;
 
 ![Cinco clientes con mayor gasto de referencia en 2025](imagenes/top_5_clientes.png)
 
-| Cliente | Establecimiento | Localidad | Provincia | Pedidos | Importe de referencia (ARS) |
-| --- | --- | --- | --- | ---: | ---: |
-| C0012 | SUCATA S.A. | San Lorenzo | Santa Fe | 12 | 26.229.253.774,57 |
-| C0011 | SANTA BARBARA SA | Córdoba | Córdoba | 12 | 16.697.526.321,86 |
-| C0001 | ESTACION EL SURTIDOR S.R.L. | Rosario | Santa Fe | 12 | 12.936.900.987,89 |
-| C0006 | D.G.B. S.R.L. | Villa Dolores | Córdoba | 12 | 12.487.467.190,62 |
-| C0017 | MARIJO S.A. | Río Cuarto | Córdoba | 12 | 9.822.274.048,88 |
 
 Identifico a **SUCATA S.A.** como la cuenta de mayor importe de referencia, seguida por SANTA BARBARA SA. Los cinco establecimientos se ubican en Santa Fe y Córdoba: dos en la primera provincia y tres en la segunda. Este resultado describe las cuentas seleccionadas y no un ranking provincial del mercado.
 
@@ -308,20 +297,6 @@ ORDER BY mes;
 
 ![Evolución mensual de las ventas simuladas en 2025](imagenes/ventas_mensuales.png)
 
-| Mes de 2025 | Pedidos | Clientes | Importe de referencia (ARS) |
-| --- | ---: | ---: | ---: |
-| Enero | 18 | 18 | 10.095.233.279,25 |
-| Febrero | 18 | 18 | 10.024.372.092,50 |
-| Marzo | 18 | 18 | 10.636.993.017,83 |
-| Abril | 18 | 18 | 10.213.597.094,02 |
-| Mayo | 18 | 18 | 10.765.760.001,72 |
-| Junio | 18 | 18 | 10.813.129.530,75 |
-| Julio | 18 | 18 | 12.004.274.839,26 |
-| Agosto | 18 | 18 | 12.260.514.811,11 |
-| Septiembre | 18 | 18 | 12.356.546.180,88 |
-| Octubre | 18 | 18 | 13.391.668.900,60 |
-| Noviembre | 18 | 18 | 13.295.202.542,47 |
-| Diciembre | 18 | 18 | 15.860.282.317,40 |
 
 Identifico **diciembre** como el mes de mayor importe, con **15.860.282.317,40 ARS**, y **febrero** como el menor, con **10.024.372.092,50 ARS**. La suma de los doce importes es **141.717.574.607,79 ARS**, coincidente con el total anual del dataset.
 
@@ -358,11 +333,6 @@ LIMIT 3;
 
 ![Tres combustibles líquidos con menor volumen vendido](imagenes/productos_menos_vendidos.png)
 
-| Producto | Categoría | Litros vendidos |
-| --- | --- | ---: |
-| Kerosene | Queroseno | 495.530 |
-| Nafta (común) hasta 92 Ron | Nafta | 3.405.860 |
-| Nafta (premium) de más de 95 Ron | Nafta | 11.885.870 |
 
 Identifico al queroseno como el producto de menor volumen de la cartera, seguido por la nafta común y la nafta premium. Comparo litros acumulados durante 2025, por lo que este orden no representa un ranking de importes ni de rentabilidad.
 
@@ -417,7 +387,58 @@ ORDER BY categoria, posicion, id_pedido;
 
 Clasifico por el importe sin redondear y redondeo únicamente para mostrarlo. Los empates comparten posición y generan saltos en la siguiente; el filtro puede devolver más de tres filas por categoría si hay empates. El identificador del pedido ordena la presentación sin romper esos empates.
 
-La consulta está preparada; todavía no incorporo su resultado ni conclusiones sobre los pedidos destacados.
+![Ranking de pedidos por categoría: posiciones uno a tres](imagenes/ranking_pedidos_categoria.png)
+
+Obtengo tres posiciones por cada una de las cuatro categorías, sin empates en las posiciones mostradas. Identifico los pedidos que encabezan cada ranking:
+
+- **Gasoil:** pedido V000139, de SUCATA S.A., correspondiente a julio, con **1.763.802.594,40 ARS**.
+- **GNC:** pedido V000067, de D.G.B. S.R.L., correspondiente a julio, con **120.939.940,50 ARS**.
+- **Nafta:** pedido V000012, de ESTACION EL SURTIDOR S.R.L., correspondiente a diciembre, con **999.287.344,80 ARS**.
+- **Queroseno:** pedido V000158, de LIBEROIL SRL, correspondiente a febrero, con **107.067.890,00 ARS**.
+
+Observo que D.G.B. S.R.L. ocupa las tres primeras posiciones de GNC y ESTACION EL SURTIDOR S.R.L. las tres de nafta, mediante pedidos de meses diferentes. Esto destaca operaciones de estas cuentas dentro de cada categoría, pero no mide su participación en el importe anual total.
+
+Utilizaría el ranking para seleccionar pedidos cuyo volumen y composición conviene revisar con mayor detalle. Cada importe corresponde únicamente a la categoría indicada; no representa necesariamente el importe completo del pedido ni permite inferir rentabilidad.
+
+### 4.5. Concentración del importe en los cinco principales clientes
+
+Calculo qué porcentaje del importe total de la cartera corresponde a los cinco clientes de mayor gasto de referencia. Selecciono exactamente cinco cuentas con el mismo desempate por identificador utilizado en el top 5. La métrica es `importe_top_5 / importe_total * 100`.
+
+```sql
+WITH gasto_por_cliente AS (
+    SELECT
+        p.id_cliente,
+        SUM(d.cantidad * d.precio_unitario_ars) AS importe
+    FROM combustibles.pedidos AS p
+    JOIN combustibles.detalle_pedido AS d
+        ON d.id_pedido = p.id_pedido
+    WHERE p.estado = 'Concretado'
+    GROUP BY p.id_cliente
+),
+clientes_ordenados AS (
+    SELECT
+        id_cliente,
+        importe,
+        ROW_NUMBER() OVER (
+            ORDER BY importe DESC, id_cliente
+        ) AS posicion
+    FROM gasto_por_cliente
+)
+SELECT
+    ROUND(SUM(importe) FILTER (WHERE posicion <= 5), 2)
+        AS importe_top_5_ars,
+    ROUND(SUM(importe), 2) AS importe_total_ars,
+    ROUND(
+        100.0 * SUM(importe) FILTER (WHERE posicion <= 5)
+        / NULLIF(SUM(importe), 0),
+        2
+    ) AS participacion_top_5_pct
+FROM clientes_ordenados;
+```
+
+Uso `ROW_NUMBER()` para numerar las cuentas y `FILTER` para sumar las cinco primeras sin excluir a las demás del total. `NULLIF` evita dividir por cero. Mantengo los importes sin redondear durante el cálculo del porcentaje y redondeo la presentación.
+
+La consulta está preparada; aún no incorporo su resultado ni una conclusión sobre la concentración de la cartera.
 
 
 

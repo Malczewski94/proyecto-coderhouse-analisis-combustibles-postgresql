@@ -12,6 +12,8 @@ Actualizar este archivo con cada avance, diferenciando preparado, validado técn
 
 ### Criterio editorial del README
 
+Evitar tablas que transcriban resultados ya visibles en capturas. Usar consulta → captura → interpretación; conservar tablas de estructura, métricas o archivos cuando aporten información distinta.
+
 El usuario requiere documentación en primera persona, con voz del autor del proyecto. El README explica problema, modelo, decisiones metodológicas, consultas, resultados y límites; no relata conversaciones, autorizaciones, cambios de enfoque ni entregas de capturas. Evitar expresiones como «el usuario confirmó», «se acordó» o «captura aportada por el usuario».
 
 Cada captura debe estar acompañada por la consulta SQL que produce su resultado y una interpretación. Un enlace o una referencia a validaciones.sql no sustituye mostrar esa consulta. Mantener las instrucciones mínimas de reproducción, exigidas por la entrega, separadas de la descripción del proyecto. El seguimiento operativo y los pendientes detallados pertenecen a PROJECT_STATE.md.
@@ -98,7 +100,7 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
 | 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos, fechas, pedidos mensuales, trazabilidad y tipos confirmados mediante capturas locales (23/09/2026) |
 | 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
-| 4. Análisis | Top 5, evolución mensual y productos ejecutados y documentados; ranking por categoría preparado |
+| 4. Análisis | Cuatro análisis ejecutados y documentados; concentración del top 5 preparada |
 | 5. Hallazgos | Pendientes de revisión conjunta |
 
 Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
@@ -125,8 +127,8 @@ La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/
 1. Cinco clientes con mayor gasto de referencia: ejecutado por el usuario, captura publicada e interpretación descriptiva documentada en README.
 2. Evolución mensual de importes: ejecutada por el usuario; captura y doce importes documentados, con interpretación nominal.
 3. Tres productos líquidos menos vendidos: ejecutada; captura y resultados documentados con interpretación y límites.
-4. Ranking de pedidos por categoría con RANK(): consulta preparada; pendiente ejecución y captura de posiciones 1 a 3 por categoría.
-5. Concentración del top 5: pendiente.
+4. Ranking de pedidos por categoría con RANK(): ejecución confirmada, captura e interpretación publicadas.
+5. Concentración del top 5: consulta preparada; pendiente ejecución, captura e interpretación.
 6. Precio ponderado por producto/mes: pendiente.
 
 Las secciones 1–6 de la actividad son orientación, pipeline, ejemplos, controles, conceptos y cierre, no seis entregas diferentes. Se cubren los cuatro pasos del entregable: configuración, limpieza, análisis y documentación. Mantener las seis preguntas y revisar todos los criterios de la rúbrica al cerrar.
@@ -155,7 +157,11 @@ La captura mensual se reemplazó por la versión con fechas completas en el mism
 
 La tercera consulta quedó confirmada en imagenes/productos_menos_vendidos.png: P004 Kerosene 495530 L; P005 Nafta común 3405860 L; P006 Nafta premium 11885870 L. El nombre completo de P006 procede del catálogo de productos ya leído. El README documenta menor volumen, sin equipararlo a baja rentabilidad ni atribuir causas.
 
-Siguiente tarea: ejecutar la cuarta consulta de analisis.sql. Agrupa por pedido/categoría, calcula el importe exacto y aplica RANK PARTITION BY categoria ORDER BY importe DESC; muestra posiciones <=3, incluyendo empates. Solo redondea al presentar. Un pedido puede aparecer en más de una categoría con sus importes parciales; GNC participa por importe en ARS, sin mezclar volúmenes. La consulta está preparada, pendiente de ejecución del usuario. Pedir captura de todas las filas y columnas (pueden ser varias imágenes). No anticipar ganadores.
+Ranking confirmado en imagenes/ranking_pedidos_categoria.png: doce filas, tres por categoría. Ganadores: Gasoil V000139/C0012 julio 1763802594.40; GNC V000067/C0006 julio 120939940.50; Nafta V000012/C0001 diciembre 999287344.80; Queroseno V000158/C0014 febrero 107067890.00. D.G.B. ocupa las tres primeras posiciones GNC y EL SURTIDOR las de nafta. Son importes parciales de pedido por categoría, no concentración anual.
+
+Se retiraron las cuatro tablas que duplicaban resultados de limpieza, top 5, meses y productos. Se conservaron las tablas de preguntas, estructura y archivos. La captura que muestra la duplicación del README es referencia editorial y no evidencia nueva para publicar.
+
+Siguiente tarea: ejecutar la quinta consulta de analisis.sql (concentración del top 5), recibir la captura de una fila con importe_top_5_ars, importe_total_ars y participacion_top_5_pct, e interpretar el porcentaje. ROW_NUMBER selecciona exactamente cinco con desempate por id_cliente; FILTER suma sus importes y NULLIF protege el denominador. No se ha ejecutado en el servidor del usuario.
 
 Preferencia explícita: al documentar una captura, incluir en la respuesta el siguiente paso concreto y su consulta; no responder solamente confirmando la actualización. Continuar de una consulta a la vez.
 
