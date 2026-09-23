@@ -479,12 +479,32 @@ ORDER BY pr.id_producto, mes;
 
 Expreso los precios de líquidos en ARS/L y los de GNC en ARS/m³. La columna `volumen_total` conserva la unidad correspondiente: litros para líquidos y m³ para GNC. Cuento los clientes participantes para contextualizar posibles cambios en la composición de cada grupo.
 
-Interpreto este indicador como un precio ponderado de la muestra, no como un precio nacional ni un índice puro de inflación: puede cambiar tanto por los precios declarados como por el peso relativo de cada establecimiento. La consulta está preparada; aún no incorporo resultados de su ejecución.
+Conservo el [resultado completo de la consulta en CSV](resultados/precios_ponderados_mensuales.csv), con 83 combinaciones de producto y mes. Compruebo que los volúmenes, el número de clientes y los precios ponderados coinciden con los datos de pedidos y detalles.
+
+Los seis productos restantes aparecen en los doce meses; la nafta común (P005) aparece en once. No encuentro registros de este producto en octubre dentro de la muestra, por lo que no asigno un precio cero ni completo el período con una estimación.
+
+Al comparar enero con diciembre, observo aumentos nominales del precio ponderado en los siete productos. Por ejemplo, Gas Oil Grado 2 pasa de **1.234,06 a 1.742,90 ARS/L** (+41,23 %), nafta súper de **1.213,22 a 1.657,09 ARS/L** (+36,59 %) y GNC de **635,32 a 705,99 ARS/m³** (+11,12 %). Calculo estas variaciones sobre los precios publicados en el resultado, redondeados a dos decimales.
+
+No observo un incremento continuo en todos los meses. Kerosene pasa de 1.588,74 ARS/L en noviembre a 1.116,85 ARS/L en diciembre, mientras su volumen pasa de 9.350 a 93.030 litros. Esta combinación requiere considerar el peso de cada establecimiento antes de atribuir la caída a un cambio general de precios.
+
+La cobertura también varía: GNC incluye entre siete y nueve clientes por mes y nafta común entre uno y cinco en los meses con registros. En septiembre, noviembre y diciembre, el precio ponderado de nafta común representa a un único cliente de la muestra.
+
+Utilizaría esta métrica para seguir los precios de referencia por producto y contextualizar la evolución de los importes. La interpreto como un precio ponderado de la muestra, no como un precio nacional ni un índice puro de inflación: puede cambiar tanto por los precios declarados como por el peso relativo de cada establecimiento.
 
 
 
 
-## 5. Límites de interpretación
+## 5. Conclusiones de negocio
+
+Identifico una cartera cuyo importe de referencia se concentra en pocas cuentas: los cinco principales clientes reúnen el **55,16 %** del total anual, y SUCATA S.A. encabeza el ranking. Priorizaría el seguimiento de estas cuentas y analizaría oportunidades para diversificar la cartera, sin equiparar su importe con rentabilidad.
+
+Observo un importe mensual de diciembre **57,11 % superior al de enero**, en términos nominales. Como el modelo fija dieciocho clientes y dieciocho pedidos cada mes, no atribuyo esa variación a una incorporación de cuentas ni a una mayor frecuencia de pedidos. Considero conjuntamente precios, volúmenes y composición de productos; el análisis ponderado muestra que los siete productos terminan el año con precios de referencia superiores a los de enero, pero no cuantifica por separado el aporte de cada factor al importe total.
+
+Identifico kerosene, nafta común y nafta premium como los líquidos de menor volumen acumulado. Revisaría su cobertura comercial y los volúmenes por establecimiento antes de tomar decisiones de surtido: vender menos litros no demuestra un margen menor. Complemento esa lectura con el ranking de pedidos por categoría, que permite seleccionar operaciones para un análisis más detallado.
+
+Concluyo que el modelo permite describir concentración, composición y evolución de una cartera simulada mediante consultas reproducibles. Para convertir estos hallazgos en decisiones comerciales reales, necesitaría precios de venta mayoristas, costos, inventarios y condiciones de los clientes.
+
+## 6. Límites de interpretación
 
 Delimito las conclusiones a los establecimientos seleccionados y al período 2025. Considero el efecto conjunto de cantidades, precios y composición por productos al interpretar los importes.
 
@@ -501,6 +521,7 @@ No extrapolo la muestra al país ni interpreto una variación nominal como creci
 | [datos/diccionario.md](datos/diccionario.md) | Definición de campos, relaciones y unidades |
 | [datos/generar_dataset.py](datos/generar_dataset.py) | Generación determinista de los datos derivados |
 | [datos/sha256_csv.json](datos/sha256_csv.json) | Huellas de integridad de los CSV |
+| [resultados/precios_ponderados_mensuales.csv](resultados/precios_ponderados_mensuales.csv) | Resultado completo del precio ponderado por producto y mes |
 | [imagenes/](imagenes/) | Resultados de las consultas en pgAdmin |
 
 Para reproducir la base, utilizo una base vacía llamada `capstone_project` y ejecuto completo `estructura.sql`. El archivo contiene las inserciones y la limpieza en una transacción, por lo que no requiere importar los CSV por separado. Desde la raíz del repositorio, puedo cargarlo con:
