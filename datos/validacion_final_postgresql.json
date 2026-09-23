@@ -1,0 +1,149 @@
+{
+  "resultado": "CORRECTO",
+  "fecha": "2026-09-23",
+  "motor": "PGlite 0.5.8 (PostgreSQL en WebAssembly)",
+  "version": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "current_database": "postgres",
+  "archivos_sha256": {
+    "estructura.sql": "0250fa03d437a5c01c0e8db73cf8c09b55fe860f55676dd5cb2fb71dd1ee8e30",
+    "validaciones.sql": "6826746ca1beda8b137e6e7a97e6a90575306f0220b8790119f2eba5571eaab4",
+    "analisis.sql": "547eea144b23477ca99c2e9b5b86ea13b472e73344544f62517ab883a83519e6",
+    "reiniciar_esquema.sql": "bc05eea1535a44d854a56241352ab85531fb066d7f73f1d7705c1dc50f6426a1"
+  },
+  "estructura_sql_ejecutada": true,
+  "validaciones": [
+    [
+      {
+        "tabla": "operadores",
+        "filas": 18
+      },
+      {
+        "tabla": "productos",
+        "filas": 7
+      },
+      {
+        "tabla": "clientes",
+        "filas": 18
+      },
+      {
+        "tabla": "pedidos",
+        "filas": 216
+      },
+      {
+        "tabla": "detalle_pedido",
+        "filas": 1007
+      },
+      {
+        "tabla": "fuente_ventas",
+        "filas": 1007
+      },
+      {
+        "tabla": "detalle_pedido_entrada",
+        "filas": 1010
+      }
+    ],
+    [
+      {
+        "etapa": "Entrada antes de limpiar",
+        "filas": 1010,
+        "filas_repetidas": 3,
+        "precios_nulos": 8
+      },
+      {
+        "etapa": "Detalle limpio",
+        "filas": 1007,
+        "filas_repetidas": 0,
+        "precios_nulos": 0
+      }
+    ],
+    [
+      {
+        "registros_comprobados": 1007,
+        "registros_con_diferencias": 0
+      }
+    ],
+    [
+      {
+        "fechas_nulas": 0,
+        "fechas_invalidas": 0,
+        "meses": 12
+      }
+    ],
+    [],
+    [],
+    [
+      {
+        "filas_unidas": 1007,
+        "errores_trazabilidad": 0
+      }
+    ],
+    [
+      {
+        "table_name": "detalle_pedido",
+        "column_name": "cantidad",
+        "data_type": "numeric",
+        "numeric_precision": 18,
+        "numeric_scale": 3
+      },
+      {
+        "table_name": "detalle_pedido",
+        "column_name": "precio_unitario_ars",
+        "data_type": "numeric",
+        "numeric_precision": 18,
+        "numeric_scale": 2
+      },
+      {
+        "table_name": "fuente_ventas",
+        "column_name": "periodo",
+        "data_type": "date",
+        "numeric_precision": null,
+        "numeric_scale": null
+      },
+      {
+        "table_name": "pedidos",
+        "column_name": "fecha",
+        "data_type": "date",
+        "numeric_precision": null,
+        "numeric_scale": null
+      }
+    ]
+  ],
+  "analisis": [
+    {
+      "consulta": 1,
+      "filas": 5
+    },
+    {
+      "consulta": 2,
+      "filas": 12
+    },
+    {
+      "consulta": 3,
+      "filas": 3
+    },
+    {
+      "consulta": 4,
+      "filas": 12
+    },
+    {
+      "consulta": 5,
+      "filas": 1,
+      "resultado": {
+        "importe_top_5_ars": "78173422323.82",
+        "importe_total_ars": "141717574607.79",
+        "participacion_top_5_pct": "55.16"
+      }
+    },
+    {
+      "consulta": 6,
+      "filas": 83
+    }
+  ],
+  "bloques_sql_readme_ejecutados": 15,
+  "reinicio": {
+    "proteccion_base_incorrecta": "Reinicio cancelado: conectarse a capstone_project. Base actual: postgres",
+    "ruta_destructiva_en_capstone_project": "No ejecutada en este entorno"
+  },
+  "alcance": "Prueba aislada; no conecta al servidor del usuario. Las capturas de pgAdmin y el CSV constituyen evidencias separadas.",
+  "commit_sql_verificado": "9f0ae83511203512ce67c220779b8c42c5af6398"
+}

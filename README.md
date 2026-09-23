@@ -621,7 +621,23 @@ No extrapolo la muestra al país ni interpreto una variación nominal como creci
 
 Para ampliar el análisis, incorporaría costos y precios mayoristas reales para evaluar márgenes, e inventarios para contrastar el supuesto que equipara compras con ventas al público. También descompondría la variación del importe entre precios, volúmenes y composición, y ampliaría el período observado para estudiar patrones que un único año no permite establecer.
 
-Estas ampliaciones requieren información adicional y no forman parte de los resultados obtenidos en este proyecto.
+Puedo profundizar en la descomposición de precios, volúmenes y composición con los datos actuales. Para evaluar márgenes reales, contrastar inventarios o estudiar más años necesito información adicional. Estas ampliaciones no forman parte de los resultados obtenidos en este proyecto.
+
+### 6.3. Verificación del entregable
+
+Compruebo los cinco criterios del cierre de la actividad mediante los archivos y evidencias del proyecto:
+
+| Criterio | Evidencia |
+| --- | --- |
+| Contexto y hallazgos en README | Defino el problema en 2.1, interpreto las seis consultas en 2.4 y sintetizo las conclusiones en 6. |
+| JOIN entre al menos dos tablas | Relaciono pedidos y detalles en todos los análisis, incorporando clientes, operadores o productos según la pregunta. |
+| Agregación y función avanzada | Utilizo `GROUP BY` y `SUM`; aplico `RANK()` en 2.4.4 y `ROW_NUMBER()` en 2.4.5. |
+| Scripts ejecutables | Ejecuto la estructura, los ocho controles y las seis consultas de análisis en una base aislada con PostgreSQL 18.3 mediante PGlite 0.5.8. |
+| Limpieza antes del análisis | Documento en 2.3 la eliminación de tres duplicados y la recuperación de ocho precios, con conciliación de 1.007 registros sin diferencias. |
+
+Conservo el [reporte de verificación técnica](datos/validacion_final_postgresql.json), que identifica los archivos mediante SHA-256. También compruebo los quince bloques SQL del README. Distingo esta prueba aislada de las capturas de pgAdmin y del CSV de precios ponderados, que documentan la ejecución en la base del proyecto.
+
+En el script auxiliar de reinicio verifico el rechazo de una conexión a una base distinta de `capstone_project`. No ejecuto su ruta destructiva en esta prueba; no es necesaria para reproducir la entrega en una base vacía.
 
 ## Archivos y reproducción
 
@@ -630,6 +646,7 @@ Estas ampliaciones requieren información adicional y no forman parte de los res
 | [estructura.sql](estructura.sql) | Tablas, inserciones, limpieza y vistas |
 | [analisis.sql](analisis.sql) | Consultas de negocio comentadas |
 | [validaciones.sql](validaciones.sql) | Consultas de control de carga, limpieza, conciliación y relaciones |
+| [datos/validacion_final_postgresql.json](datos/validacion_final_postgresql.json) | Evidencia técnica de ejecución de la estructura, controles y seis análisis |
 | [datos/README.md](datos/README.md) | Fuente, selección y metodología del dataset |
 | [datos/diccionario.md](datos/diccionario.md) | Definición de campos, relaciones y unidades |
 | [datos/generar_dataset.py](datos/generar_dataset.py) | Generación determinista de los datos derivados |
@@ -642,6 +659,15 @@ Para reproducir la base, utilizo una base vacía llamada `capstone_project` y ej
 ```bash
 psql -d capstone_project -v ON_ERROR_STOP=1 -f estructura.sql
 ```
+
+Después de la carga, ejecuto los controles y las seis consultas de negocio:
+
+```bash
+psql -d capstone_project -v ON_ERROR_STOP=1 -f validaciones.sql
+psql -d capstone_project -v ON_ERROR_STOP=1 -f analisis.sql
+```
+
+En pgAdmin utilizo Query Tool conectado a `capstone_project`: ejecuto `estructura.sql` completo sobre la base vacía y luego los bloques de `validaciones.sql` y `analisis.sql` por separado para inspeccionar cada resultado. La limpieza ya está incluida en la carga; los bloques del README muestran el procedimiento y no requieren repetir las inserciones sobre una base cargada.
 
 Para regenerar los datos derivados, utilizo Python 3.10 o superior, sin dependencias externas:
 
