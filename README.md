@@ -438,7 +438,49 @@ FROM clientes_ordenados;
 
 Uso `ROW_NUMBER()` para numerar las cuentas y `FILTER` para sumar las cinco primeras sin excluir a las demás del total. `NULLIF` evita dividir por cero. Mantengo los importes sin redondear durante el cálculo del porcentaje y redondeo la presentación.
 
-La consulta está preparada; aún no incorporo su resultado ni una conclusión sobre la concentración de la cartera.
+![Participación de los cinco principales clientes en el importe total](imagenes/concentracion_top_5.png)
+
+Obtengo un importe acumulado de **78.173.422.323,82 ARS** para los cinco principales clientes, sobre **141.717.574.607,79 ARS** de toda la cartera. Su participación es **55,16 %**.
+
+Cinco de los dieciocho establecimientos reúnen más de la mitad del importe de referencia; los trece restantes representan el 44,84 %. Esto muestra una concentración comercial en esas cuentas dentro de la simulación, sin establecer por sí solo un nivel de riesgo aceptable ni medir rentabilidad.
+
+Utilizaría este indicador para priorizar el seguimiento de las cuentas principales y evaluar oportunidades de diversificación de la cartera. La métrica describe importes simulados a precios de referencia; no informa sobre incumplimientos, contratos ni probabilidad de pérdida de clientes.
+
+### 4.6. Precio ponderado por producto y mes
+
+Calculo el precio medio de referencia dando mayor peso a los registros con mayor volumen. Utilizo `SUM(cantidad * precio) / SUM(cantidad)` para cada producto y mes, en lugar de un promedio simple que asignaría el mismo peso a volúmenes diferentes.
+
+```sql
+SELECT
+    DATE_TRUNC('month', p.fecha)::date AS mes,
+    pr.id_producto,
+    pr.nombre_original AS producto,
+    pr.unidad_precio,
+    COUNT(DISTINCT p.id_cliente) AS cantidad_clientes,
+    SUM(d.cantidad) AS volumen_total,
+    ROUND(
+        SUM(d.cantidad * d.precio_unitario_ars)
+        / NULLIF(SUM(d.cantidad), 0),
+        2
+    ) AS precio_ponderado_ars
+FROM combustibles.pedidos AS p
+JOIN combustibles.detalle_pedido AS d
+    ON d.id_pedido = p.id_pedido
+JOIN combustibles.productos AS pr
+    ON pr.id_producto = d.id_producto
+WHERE p.estado = 'Concretado'
+GROUP BY
+    DATE_TRUNC('month', p.fecha)::date,
+    pr.id_producto,
+    pr.nombre_original,
+    pr.unidad_precio
+ORDER BY pr.id_producto, mes;
+```
+
+Expreso los precios de líquidos en ARS/L y los de GNC en ARS/m³. La columna `volumen_total` conserva la unidad correspondiente: litros para líquidos y m³ para GNC. Cuento los clientes participantes para contextualizar posibles cambios en la composición de cada grupo.
+
+Interpreto este indicador como un precio ponderado de la muestra, no como un precio nacional ni un índice puro de inflación: puede cambiar tanto por los precios declarados como por el peso relativo de cada establecimiento. La consulta está preparada; aún no incorporo resultados de su ejecución.
+
 
 
 

@@ -130,3 +130,30 @@ SELECT
         2
     ) AS participacion_top_5_pct
 FROM clientes_ordenados;
+
+-- Calcula el precio de referencia ponderado por volumen para cada producto y mes.
+-- Mantiene separadas las unidades de cada producto y cuenta los clientes participantes.
+SELECT
+    DATE_TRUNC('month', p.fecha)::date AS mes,
+    pr.id_producto,
+    pr.nombre_original AS producto,
+    pr.unidad_precio,
+    COUNT(DISTINCT p.id_cliente) AS cantidad_clientes,
+    SUM(d.cantidad) AS volumen_total,
+    ROUND(
+        SUM(d.cantidad * d.precio_unitario_ars)
+        / NULLIF(SUM(d.cantidad), 0),
+        2
+    ) AS precio_ponderado_ars
+FROM combustibles.pedidos AS p
+JOIN combustibles.detalle_pedido AS d
+    ON d.id_pedido = p.id_pedido
+JOIN combustibles.productos AS pr
+    ON pr.id_producto = d.id_producto
+WHERE p.estado = 'Concretado'
+GROUP BY
+    DATE_TRUNC('month', p.fecha)::date,
+    pr.id_producto,
+    pr.nombre_original,
+    pr.unidad_precio
+ORDER BY pr.id_producto, mes;

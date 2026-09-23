@@ -100,7 +100,7 @@ Se conservan PK/FK y cantidades/precios positivos. DATE para fecha/período; NUM
 | 1. Problema | Reformulado y aprobado: mayorista ficticio y establecimientos clientes |
 | 2. Preparación/carga | Generador y SQL actualizados; carga técnica comprobada; conteos, fechas, pedidos mensuales, trazabilidad y tipos confirmados mediante capturas locales (23/09/2026) |
 | 3. Limpieza | 8 precios nulos y 3 duplicados; limpieza y conciliación confirmadas en capturas locales (23/09/2026) |
-| 4. Análisis | Cuatro análisis ejecutados y documentados; concentración del top 5 preparada |
+| 4. Análisis | Cinco análisis ejecutados y documentados; precio ponderado preparado |
 | 5. Hallazgos | Pendientes de revisión conjunta |
 
 Entrada: 1.010 filas, 3 repeticiones y 8 precios nulos. Salida: 1.007, cero repeticiones y cero nulos. DISTINCT elimina copias; COALESCE recupera el precio de la misma fuente por el diseño del caso. Los nulos y duplicados son sintéticos. Fechas completas y válidas: no imputar valores si no faltan.
@@ -128,8 +128,8 @@ La publicación de nombres/CUIT de operadores públicos fue autorizada el 21/09/
 2. Evolución mensual de importes: ejecutada por el usuario; captura y doce importes documentados, con interpretación nominal.
 3. Tres productos líquidos menos vendidos: ejecutada; captura y resultados documentados con interpretación y límites.
 4. Ranking de pedidos por categoría con RANK(): ejecución confirmada, captura e interpretación publicadas.
-5. Concentración del top 5: consulta preparada; pendiente ejecución, captura e interpretación.
-6. Precio ponderado por producto/mes: pendiente.
+5. Concentración del top 5: ejecutada y documentada; 78173422323.82 / 141717574607.79 ARS, participación 55.16%.
+6. Precio ponderado por producto/mes: consulta preparada; pendiente ejecución y resultados completos.
 
 Las secciones 1–6 de la actividad son orientación, pipeline, ejemplos, controles, conceptos y cierre, no seis entregas diferentes. Se cubren los cuatro pasos del entregable: configuración, limpieza, análisis y documentación. Mantener las seis preguntas y revisar todos los criterios de la rúbrica al cerrar.
 
@@ -161,7 +161,11 @@ Ranking confirmado en imagenes/ranking_pedidos_categoria.png: doce filas, tres p
 
 Se retiraron las cuatro tablas que duplicaban resultados de limpieza, top 5, meses y productos. Se conservaron las tablas de preguntas, estructura y archivos. La captura que muestra la duplicación del README es referencia editorial y no evidencia nueva para publicar.
 
-Siguiente tarea: ejecutar la quinta consulta de analisis.sql (concentración del top 5), recibir la captura de una fila con importe_top_5_ars, importe_total_ars y participacion_top_5_pct, e interpretar el porcentaje. ROW_NUMBER selecciona exactamente cinco con desempate por id_cliente; FILTER suma sus importes y NULLIF protege el denominador. No se ha ejecutado en el servidor del usuario.
+Concentración confirmada mediante imagenes/concentracion_top_5.png: importe top 5 78173422323.82 ARS; total 141717574607.79; participación 55.16%. El README interpreta que cinco de dieciocho cuentas reúnen más de la mitad del importe, sin etiquetar arbitrariamente el riesgo ni inferir rentabilidad.
+
+Siguiente tarea: ejecutar la sexta consulta de analisis.sql, precio ponderado por producto y mes. La consulta calcula SUM(cantidad*precio)/SUM(cantidad), incluye número de clientes y volumen por grupo y muestra unidad_precio. Solicitar el resultado completo exportado a CSV para evitar múltiples capturas; pueden acompañarlo con una captura. No afirmar que cada producto aparece necesariamente en todos los meses antes de comprobarlo. Pendiente ejecución local, interpretación, conclusiones y revisión final.
+
+El usuario indica que los nombres truncados y otros detalles de presentación se revisarán al final cuando pida una revisión completa. No frenar las consultas para solicitar nuevas capturas por esos detalles. Mantener este pendiente para esa revisión.
 
 Preferencia explícita: al documentar una captura, incluir en la respuesta el siguiente paso concreto y su consulta; no responder solamente confirmando la actualización. Continuar de una consulta a la vez.
 
